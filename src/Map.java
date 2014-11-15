@@ -2,6 +2,7 @@
 
 
 public class Map {
+	private final int BOARD_SIZE = 12;
 	private static Tiles [][] tiles;
 	private int [] obstacles;
 	
@@ -141,6 +142,7 @@ public class Map {
 	public Tiles[][] getTiles(){
 		return tiles;
 	}
+	
 	/*
 	public Tiles getTile(int x, int y){
 		for(int i = 0; i < tiles.length; i++){
@@ -151,10 +153,11 @@ public class Map {
 	}\
 	*/
 	//prints for each tile in which direction obstacles are located
-	public static void printMapObstacles(Map map){
+	
+	public void printMapObstacles(Map map){
 		Tiles [][] temp = map.getTiles();
-		for(int i=0; i<12; i++){
-			for(int j=0; j<12; j++){
+		for(int i=0; i < BOARD_SIZE; i++){
+			for(int j=0; j < BOARD_SIZE; j++){
 				for(int k=0; k<4; k++){
 					if(temp[i][j].getObstacles()[k])
 						System.out.print("("+temp[i][j].getTileNumber()+", "+temp[i][j].coordinate(k)+"); ");

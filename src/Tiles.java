@@ -3,7 +3,7 @@ import java.util.LinkedList;
 
 
 public class Tiles {
-	
+	private final int BOARD_SIZE = 12;
 	private int x;
 	private int y;
 	public boolean isVisited;	//used in BFS
@@ -35,8 +35,8 @@ public class Tiles {
 			this.obstacles[i] = false;
 		}
 		int count = 1;
-		for(int i = 0; i < 4; i++){
-			for(int j = 0; j<4; j++){
+		for(int i = 0; i < BOARD_SIZE; i++){
+			for(int j = 0; j < BOARD_SIZE; j++){
 				if(tileNumber == count){
 					this.x = j;
 					this.y = i;
