@@ -9,6 +9,10 @@ public class GraphGenerator {
 	private Tiles[][] tile;
 	private ArrayList<Tiles> graph;
 
+	public ArrayList<Tiles> getGraph() {
+		return graph;
+	}
+
 	public GraphGenerator(Map map) {
 		tile = map.getTiles();
 		graph = new ArrayList<Tiles>();

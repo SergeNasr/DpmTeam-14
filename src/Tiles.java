@@ -4,8 +4,8 @@ import java.util.LinkedList;
 
 public class Tiles {
 	private final int BOARD_SIZE = 12;
-	private int x;
-	private int y;
+	private int col;
+	private int row;
 	public boolean isVisited;	//used in BFS
 	
 	public boolean isVisited() {
@@ -38,8 +38,8 @@ public class Tiles {
 		for(int i = 0; i < BOARD_SIZE; i++){
 			for(int j = 0; j < BOARD_SIZE; j++){
 				if(tileNumber == count){
-					this.x = j;
-					this.y = i;
+					this.col = j;
+					this.row = i;
 				}
 				count++;
 			}
@@ -81,17 +81,17 @@ public class Tiles {
 		else
 			return "You're drunk, go home";
 	}
-	public int getX(){
-		return x;
+	public int getCol(){
+		return col;
 	}
-	public int getY(){
-		return y;
+	public int getRow(){
+		return row;
 	}
-	public void setX(int xC){
-		x = xC;
+	public void setCol(int xC){
+		col = xC;
 	}
-	public void setY(int yC){
-		y = yC;
+	public void setRow(int yC){
+		row = yC;
 	}
 	
 	public void generatePos(int r, int c){ 

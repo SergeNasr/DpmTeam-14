@@ -6,17 +6,6 @@ public class Map {
 	private static Tiles [][] tiles;
 	private int [] obstacles;
 	
-	public static void main(String[]args){
-		int [] obstacles = {1,7,8,14,21,34,56,67,78,89,90,100,112,113};
-		Map map = new Map(obstacles);
-		//printMapObstacles(map);
-		
-		GraphGenerator gg = new GraphGenerator(map);
-		gg.createGraph();
-		//gg.printGraph();
-		gg.printPath();
-		
-	}
 	public Map(int [] obstacles){
 		
 		this.obstacles = new int[obstacles.length];
@@ -38,7 +27,7 @@ public class Map {
 		
 		for(int i = 0; i< tiles.length; i++){
 			for(int j = 0; j <tiles[i].length; j++){
-				System.out.println("TileNumber = "+ tiles[i][j].getTileNumber() +"(x: " + tiles[i][j].getX() + ", y: " + tiles[i][j].getY() + ")");
+				System.out.println("TileNumber = "+ tiles[i][j].getTileNumber() +" (Col: " + tiles[i][j].getCol() + ", Row: " + tiles[i][j].getRow() + ")");
 			}
 		}
 		setWalls(0);

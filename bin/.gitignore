@@ -2,3 +2,10 @@
 /GraphGenerator.class
 /Map.class
 /Tiles.class
+/Main.class
+/Navigation.class
+/Point.class
+/OdometerTemp.class
+/Odometer.class
+/OdometryCorrection.class
+/SquareDriver.class
