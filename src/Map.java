@@ -12,7 +12,9 @@ public class Map {
 		
 		GraphGenerator gg = new GraphGenerator(map);
 		gg.createGraph();
-		gg.printGraph();
+		//gg.printGraph();
+		gg.printPath();
+		
 	}
 	public Map(int [] obstacles){
 		
@@ -24,9 +26,11 @@ public class Map {
 		tiles = new Tiles[12][12];
 		
 		
+		Tiles tile;
 		for(int i = 0; i < tiles.length; i++){
 			for(int j = 0; j < tiles[i].length; j++){
-				tiles[i][j] = new Tiles(count,false);
+				tile = new Tiles(count,false);
+				tiles[i][j] = tile;
 				count ++;
 			}
 		}

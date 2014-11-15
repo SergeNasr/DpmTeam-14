@@ -1,6 +1,10 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 
+
+@SuppressWarnings("deprecation")
 public class GraphGenerator {
 	private Tiles[][] tile;
 	private ArrayList<Tiles> graph;
@@ -46,6 +50,51 @@ public class GraphGenerator {
 			for ( Tiles t : graph.get(i).adjList) {
 				System.out.println("For tile "+ graph.get(i).getTileNumber() +  " " + t.getTileNumber());
 			}
+		}
+	}
+	
+	public LinkedList<Tiles> bfs(Tiles start, Tiles dest) {
+		HashMap<Tiles, Tiles> prev = new HashMap<Tiles, Tiles>();
+		LinkedList<Tiles> path = new LinkedList<Tiles>();
+		LinkedList<Tiles> q = new LinkedList<Tiles>();
+		
+		// add starting position
+		q.add(start);
+		start.setVisited(true);
+		
+		while (!q.isEmpty()) {
+			Tiles current = (Tiles) q.remove(0);
+			
+			if (current.equals(dest)) {
+				break;
+			}
+			else {
+				for (Tiles neighbor : current.adjList) {
+					if (!neighbor.isVisited()) {
+						neighbor.setVisited(true);
+						q.add(neighbor);
+						prev.put(neighbor, current);
+					}
+				}
+			}
+		}
+		
+		// get shortest path
+		for (Tiles tile = dest; tile != null; tile = prev.get(tile)) {
+			path.add(0, tile);
+		}
+		
+		return path;
+	}
+	
+	
+	public void printPath() {
+		Tiles st = graph.get(1);
+		Tiles end = graph.get(25);
+		LinkedList<Tiles> pp = bfs(st, end);
+		
+		for (Tiles f : pp) {
+			System.out.println(f.getTileNumber());
 		}
 	}
 }

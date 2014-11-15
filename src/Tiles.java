@@ -7,6 +7,15 @@ public class Tiles {
 	private int x;
 	private int y;
 	public boolean isVisited;	//used in BFS
+	
+	public boolean isVisited() {
+		return isVisited;
+	}
+
+	public void setVisited(boolean isVisited) {
+		this.isVisited = isVisited;
+	}
+	
 	public LinkedList<Tiles> adjList;	//to represent a graph using adjacency list
 	private static Arrow[] positions;
 	
