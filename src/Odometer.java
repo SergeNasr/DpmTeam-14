@@ -11,17 +11,16 @@ import lejos.nxt.NXTRegulatedMotor;
 
 public class Odometer extends Thread {
 	// robot position
-	private static int lastTachoL;
-	private static int lastTachoR;
-	private static int nowTachoL;
-	private static int nowTachoR;
+	private int lastTachoL;
+	private int lastTachoR;
+	private int nowTachoL;
+	private int nowTachoR;
 	private double x, y, theta, angle;
 	private double dirX, dirY;
 	private double distL, distR, deltaD, deltaT, dX, dY;
 	private double [] oldDH, dDH;
-	private double maxY = 0.0;
-	private static NXTRegulatedMotor leftMotor;
-	private static NXTRegulatedMotor rightMotor;
+	private NXTRegulatedMotor leftMotor;
+	private NXTRegulatedMotor rightMotor;
 	// odometer update period, in ms
 	private static final long ODOMETER_PERIOD = 25;
 	private static double wb = 15.8;
@@ -31,16 +30,16 @@ public class Odometer extends Thread {
 
 	// default constructor
 	public Odometer(double x, double y, NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor) {
-		leftMotor = leftMotor;
-		rightMotor = rightMotor;
+		this.leftMotor = leftMotor;
+		this.rightMotor = rightMotor;
 		leftMotor.resetTachoCount();
 		rightMotor.resetTachoCount();
 		leftMotor.flt();
 		rightMotor.flt();
 		lastTachoL = leftMotor.getTachoCount();
 		lastTachoR = rightMotor.getTachoCount();
-		x = x;
-		y = y;
+		this.x = x;
+		this.y = y;
 		theta = 0.0;
 		angle = 0.0;
 		lock = new Object();
