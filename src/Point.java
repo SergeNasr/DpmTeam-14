@@ -16,8 +16,8 @@ public class Point {
 	}
 	
 	public static Point convertTileToPoint(Tiles t) {
-		double x = 15 + 15 * t.getCol();
-		double y = 15 + 15 * t.getRow();
+		double x = 15 + 30 * t.getCol();
+		double y = 15 + 30 * t.getRow();
 		
 		return new Point(x, y);
 	}

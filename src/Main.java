@@ -63,24 +63,25 @@ public class Main {
 			gg.createGraph();
 			
 			// Odometer and Correction starts
-			odo.start();
-			odometryDisplay.start();
-			odoCor.start();
+//			odo.start();
+//			odometryDisplay.start();
+//			odoCor.start();
 			
 			Tiles start = gg.getGraph().get(1);			// need to modify those values!!
-			Tiles dest =  gg.getGraph().get(2);
+			Tiles dest =  gg.getGraph().get(5);
 			LinkedList<Tiles> path = gg.bfs(start, dest);
 			
 			// convert path to points
 			Point[] pointPath = new Point[path.size()];
 			for (int i = 0; i < path.size(); i++) {
 				pointPath[i] = Point.convertTileToPoint(path.get(i));
+				System.out.println(pointPath[i].getX() + " " + pointPath[i].getY());
 			}
 
-			Navigation navigator = new Navigation(driver, pointPath, odo);
-			// travel/navigate (in a different thread)
-			// TODO need to pass values of the robots positions
-			navigator.start();
+//			Navigation navigator = new Navigation(driver, pointPath, odo);
+//			// travel/navigate (in a different thread)
+//			// TODO need to pass values of the robots positions
+//			navigator.start();
 			
 			// TODO Claw/Grab-List block
 				
