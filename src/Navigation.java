@@ -2,7 +2,7 @@
 
 public class Navigation extends Thread {
 	private SquareDriver driver;
-	private double prevPosX = 15.0; 
+	private double prevPosX = 45.0; 	//TODO modify those values
 	private double prevPosY = 15.0; 
 	private double currentTheta = Math.PI/2;
 	private final int ROTATE_SPEED = 150;

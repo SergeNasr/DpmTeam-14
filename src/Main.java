@@ -19,7 +19,7 @@ public class Main {
 		int buttonChoice;
 		
 		// initialize all classes
-		Odometer odo = new Odometer(InitPos, InitPos, leftMotor, rightMotor);
+		Odometer odo = new Odometer(InitPos + 30, InitPos, leftMotor, rightMotor);
 		OdometryDisplay odometryDisplay = new OdometryDisplay(odo);
 		SquareDriver driver = new SquareDriver(leftMotor, rightMotor);
 		OdometryCorrection odoCor = new OdometryCorrection(odo, colorSensor, driver);
@@ -27,7 +27,7 @@ public class Main {
 		// TODO create obstacles for each map and insert coordinates of location of the block
 		
 		// create map
-		int [] obstacles = {1,7,8,14,21,34,56,67,78,89,90,100,112,113};
+		int [] obstacles = {1, 8, 10, 14};
 		Map map = new Map(obstacles);
 		
 		do {
@@ -55,7 +55,7 @@ public class Main {
 			odometryDisplay.start();
 			
 		} else {
-			
+			LCD.clear();
 			// TODO orienteering
 			
 			// create graph and path
@@ -63,25 +63,24 @@ public class Main {
 			gg.createGraph();
 			
 			// Odometer and Correction starts
-//			odo.start();
-//			odometryDisplay.start();
-//			odoCor.start();
+			odo.start();
+			odometryDisplay.start();
+			//odoCor.start();
 			
 			Tiles start = gg.getGraph().get(1);			// need to modify those values!!
-			Tiles dest =  gg.getGraph().get(5);
+			Tiles dest =  gg.getGraph().get(14);
 			LinkedList<Tiles> path = gg.bfs(start, dest);
 			
 			// convert path to points
-			Point[] pointPath = new Point[path.size()];
-			for (int i = 0; i < path.size(); i++) {
-				pointPath[i] = Point.convertTileToPoint(path.get(i));
-				System.out.println(pointPath[i].getX() + " " + pointPath[i].getY());
+			Point[] pointPath = new Point[path.size() - 1];
+			for (int i = 0; i < path.size() - 1; i++) {	//removed first element because it is the current tile
+				pointPath[i] = Point.convertTileToPoint(path.get(i + 1));
 			}
 
-//			Navigation navigator = new Navigation(driver, pointPath, odo);
-//			// travel/navigate (in a different thread)
-//			// TODO need to pass values of the robots positions
-//			navigator.start();
+			Navigation navigator = new Navigation(driver, pointPath, odo);
+			// travel/navigate (in a different thread)
+			// TODO need to pass values of the robots positions
+			navigator.start();
 			
 			// TODO Claw/Grab-List block
 				
