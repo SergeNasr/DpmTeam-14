@@ -2,8 +2,8 @@ import lejos.nxt.NXTRegulatedMotor;
 
 
 public class SquareDriver {
-	private static final double RADIUS = 2.05;
-	private static final double WIDTH = 15.3;
+	private static final double RADIUS = 2.09;
+	private static final double WIDTH = 10;
 	
 	private boolean rotating;	// used in odometry correction
 	private NXTRegulatedMotor leftMotor;

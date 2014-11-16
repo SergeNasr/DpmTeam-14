@@ -22,9 +22,9 @@ public class Arrow {
 	}
 	
 	public Arrow(double x, double y, double theta) {
-		x = x;
-		y = y;
-		theta = theta;
+		this.x = x;
+		this.y = y;
+		this.theta = theta;
 	}
 
 	public void setRow(int row) {

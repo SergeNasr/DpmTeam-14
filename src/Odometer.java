@@ -1,8 +1,5 @@
 
-import lejos.nxt.Button;
-import lejos.nxt.LCD;
 import lejos.nxt.Motor;
-import lejos.nxt.NXT;
 import lejos.nxt.NXTRegulatedMotor;
 
 /*
@@ -23,7 +20,7 @@ public class Odometer extends Thread {
 	private NXTRegulatedMotor rightMotor;
 	// odometer update period, in ms
 	private static final long ODOMETER_PERIOD = 25;
-	private static double wb = 15.8;
+	private static double wb = 10;
 	private static double wr = 2.09;
 	// lock object for mutual exclusion
 	private Object lock;
@@ -61,12 +58,6 @@ public class Odometer extends Thread {
 	// run method (required for Thread)
 	public void run() {
 		long updateStart, updateEnd;
-		
-		LCD.clear();
-		LCD.drawString("Odometer Demo",0,0,false);
-		LCD.drawString("Current X ",0,4,false);
-		LCD.drawString("Current Y ",0,5,false);
-		LCD.drawString("Current T ",0,6,false);
 
 		while (true) {
 			updateStart = System.currentTimeMillis();
@@ -98,10 +89,6 @@ public class Odometer extends Thread {
 				x = x + dX;
 				y = y + dY;
 							
-				//display current x and y position in cm and theta in degrees
-				LCD.drawInt((int)x, 4, 11,4);
-				LCD.drawInt((int)y,4,11,5);
-				LCD.drawInt((int)(angle*180/(Math.PI)),4,11,6);
 			}
 			
 			oldDH[0] += dDH[0];
@@ -137,28 +124,6 @@ public class Odometer extends Thread {
 		
 		return angle % 360.0;
 	}
-	
-	private double invTan(double x, double y){
-		if(x==0){
-			if(y<0)
-				return Math.PI*3/2;
-			else
-				return Math.PI/2;
-		}
-		else if(y==0){
-			if(x<0)
-				return Math.PI;
-			else
-				return 0;
-		}	
-		else if(x>0)
-			return Math.atan(y/x);
-		else if(y>0)
-			return Math.PI - Math.atan(y/x);
-		else
-			return Math.PI + Math.atan(y/x);
-	}
-	
 
 	// accessors
 	public void getPosition(double[] position, boolean[] update) {

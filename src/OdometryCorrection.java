@@ -25,7 +25,6 @@ public class OdometryCorrection extends Thread {
 
 	// run method (required for Thread)
 	public void run() {
-		Sound.setVolume(Sound.VOL_MAX);
 		colorSensor.setFloodlight(true);
 		double previous_x = 15;
 		double previous_y = 15;

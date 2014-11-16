@@ -13,7 +13,7 @@ public class Map {
 			this.obstacles[i] = obstacles[i];
 		}
 		int count = 1;
-		tiles = new Tiles[12][12];
+		tiles = new Tiles[BOARD_SIZE][BOARD_SIZE];
 		
 		
 		Tiles tile;
@@ -25,19 +25,21 @@ public class Map {
 			}
 		}
 		
-		for(int i = 0; i< tiles.length; i++){
-			for(int j = 0; j <tiles[i].length; j++){
-				System.out.println("TileNumber = "+ tiles[i][j].getTileNumber() +" (Col: " + tiles[i][j].getCol() + ", Row: " + tiles[i][j].getRow() + ")");
-			}
-		}
+//		Print tiles created
+//		for(int i = 0; i< tiles.length; i++){
+//			for(int j = 0; j <tiles[i].length; j++){
+//				System.out.println("TileNumber = "+ tiles[i][j].getTileNumber() +" (Col: " + tiles[i][j].getCol() + ", Row: " + tiles[i][j].getRow() + ")");
+//			}
+//		}
+		
 		setWalls(0);
 		setWalls(1);
 		setWalls(2);
 		setWalls(3);
 		setBlocks();
 		
-		for (int i = 0 ; i < 12 ; i++) {
-			for (int j = 0 ; j < 12 ; j++) {
+		for (int i = 0 ; i < BOARD_SIZE ; i++) {
+			for (int j = 0 ; j < BOARD_SIZE ; j++) {
 				if (!tiles[i][j].getIsObstacle()) {
 					tiles[i][j].generatePos(i, j);
 				}
