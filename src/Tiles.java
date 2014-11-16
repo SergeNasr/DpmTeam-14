@@ -1,42 +1,35 @@
 import java.util.LinkedList;
 
-
-
 public class Tiles {
-	private final int BOARD_SIZE = 12;
+	
 	private int col;
 	private int row;
-	public boolean isVisited;	//used in BFS
 	
-	public boolean isVisited() {
-		return isVisited;
-	}
-
-	public void setVisited(boolean isVisited) {
-		this.isVisited = isVisited;
-	}
-	
+	private static final int MAZE_SIZE = 4;
 	public LinkedList<Tiles> adjList;	//to represent a graph using adjacency list
+	public boolean isVisited;	//used in BFS
+
 	private static Arrow[] positions;
 	
-	//variable keeping track whether there are obstacles in the 4 tiles surrounding current tile
-	private boolean [] obstacles = new boolean[4];
+	//variable keeping track whether there are hasBlock in the 4 tiles surrounding current tile
+	private boolean [] hasBlock = new boolean[4];
 	//tile number from 1 to max size of board
 	private int tileNumber;
 	//variable keeping track whether or not tile is an obstacle
 	private boolean isObstacle = false;
 	
+	
 	public Tiles(int tileNumber, boolean isObstacle){
 		adjList = new LinkedList<Tiles>();
-		isVisited = false;
+		this.isVisited = false;
 		this.tileNumber = tileNumber;
 		this.isObstacle = isObstacle;
 		for(int i=0; i<4; i++){
-			this.obstacles[i] = false;
+			this.hasBlock[i] = false;
 		}
 		int count = 1;
-		for(int i = 0; i < BOARD_SIZE; i++){
-			for(int j = 0; j < BOARD_SIZE; j++){
+		for(int i = 0; i < MAZE_SIZE; i++){
+			for(int j = 0; j< MAZE_SIZE; j++){
 				if(tileNumber == count){
 					this.col = j;
 					this.row = i;
@@ -47,13 +40,13 @@ public class Tiles {
 	}
 	
 	public boolean[] getObstacles(){
-		return obstacles;
+		return hasBlock;
 	}
 	
 	
 	public void setObstacles(int index, boolean yolo){
 		if(index < 4){
-			obstacles[index] = yolo;
+			hasBlock[index] = yolo;
 		}
 		else return;
 	}
@@ -67,19 +60,17 @@ public class Tiles {
 	}
 	public void setBlock(){
 		isObstacle = true;
+		for(int i = 0; i < 4 ; i++){
+			hasBlock[i] = true;
+		}
 	}
-	
-	public String coordinate(int index){
-		if(index == 0)
-			return "North";
-		if(index == 1)
-			return "West";
-		if(index == 2)
-			return "South";
-		if (index == 3)
-			return "East";
-		else
-			return "You're drunk, go home";
+		
+	public boolean isVisited() {
+		return isVisited;
+	}
+
+	public void setVisited(boolean isVisited) {
+		this.isVisited = isVisited;
 	}
 	public int getCol(){
 		return col;
@@ -94,7 +85,35 @@ public class Tiles {
 		row = yC;
 	}
 	
-	public void generatePos(int r, int c){ 
+	public String coordinate(int index){
+		if(index == 0)
+			return "North";
+		if(index == 1)
+			return "West";
+		if(index == 2)
+			return "South";
+		if (index == 3)
+			return "East";
+		else
+			return "You're drunk, go home";
+	}
+	public boolean isNorth() {
+		return hasBlock[0];
+	}
+
+	public boolean isEast() {
+		return hasBlock[3];
+	}
+
+	public boolean isWest() {
+		return hasBlock[1];
+	}
+
+	public boolean isSouth() {
+		return hasBlock[2];
+	}
+
+	public void generatePos(int r, int c){
 		positions = new Arrow[4];
 		
 		positions[0] = new Arrow(r, c, 'n');
@@ -103,7 +122,9 @@ public class Tiles {
 		positions[3] = new Arrow(r, c, 'e');
 	}
 	
-	public Arrow[] getPositionsArrows(){
-		return positions;
+	public Arrow getPositionsArrows(int index){
+		if(index >= 0 || index <= 3)
+			return positions[index];
+		return null;
 	}
 }

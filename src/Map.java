@@ -1,19 +1,24 @@
-
-
-
 public class Map {
-	private final int BOARD_SIZE = 12;
 	private static Tiles [][] tiles;
 	private int [] obstacles;
+	private static final int MAZE_SIZE = 4;
 	
-	public Map(int [] obstacles){
+	/*
+	public static void main(String[]args){
+		int [] obstacles = {1,7,8,14};
+		Map map = new Map(obstacles);
+		printMapObstacles(map);
 		
-		this.obstacles = new int[obstacles.length];
-		for(int i=0; i<obstacles.length; i++){
-			this.obstacles[i] = obstacles[i];
+	}*/
+	
+	public Map(int [] blocks_tilenumber){
+		
+		this.obstacles = new int[blocks_tilenumber.length];
+		for(int i=0; i< blocks_tilenumber.length; i++){
+			this.obstacles[i] = blocks_tilenumber[i];
 		}
 		int count = 1;
-		tiles = new Tiles[BOARD_SIZE][BOARD_SIZE];
+		tiles = new Tiles[MAZE_SIZE][MAZE_SIZE];
 		
 		
 		Tiles tile;
@@ -25,21 +30,13 @@ public class Map {
 			}
 		}
 		
-//		Print tiles created
-//		for(int i = 0; i< tiles.length; i++){
-//			for(int j = 0; j <tiles[i].length; j++){
-//				System.out.println("TileNumber = "+ tiles[i][j].getTileNumber() +" (Col: " + tiles[i][j].getCol() + ", Row: " + tiles[i][j].getRow() + ")");
-//			}
-//		}
-		
-		setWalls(0);
-		setWalls(1);
-		setWalls(2);
-		setWalls(3);
+		for(int i = 0; i < 4; i++){
+			setWalls(i);
+		}
 		setBlocks();
 		
-		for (int i = 0 ; i < BOARD_SIZE ; i++) {
-			for (int j = 0 ; j < BOARD_SIZE ; j++) {
+		for (int i = 0 ; i < MAZE_SIZE ; i++) {
+			for (int j = 0 ; j < MAZE_SIZE ; j++) {
 				if (!tiles[i][j].getIsObstacle()) {
 					tiles[i][j].generatePos(i, j);
 				}
@@ -51,24 +48,25 @@ public class Map {
 	// 1 = west
 	// 2 = south
 	// 3 = east
+	
 	public void setWalls(int orientation){
 		if(orientation > 3)
 			return;
 		if(orientation == 0){
 			for(int i = 0; i < tiles.length; i++){
-				tiles[orientation][i].setObstacles(orientation, true); 
+				tiles[0][i].setObstacles(orientation, true); 
 			}
 		} else if(orientation == 1){
 			for(int i = 0; i < tiles.length; i++){
-				tiles[i][orientation - 1].setObstacles(orientation, true);
+				tiles[i][0].setObstacles(orientation, true);
 			}
 		} else if(orientation == 2){
 			for(int i = 0; i < tiles.length; i++){
-				tiles[11][i].setObstacles(orientation, true);
+				tiles[MAZE_SIZE-1][i].setObstacles(orientation, true);
 			}
 		} else{
 			for(int i = 0; i < tiles.length; i++){
-				tiles[i][11].setObstacles(orientation, true);
+				tiles[i][MAZE_SIZE-1].setObstacles(orientation, true);
 			}
 		}
 	}
@@ -84,7 +82,7 @@ public class Map {
 							if(k == 0){
 								tiles[j+1][k].setObstacles(0, true);
 								tiles[j][k+1].setObstacles(1, true);
-							} else if (k == 11){
+							} else if (k == MAZE_SIZE-1){
 								tiles[j+1][k].setObstacles(0, true);
 								tiles[j][k-1].setObstacles(3, true);
 							} else{
@@ -92,11 +90,11 @@ public class Map {
 								tiles[j][k-1].setObstacles(3, true);
 								tiles[j][k+1].setObstacles(1, true);
 							}
-						} else if(j == 11){
+						} else if(j == MAZE_SIZE-1){
 							if(k == 0){
 								tiles[j-1][k].setObstacles(2, true);
 								tiles[j][k+1].setObstacles(1, true);
-							} else if(k == 11){
+							} else if(k == MAZE_SIZE-1){
 								tiles[j-1][k].setObstacles(2, true);
 								tiles[j][k-1].setObstacles(3, true);
 							} else{
@@ -109,7 +107,7 @@ public class Map {
 								tiles[j-1][k].setObstacles(2, true);
 								tiles[j+1][k].setObstacles(0, true);
 								tiles[j][k+1].setObstacles(1, true);
-							} else if(k == 11){
+							} else if(k == MAZE_SIZE-1){
 								tiles[j-1][k].setObstacles(2, true);
 								tiles[j+1][k].setObstacles(0, true);
 								tiles[j][k-1].setObstacles(3, true);
@@ -125,30 +123,19 @@ public class Map {
 			}
 		}
 	}
-	
 	public int[] getObstacles(){
 		return this.obstacles;
 	}
 	
-	public Tiles[][] getTiles(){
+	public Tiles[][] getMap(){
 		return tiles;
 	}
 	
-	/*
-	public Tiles getTile(int x, int y){
-		for(int i = 0; i < tiles.length; i++){
-			for(int j = 0; j < tiles.length; j++){
-				Tiles temp = tiles[]
-			}
-		}
-	}\
-	*/
 	//prints for each tile in which direction obstacles are located
-	
-	public void printMapObstacles(Map map){
-		Tiles [][] temp = map.getTiles();
-		for(int i=0; i < BOARD_SIZE; i++){
-			for(int j=0; j < BOARD_SIZE; j++){
+	public static void printMapObstacles(Map map){
+		Tiles [][] temp = tiles;
+		for(int i=0; i< MAZE_SIZE; i++){
+			for(int j=0; j< MAZE_SIZE; j++){
 				for(int k=0; k<4; k++){
 					if(temp[i][j].getObstacles()[k])
 						System.out.print("("+temp[i][j].getTileNumber()+", "+temp[i][j].coordinate(k)+"); ");

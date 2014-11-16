@@ -14,7 +14,7 @@ public class GraphGenerator {
 	}
 
 	public GraphGenerator(Map map) {
-		tile = map.getTiles();
+		tile = map.getMap();
 		graph = new ArrayList<Tiles>();
 	}
 
