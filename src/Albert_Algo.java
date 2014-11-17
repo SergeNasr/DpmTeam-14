@@ -1,6 +1,7 @@
 
 
 import java.util.LinkedList;
+
 import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
 
@@ -79,156 +80,6 @@ public class Albert_Algo {
 				}
 			}
 		}
-	}
-	
-	public int getPositionToRemove(Arrow pos, int index) {
-		PathNode mvt = currentPath.get(currentPath.size() - 1);
-		Arrow next = pos.getNext();
-		int row = next.getRow();
-		int col = next.getColumn();
-		
-		if(mvt.getMvt().equals("turnLeft")){
-			if (next.getPoint() == 'n') {
-				if (mvt.getNodeTilesAway() == 0) {
-					if (map[row][col].isWest() && mvt.isObstacleSeen()) {
-						pos.setNext(map[row][col].getPositionsArrows(1));
-					} else return index;
-				} else if(mvt.getNodeTilesAway() == 1){
-					if (!map[row][col].isWest() && mvt.isObstacleSeen()) {
-						pos.setNext(map[row][col].getPositionsArrows(1));
-					} else return index;
-					
-					if(!map[row][col - 1].getIsObstacle() && map[row][col-1].isWest()){
-						pos.setNext(map[row][col].getPositionsArrows(1));
-					} else return index;
-				} else if(mvt.getNodeTilesAway() == 2){	
-					if (!map[row][col].isWest() && mvt.isObstacleSeen()) {
-						pos.setNext(map[row][col].getPositionsArrows(1));
-					} else return index;
-					
-					if(!map[row][col - 1].getIsObstacle() && !map[row][col-1].isWest()){
-						pos.setNext(map[row][col].getPositionsArrows(1));
-					} else return index;
-					
-					if(!map[row][col - 2].getIsObstacle() && map[row][col-2].isWest()){
-						pos.setNext(map[row][col].getPositionsArrows(1));
-					} else return index;
-				} else {					
-					if (!map[row][col].isWest() && mvt.isObstacleSeen()) {
-						pos.setNext(map[row][col].getPositionsArrows(1));
-					} else
-						return index;
-
-					if (!map[row][col - 1].getIsObstacle()
-							&& !map[row][col - 1].isWest()) {
-						pos.setNext(map[row][col].getPositionsArrows(1));
-					} else
-						return index;
-
-					if (!map[row][col - 2].getIsObstacle()
-							&& !map[row][col - 2].isWest()) {
-						pos.setNext(map[row][col].getPositionsArrows(1));
-					} else
-						return index;
-					
-				}
-			} else if(next.getPoint() == 'w'){
-				if (mvt.getNodeTilesAway() == 0) {
-					if (!(map[row][col].isSouth() && mvt.isObstacleSeen()))	return index;
-					 
-					else pos.setNext(map[row][col].getPositionsArrows(2));
-				} else if(mvt.getNodeTilesAway() == 1){
-					if (!(!map[row][col].isSouth() && mvt.isObstacleSeen())) return index;
-					
-					if(!(!map[row + 1][col].getIsObstacle() && map[row + 1][col].isSouth())) return index;
-					
-					else pos.setNext(map[row][col].getPositionsArrows(2));
-				} else if(mvt.getNodeTilesAway() == 2){	
-					if (!(!map[row][col].isSouth() && mvt.isObstacleSeen())) return index;
-					
-					if(!(!map[row+1][col].getIsObstacle() && !map[row+1][col].isSouth())) return index;
-		
-					if(!(!map[row+2][col].getIsObstacle() && map[row+2][col].isSouth())) return index;
-					
-					else pos.setNext(map[row][col].getPositionsArrows(2));
-				} else {
-					if(map[row][col-1].getIsObstacle()){
-						if (!(!map[row][col].isSouth() && mvt.isObstacleSeen())) return index;
-	
-						if(!(!map[row][col - 1].getIsObstacle() && !map[row][col-1].isSouth()))	return index;
-						
-						if(!(!map[row][col - 2].getIsObstacle() && !map[row][col-2].isSouth()))	return index;
-						
-						else pos.setNext(map[row][col].getPositionsArrows(2));
-					}
-				}
-			} else if(next.getPoint() == 's'){
-				if (mvt.getNodeTilesAway() == 0) {
-					if (!(map[row][col].isEast() && mvt.isObstacleSeen()))	return index;
-					 
-					else pos.setNext(map[row][col].getPositionsArrows(3));
-				} else if(mvt.getNodeTilesAway() == 1){
-					if (!(!map[row][col].isEast() && mvt.isObstacleSeen())) return index;
-					
-					if(!(!map[row][col+1].getIsObstacle() && map[row][col+1].isEast())) return index;
-					
-					else pos.setNext(map[row][col].getPositionsArrows(3));
-				} else if(mvt.getNodeTilesAway() == 2){	
-					if (!(!map[row][col].isEast() && mvt.isObstacleSeen())) return index;
-					
-					if(!(!map[row][col+1].getIsObstacle() && !map[row][col+1].isEast())) return index;
-		
-					if(!(!map[row][col+2].getIsObstacle() && map[row][col+2].isEast())) return index;
-					
-					else pos.setNext(map[row][col].getPositionsArrows(3));
-				} else {
-					if(map[row][col-1].getIsObstacle()){
-						if (!(!map[row][col].isEast() && mvt.isObstacleSeen())) return index;
-	
-						if(!(!map[row][col+1].getIsObstacle() && !map[row][col+1].isEast()))	return index;
-						
-						if(!(!map[row][col+2].getIsObstacle() && !map[row][col+2].isEast()))	return index;
-						
-						else pos.setNext(map[row][col].getPositionsArrows(3));
-					}
-				}
-			} else if(next.getPoint() == 'e'){
-				if (mvt.getNodeTilesAway() == 0) {
-					if (!(map[row][col].isNorth() && mvt.isObstacleSeen()))	return index;
-					 
-					else pos.setNext(map[row][col].getPositionsArrows(0));
-				} else if(mvt.getNodeTilesAway() == 1){
-					if (!(!map[row][col].isNorth() && mvt.isObstacleSeen())) return index;
-					
-					if(!(!map[row][col+1].getIsObstacle() && map[row][col+1].isNorth())) return index;
-					
-					else pos.setNext(map[row][col].getPositionsArrows(0));
-				} else if(mvt.getNodeTilesAway() == 2){	
-					if (!(!map[row][col].isNorth() && mvt.isObstacleSeen())) return index;
-					
-					if(!(!map[row][col+1].getIsObstacle() && !map[row][col+1].isNorth())) return index;
-		
-					if(!(!map[row][col+2].getIsObstacle() && map[row][col+2].isNorth())) return index;
-					
-					else pos.setNext(map[row][col].getPositionsArrows(0));
-				} else {
-					if(map[row][col-1].getIsObstacle()){
-						if (!(!map[row][col].isNorth() && mvt.isObstacleSeen())) return index;
-	
-						if(!(!map[row][col+1].getIsObstacle() && !map[row][col+1].isNorth()))	return index;
-						
-						if(!(!map[row][col+2].getIsObstacle() && !map[row][col+2].isNorth()))	return index;
-						
-						else pos.setNext(map[row][col].getPositionsArrows(0));
-					}
-				}
-			}
-		} else if(mvt.getMvt().equals("turnRight")){
-			
-		} else{
-			
-		}
-		return -1;
 	}
 	
 	public boolean seesObject(int wallsAway){
@@ -422,119 +273,332 @@ public class Albert_Algo {
 		return -1;
 	}
 	// TODO check algorithm for forward cases
-	public int checkPosition(Arrow pos, int index) {
+	public static int getPositionToRemove(Arrow pos, int index) {
 		PathNode mvt = currentPath.get(currentPath.size() - 1);
 		Arrow next = pos.getNext();
 		int row = next.getRow();
 		int col = next.getColumn();
 		
 		if(mvt.getMvt().equals("turnLeft")){
-			if (next.getPoint() == 'n' && map[row][col].isNorth()) {
-				//check west arrow
-				if (map[row][col].isWest() == mvt.isObstacleSeen()) {
-					pos.setNext(map[row][col].getPositionsArrows(1));
+			if (next.getPoint() == 'n') {
+				if (mvt.getNodeTilesAway() == 0) {
+					if (!map[row][col].isWest()) return index;
+				} else if(mvt.getNodeTilesAway() == 1){
+					if (map[row][col].isWest()) return index;
+					if(col - 1 < MAZE_SIZE){
+						if(!map[row][col - 1].isWest()) return index;
+					} else return index;
+				} else if(mvt.getNodeTilesAway() == 2){	
+					if (map[row][col].isWest()) return index;
+					if(col - 1 < MAZE_SIZE){
+						if(map[row][col - 1].isWest()) return index;
+					} else return index;
+					if(col - 2 < MAZE_SIZE){
+						if(!map[row][col - 2].isWest()) return index;
+					} else return index;
+				} else {
+					if (map[row][col].isWest()) return index;
+					if(col - 1 < MAZE_SIZE){
+						if(map[row][col - 1].isWest()) return index;
+					} else return index;		
+					if(col - 2 < MAZE_SIZE){
+						if(map[row][col - 2].isWest()) return index;
+					} else return index;
 				}
-				else {
-					return index;
-				}
-			}
-			else if (next.getPoint() == 'w' && map[row][col].isWest()) {
-				//check south arrow
-				if (map[row][col].isSouth() == mvt.isObstacleSeen()) {
-					pos.setNext(map[row][col].getPositionsArrows(2));
-				}
-				else {
-					return index;
-				}
-			}
-			else if (next.getPoint() == 's' && map[row][col].isSouth()) {
-				//check east arrow
-				if (map[row][col].isEast() == mvt.isObstacleSeen()) {
+				pos.setNext(map[row][col].getPositionsArrows(1));
+			} else if(next.getPoint() == 'w'){
+				if (mvt.getNodeTilesAway() == 0) {
+					if (!map[row][col].isSouth()) return index;
+				} else if(mvt.getNodeTilesAway() == 1){
+					if (map[row][col].isSouth()) return index;
+					if(row-1 < MAZE_SIZE){
+						if(!map[row-1][col].isSouth()) return index;
+					} else return index;
+				} else if(mvt.getNodeTilesAway() == 2){	
+					if (map[row][col].isSouth()) return index;
+					if(row-1 < MAZE_SIZE){
+						if(map[row-1][col].isSouth()) return index;
+					} else return index;
+					if(row-2 < MAZE_SIZE){
+						if(!map[row-2][col].isSouth()) return index;
+					} else return index;
+				} else {
+					if (map[row][col].isNorth()) return index;
+					if(row-1 < MAZE_SIZE){
+						if(map[row-1][col].isSouth()) return index;
+					} else return index;		
+					if(row-2 < MAZE_SIZE){
+						if(map[row-2][col].isSouth()) return index;
+					} else return index;
+				}pos.setNext(map[row][col].getPositionsArrows(2));
+				
+			} else if(next.getPoint() == 's'){
+					if (mvt.getNodeTilesAway() == 0) {
+						if (!map[row][col].isEast()) return index;
+					} else if(mvt.getNodeTilesAway() == 1){
+						if (map[row][col].isEast()) return index;
+						if(col+1 < MAZE_SIZE){
+							if(!map[row][col+1].isEast()) return index;
+						} else return index;
+					} else if(mvt.getNodeTilesAway() == 2){	
+						if (map[row][col].isEast()) return index;
+						if(col+1 < MAZE_SIZE){
+							if(map[row][col+1].isEast()) return index;
+						} else return index;
+						if(col+2 < MAZE_SIZE){
+							if(!map[row][col+2].isEast()) return index;
+						} else return index;
+					} else {
+						if (map[row][col].isEast()) return index;
+						if(col+1 < MAZE_SIZE){
+							if(map[row][col+1].isEast()) return index;
+						} else return index;		
+						if(col+2 < MAZE_SIZE){
+							if(map[row][col+2].isEast()) return index;
+						} else return index;
+					}
 					pos.setNext(map[row][col].getPositionsArrows(3));
+			} else if(next.getPoint() == 'e'){
+				if (mvt.getNodeTilesAway() == 0) {
+					if (!map[row][col].isNorth()) return index;
+				} else if(mvt.getNodeTilesAway() == 1){
+					if (map[row][col].isNorth()) return index;
+					if(row+1 < MAZE_SIZE){
+						if(!map[row+1][col].isNorth()) return index;
+					} else return index;
+				} else if(mvt.getNodeTilesAway() == 2){	
+					if (map[row][col].isNorth()) return index;
+					if(row+1 < MAZE_SIZE){
+						if(map[row+1][col].isNorth()) return index;
+					} else return index;
+					if(row+2 < MAZE_SIZE){
+						if(!map[row+2][col].isNorth()) return index;
+					} else return index;
+				} else {
+					if (map[row][col].isNorth()) return index;
+					if(row+1 < MAZE_SIZE){
+						if(map[row+1][col].isNorth()) return index;
+					} else return index;		
+					if(row+2 < MAZE_SIZE){
+						if(map[row+2][col].isNorth()) return index;
+					} else return index;
 				}
-				else {
-					return index;
-				}
+				pos.setNext(map[row][col].getPositionsArrows(0));
 			}
-			else if (next.getPoint() == 'e' && map[row][col].isEast()) {
-				//check north arrow
-				if (map[row][col].isNorth() == mvt.isObstacleSeen()) {
-					pos.setNext(map[row][col].getPositionsArrows(0));
-				}
-				else {
-					return index;
-				}
-			}
-			else return index;
 		} else if(mvt.getMvt().equals("turnRight")){
-			if (next.getPoint() == 'n' && map[row][col].isNorth()) {
-				//check west arrow
-				if (map[row][col].isEast() == mvt.isObstacleSeen()) {
-					pos.setNext(map[row][col].getPositionsArrows(3));
-				}
-				else {
-					return index;
-				}
-			}
-			else if (next.getPoint() == 'w' && map[row][col].isWest()) {
-				//check south arrow
-				if (map[row][col].isNorth() == mvt.isObstacleSeen()) {
-					pos.setNext(map[row][col].getPositionsArrows(0));
-				}
-				else {
-					return index;
-				}
-			}
-			else if (next.getPoint() == 's' && map[row][col].isSouth()) {
-				//check east arrow
-				if (map[row][col].isWest() == mvt.isObstacleSeen()) {
-					pos.setNext(map[row][col].getPositionsArrows(1));
-				}
-				else {
-					return index;
-				}
-			}
-			else if (next.getPoint() == 'e' && map[row][col].isEast()) {
-				//check north arrow
-				if (map[row][col].isSouth() == mvt.isObstacleSeen()) {
-					pos.setNext(map[row][col].getPositionsArrows(2));
-				}
-				else {
-					return index;
-				}
-			}
-			else return index;
-		} 
-		else{
-			if (next.getPoint() == 'n' && !map[row][col].isNorth()) {
-				if ((row + 1) < MAZE_SIZE && map[row + 1][col].isNorth() == mvt.isObstacleSeen()) {
-					pos.setNext(map[row + 1][col].getPositionsArrows(0));
-				}
-				else {
-					return index;
-				}
-			} else if (next.getPoint() == 'w' && !map[row][col].isWest()) {
-				if ((col - 1) >= 0 && map[row][col - 1].isWest() == mvt.isObstacleSeen()) {
-					pos.setNext(map[row][col - 1].getPositionsArrows(1));
+			if (next.getPoint() == 'n') {
+				if (mvt.getNodeTilesAway() == 0) {
+					if (!map[row][col].isEast()) return index;
+				} else if(mvt.getNodeTilesAway() == 1){
+					if (map[row][col].isEast()) return index;
+					if(col+1 < MAZE_SIZE){
+						if(!map[row][col+1].isEast()) return index;
+					} else return index;
+				} else if(mvt.getNodeTilesAway() == 2){	
+					if (map[row][col].isEast()) return index;
+					if(col+1 < MAZE_SIZE){
+						if(map[row][col+1].isEast()) return index;
+					} else return index;
+					if(col+2 < MAZE_SIZE){
+						if(!map[row][col+2].isEast()) return index;
+					} else return index;
 				} else {
-					return index;
+					if (map[row][col].isEast()) return index;
+					if(col+1 < MAZE_SIZE){
+						if(map[row][col+1].isEast()) return index;
+					} else return index;		
+					if(col+2 < MAZE_SIZE){
+						if(map[row][col+2].isEast()) return index;
+					} else return index;
 				}
-			} else if (next.getPoint() == 's' && !map[row][col].isSouth()) {
-				if ((row - 1) >= 0 && map[row - 1][col].isSouth() == mvt.isObstacleSeen()) {
-					pos.setNext(map[row - 1][col].getPositionsArrows(2));
+				pos.setNext(map[row][col].getPositionsArrows(3));
+			} else if(next.getPoint() == 'w'){
+				if (mvt.getNodeTilesAway() == 0) {
+					if (!map[row][col].isNorth()) return index;
+				} else if(mvt.getNodeTilesAway() == 1){
+					if (map[row][col].isNorth()) return index;
+					if(row+1 < MAZE_SIZE){
+						if(!map[row+1][col].isNorth()) return index;
+					} else return index;
+				} else if(mvt.getNodeTilesAway() == 2){	
+					if (map[row][col].isNorth()) return index;
+					if(row+1 < MAZE_SIZE){
+						if(map[row+1][col].isNorth()) return index;
+					} else return index;
+					if(row+2 < MAZE_SIZE){
+						if(!map[row+2][col].isNorth()) return index;
+					} else return index;
 				} else {
-					return index;
+					if (map[row][col].isNorth()) return index;
+					if(row+1 < MAZE_SIZE){
+						if(map[row+1][col].isNorth()) return index;
+					} else return index;		
+					if(row+2 < MAZE_SIZE){
+						if(map[row+2][col].isNorth()) return index;
+					} else return index;
 				}
-			} else if (next.getPoint() == 'e' && !map[row][col].isEast()) {
-				if ((col + 1) < MAZE_SIZE && map[row][col + 1].isEast() == mvt.isObstacleSeen()) {
-					pos.setNext(map[row][col + 1].getPositionsArrows(3));
+				pos.setNext(map[row][col].getPositionsArrows(0));
+			} else if (next.getPoint() == 's') {
+				if (mvt.getNodeTilesAway() == 0) {
+					if (!map[row][col].isWest()) return index;
+				} else if(mvt.getNodeTilesAway() == 1){
+					if (map[row][col].isWest()) return index;
+					if(col - 1 < MAZE_SIZE){
+						if(!map[row][col - 1].isWest()) return index;
+					} else return index;
+				} else if(mvt.getNodeTilesAway() == 2){	
+					if (map[row][col].isWest()) return index;
+					if(col - 1 < MAZE_SIZE){
+						if(map[row][col - 1].isWest()) return index;
+					} else return index;
+					if(col - 2 < MAZE_SIZE){
+						if(!map[row][col - 2].isWest()) return index;
+					} else return index;
 				} else {
-					return index;
+					if (map[row][col].isWest()) return index;
+					if(col - 1 < MAZE_SIZE){
+						if(map[row][col - 1].isWest()) return index;
+					} else return index;		
+					if(col - 2 < MAZE_SIZE){
+						if(map[row][col - 2].isWest()) return index;
+					} else return index;
 				}
-			} else
-				return index;
+				pos.setNext(map[row][col].getPositionsArrows(1));
+			} else if(next.getPoint() == 'e'){
+				if (mvt.getNodeTilesAway() == 0) {
+					if (!map[row][col].isSouth()) return index;
+				} else if(mvt.getNodeTilesAway() == 1){
+					if (map[row][col].isSouth()) return index;
+					if(row-1 < MAZE_SIZE){
+						if(!map[row-1][col].isSouth()) return index;
+					} else return index;
+				} else if(mvt.getNodeTilesAway() == 2){	
+					if (map[row][col].isSouth()) return index;
+					if(row-1 < MAZE_SIZE){
+						if(map[row-1][col].isSouth()) return index;
+					} else return index;
+					if(row-2 < MAZE_SIZE){
+						if(!map[row-2][col].isSouth()) return index;
+					} else return index;
+				} else {
+					if (map[row][col].isNorth()) return index;
+					if(row-1 < MAZE_SIZE){
+						if(map[row-1][col].isSouth()) return index;
+					} else return index;		
+					if(row-2 < MAZE_SIZE){
+						if(map[row-2][col].isSouth()) return index;
+					} else return index;
+				}pos.setNext(map[row][col].getPositionsArrows(2));
+				
+			}
+		} else{
+			if(next.getPoint() == 'n'){
+				if (mvt.getNodeTilesAway() == 0) {
+					if (!map[row][col].isNorth()) return index;
+				} else if(mvt.getNodeTilesAway() == 1){
+					if (map[row][col].isNorth()) return index;
+					if(row+1 < MAZE_SIZE){
+						if(!map[row+1][col].isNorth()) return index;
+					} else return index;
+				} else if(mvt.getNodeTilesAway() == 2){	
+					if (map[row][col].isNorth()) return index;
+					if(row+1 < MAZE_SIZE){
+						if(map[row+1][col].isNorth()) return index;
+					} else return index;
+					if(row+2 < MAZE_SIZE){
+						if(!map[row+2][col].isNorth()) return index;
+					} else return index;
+				} else {
+					if (map[row][col].isNorth()) return index;
+					if(row+1 < MAZE_SIZE){
+						if(map[row+1][col].isNorth()) return index;
+					} else return index;		
+					if(row+2 < MAZE_SIZE){
+						if(map[row+2][col].isNorth()) return index;
+					} else return index;
+				}
+				pos.setNext(map[row][col].getPositionsArrows(0));
+			} else if(next.getPoint() == 'w') {
+				if (mvt.getNodeTilesAway() == 0) {
+					if (!map[row][col].isWest()) return index;
+				} else if(mvt.getNodeTilesAway() == 1){
+					if (map[row][col].isWest()) return index;
+					if(col - 1 < MAZE_SIZE){
+						if(!map[row][col - 1].isWest()) return index;
+					} else return index;
+				} else if(mvt.getNodeTilesAway() == 2){	
+					if (map[row][col].isWest()) return index;
+					if(col - 1 < MAZE_SIZE){
+						if(map[row][col - 1].isWest()) return index;
+					} else return index;
+					if(col - 2 < MAZE_SIZE){
+						if(!map[row][col - 2].isWest()) return index;
+					} else return index;
+				} else {
+					if (map[row][col].isWest()) return index;
+					if(col - 1 < MAZE_SIZE){
+						if(map[row][col - 1].isWest()) return index;
+					} else return index;		
+					if(col - 2 < MAZE_SIZE){
+						if(map[row][col - 2].isWest()) return index;
+					} else return index;
+				}
+				pos.setNext(map[row][col].getPositionsArrows(1));
+			} else if(next.getPoint() == 's') {
+				if (mvt.getNodeTilesAway() == 0) {
+					if (!map[row][col].isSouth()) return index;
+				} else if(mvt.getNodeTilesAway() == 1){
+					if (map[row][col].isSouth()) return index;
+					if(row-1 < MAZE_SIZE){
+						if(!map[row-1][col].isSouth()) return index;
+					} else return index;
+				} else if(mvt.getNodeTilesAway() == 2){	
+					if (map[row][col].isSouth()) return index;
+					if(row-1 < MAZE_SIZE){
+						if(map[row-1][col].isSouth()) return index;
+					} else return index;
+					if(row-2 < MAZE_SIZE){
+						if(!map[row-2][col].isSouth()) return index;
+					} else return index;
+				} else {
+					if (map[row][col].isNorth()) return index;
+					if(row-1 < MAZE_SIZE){
+						if(map[row-1][col].isSouth()) return index;
+					} else return index;		
+					if(row-2 < MAZE_SIZE){
+						if(map[row-2][col].isSouth()) return index;
+					} else return index;
+				}
+				pos.setNext(map[row][col].getPositionsArrows(2));
+			} else if(next.getPoint() == 'e'){
+				if (mvt.getNodeTilesAway() == 0) {
+					if (!map[row][col].isEast()) return index;
+				} else if(mvt.getNodeTilesAway() == 1){
+					if (map[row][col].isEast()) return index;
+					if(col+1 < MAZE_SIZE){
+						if(!map[row][col+1].isEast()) return index;
+					} else return index;
+				} else if(mvt.getNodeTilesAway() == 2){	
+					if (map[row][col].isEast()) return index;
+					if(col+1 < MAZE_SIZE){
+						if(map[row][col+1].isEast()) return index;
+					} else return index;
+					if(col+2 < MAZE_SIZE){
+						if(!map[row][col+2].isEast()) return index;
+					} else return index;
+				} else {
+					if (map[row][col].isEast()) return index;
+					if(col+1 < MAZE_SIZE){
+						if(map[row][col+1].isEast()) return index;
+					} else return index;		
+					if(col+2 < MAZE_SIZE){
+						if(map[row][col+2].isEast()) return index;
+					} else return index;
+				}
+				pos.setNext(map[row][col].getPositionsArrows(3));
+			}
 		}
-	return -1;
+		return -1;
 	}
 	
 	public void newPosition (Arrow startPos) {
@@ -607,7 +671,7 @@ public class Albert_Algo {
 		memRatio.clear();
 		for (int i = 0 ; i < possibilities.size() ; i++) {	//for all possible arrows, check if the new position of the robot matches 
 			cur = possibilities.get(i);
-			ind = checkPosition(cur, i);
+			ind = getPositionToRemove(cur, i);
 			
 			if (ind != -1) {
 				itemsToRemove.add(ind);
