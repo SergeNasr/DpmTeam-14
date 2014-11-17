@@ -33,28 +33,13 @@ public class Albert_Algo {
 		currentPath = new LinkedList<PathNode>();
 		for (int i = 0; i < map.length; i++) {
 			for (int j = 0; j < map[i].length; j++) {
-				// System.out.print(counter + " ");
 				for (int k = 0; k < 4; k++) {
 					if (!map[i][j].getIsObstacle())
-						possibilities.add(new Arrow(setRowTile(i), j, map[i][j]
-								.getPositionsArrows(k).getPoint()));
-				}
-				System.out.println("(" + map[i][j].isNorth() + ", " + map[i][j].isWest() + ", " +
-						map[i][j].isSouth() + ", " + map[i][j].isEast() + ")");
-				
+						possibilities.add(new Arrow(setRowTile(i), j, map[i][j].getPositionsArrows(k).getPoint()));
+				}				
 			}
 		}
 		currentPath.add(new PathNode("turnLeft", true, 2));
-
-		for (int i = 0; i < possibilities.size(); i++) {
-			System.out.print(possibilities.get(i).getPoint() + " ");
-			System.out.print("(" + possibilities.get(i).getColumn() + ", "
-					+ possibilities.get(i).getRow() + ")  ");
-			// System.out.print("(" + possibilities.get(i).getNext().getColumn()
-			// + ", " + possibilities.get(i).getNext().getRow() + ")");
-			System.out.println("    " +getPositionToRemove(possibilities.get(i), i)
-					+ " ");
-		}
 	}
 
 	public static int setRowTile(int row) {
@@ -65,8 +50,8 @@ public class Albert_Algo {
 
 		Map maps = new Map(blocks_tilenumber);
 		map = maps.getMap();
-		fwd_sensor = new UltrasonicSensor(1);
-		back_sensor = new UltrasonicSensor(2);
+		fwd_sensor = new UltrasonicSensor(SensorPort.S1);
+		back_sensor = new UltrasonicSensor(SensorPort.S2);
 		fwd_sensor.off();
 		back_sensor.off();
 
@@ -75,13 +60,9 @@ public class Albert_Algo {
 		for (int i = 0; i < map.length; i++) {
 			for (int j = 0; j < map[i].length; j++) {
 				for (int k = 0; k < 4; k++) {
-					if (!map[i][j].getObstacles()[k]) {
-						Arrow now = map[i][j].getPositionsArrows(k);
-						now.setColumn(i);
-						now.setRow(j);
-						possibilities.add(now);
-					}
-				}
+					if (!map[i][j].getIsObstacle())
+						possibilities.add(new Arrow(setRowTile(i), j, map[i][j].getPositionsArrows(k).getPoint()));
+				}				
 			}
 		}
 	}
