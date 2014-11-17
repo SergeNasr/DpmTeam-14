@@ -66,32 +66,32 @@ public class Main {
 			LCD.clear();
 			// TODO orienteering
 			
-			// create graph and path
-			GraphGenerator gg = new GraphGenerator(map);
-			gg.createGraph();
-			
-			// Odometer and Correction starts
-			odo.start();
-			odometryDisplay.start();
-			//odoCor.start();
-			
-			Tiles start = gg.getGraph().get(1);			// need to modify those values!!
-			Tiles dest =  gg.getGraph().get(14);
-			LinkedList<Tiles> path = gg.bfs(start, dest);
-			
-			// convert path to points
-			Point[] pointPath = new Point[path.size() - 1];
-			for (int i = 0; i < path.size() - 1; i++) {	//removed first element because it is the current tile
-				pointPath[i] = Point.convertTileToPoint(path.get(i + 1));
-			}
-
-			Navigation navigator = new Navigation(driver, pointPath, odo);
-			// travel/navigate (in a different thread)
-			// TODO need to pass values of the robots positions
-			navigator.start();
+//			// create graph and path
+//			GraphGenerator gg = new GraphGenerator(map);
+//			gg.createGraph();
+//			
+//			// Odometer and Correction starts
+//			odo.start();
+//			odometryDisplay.start();
+//			//odoCor.start();
+//			
+//			Tiles start = gg.getGraph().get(1);			// need to modify those values!!
+//			Tiles dest =  gg.getGraph().get(14);
+//			LinkedList<Tiles> path = gg.bfs(start, dest);
+//			
+//			// convert path to points
+//			Point[] pointPath = new Point[path.size() - 1];
+//			for (int i = 0; i < path.size() - 1; i++) {	//removed first element because it is the current tile
+//				pointPath[i] = Point.convertTileToPoint(path.get(i + 1));
+//			}
+//
+//			Navigation navigator = new Navigation(driver, pointPath, odo);
+//			// travel/navigate (in a different thread)
+//			// TODO need to pass values of the robots positions
+//			navigator.start();
 			
 			// TODO Claw/Grab-List block
-			UltrasonicPoller usPoller = new UltrasonicPoller(usSensorFront, claw);
+			UltrasonicPoller usPoller = new UltrasonicPoller(usSensorFront, claw, driver);
 			usPoller.start();
 		}
 		

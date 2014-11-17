@@ -8,18 +8,18 @@ public class Claw implements UltrasonicController {
 	private SquareDriver driver;
 	
 	public Claw(NXTRegulatedMotor clawMotor, UltrasonicSensor usSensorFront, SquareDriver driver) {
-		clawMotor = clawMotor;
-		usSensorFront =usSensorFront;
-		driver = driver;
+		this.clawMotor = clawMotor;
+		this.clawMotor.setSpeed(125);
+		this.usSensorFront =usSensorFront;
+		this.driver = driver;
 	}
 
 	public void processUSData(int distance) {
-		// TODO Auto-generated method stub
+		driver.moveForward(- (20 - distance));
 		
-	}
-
-	public int readUSDistance() {
-		// TODO Auto-generated method stub
-		return 0;
+		clawMotor.rotate(-610);
+		driver.moveForward(10);
+		clawMotor.rotate(600);
+		
 	}
 }

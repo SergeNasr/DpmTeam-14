@@ -19,6 +19,10 @@ public class SquareDriver {
 		return rotating;
 	}
 	
+	public void setRotating(boolean rotating) {
+		this.rotating = rotating;
+	}
+
 	private static int convertDistance(double radius, double distance) {
 		return (int) ((180.0 * distance) / (Math.PI * radius));
 	}
@@ -51,4 +55,27 @@ public class SquareDriver {
 		rightMotor.setSpeed(rightSpeed);
 	}
 	
+	public void rotateWithDirectReturn(double theta) {
+		rotating = true;
+		if (theta > 0) {	// counter
+		leftMotor.rotate(-convertAngle(RADIUS, WIDTH, theta), true);
+		rightMotor.rotate(convertAngle(RADIUS, WIDTH, theta), true);
+		}
+		else {	//clockwise
+			theta = -theta;
+			leftMotor.rotate(convertAngle(RADIUS, WIDTH, theta), true);
+			rightMotor.rotate(-convertAngle(RADIUS, WIDTH, theta), true);
+		}
+	}
+	
+	public void checkMvt() {
+		if (!leftMotor.isMoving() && !rightMotor.isMoving()) {
+			rotating = false;
+		}
+	}
+	
+	public void stop() {
+		leftMotor.stop();
+		rightMotor.stop();
+	}
 }
