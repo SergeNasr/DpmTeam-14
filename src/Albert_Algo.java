@@ -541,11 +541,7 @@ public class Albert_Algo {
 		LinkedList<Integer> itemsToRemove = new LinkedList<Integer>();
 		int ind;
 		memRatio.clear();
-		for (int i = 0; i < possibilities.size(); i++) { // for all possible
-															// arrows, check if
-															// the new position
-															// of the robot
-															// matches
+		for (int i = 0; i < possibilities.size(); i++) {
 			cur = possibilities.get(i);
 			ind = getPositionToRemove(cur, i);
 
@@ -556,10 +552,7 @@ public class Albert_Algo {
 		int error = 0;
 		for (Integer j : itemsToRemove) { // remove position which can't be the
 											// starting one
-			memRatio.add(possibilities.get(j - error)); // will get all the
-														// elements from last to
-														// some element i of
-														// possibilities
+			memRatio.add(possibilities.get(j - error)); 
 			possibilities.remove(j - error);
 			error++;
 		}
