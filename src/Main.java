@@ -6,12 +6,19 @@ import lejos.nxt.LCD;
 import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.SensorPort;
+import lejos.nxt.UltrasonicSensor;
 
 
 public class Main {
 	private static ColorSensor colorSensor = new ColorSensor(SensorPort.S4);
+	private static final SensorPort usPortOne = SensorPort.S1;
+	private static UltrasonicSensor usSensorFront = new UltrasonicSensor(usPortOne);
+	private static final SensorPort usPortThree = SensorPort.S3;
+	private static UltrasonicSensor usSensorBack = new UltrasonicSensor(usPortThree);
+	private static SensorPort usTwo = SensorPort.S3;
 	private static NXTRegulatedMotor leftMotor = Motor.A;
 	private static NXTRegulatedMotor rightMotor = Motor.C;
+	private static NXTRegulatedMotor clawMotor = Motor.B;
 	
 	private static final double InitPos = 15;
 	
@@ -23,6 +30,7 @@ public class Main {
 		OdometryDisplay odometryDisplay = new OdometryDisplay(odo);
 		SquareDriver driver = new SquareDriver(leftMotor, rightMotor);
 		OdometryCorrection odoCor = new OdometryCorrection(odo, colorSensor, driver);
+		Claw claw = new Claw(clawMotor, usSensorFront, driver);
 		
 		// TODO create obstacles for each map and insert coordinates of location of the block
 		
@@ -83,7 +91,8 @@ public class Main {
 			navigator.start();
 			
 			// TODO Claw/Grab-List block
-				
+			UltrasonicPoller usPoller = new UltrasonicPoller(usSensorFront, claw);
+			usPoller.start();
 		}
 		
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE);
