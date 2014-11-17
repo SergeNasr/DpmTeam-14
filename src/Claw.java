@@ -13,16 +13,13 @@ public class Claw implements UltrasonicController {
 		driver = driver;
 	}
 
-	@Override
 	public void processUSData(int distance) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public int readUSDistance() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
 }
