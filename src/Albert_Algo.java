@@ -3,7 +3,6 @@ import java.util.LinkedList;
 import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
 
-
 public class Albert_Algo {
 	private static Tiles[][] map;
 	private static UltrasonicSensor fwd_sensor;
@@ -35,8 +34,9 @@ public class Albert_Algo {
 			for (int j = 0; j < map[i].length; j++) {
 				for (int k = 0; k < 4; k++) {
 					if (!map[i][j].getIsObstacle())
-						possibilities.add(new Arrow(setRowTile(i), j, map[i][j].getPositionsArrows(k).getPoint()));
-				}				
+						possibilities.add(new Arrow(setRowTile(i), j, map[i][j]
+								.getPositionsArrows(k).getPoint()));
+				}
 			}
 		}
 		currentPath.add(new PathNode("turnLeft", true, 2));
@@ -60,20 +60,23 @@ public class Albert_Algo {
 			for (int j = 0; j < map[i].length; j++) {
 				// System.out.print(counter + " ");
 				for (int k = 0; k < 4; k++) {
-					if (!map[i][j].getIsObstacle()){
+					if (!map[i][j].getIsObstacle()) {
 						possibilities.add(new Arrow(getRowMap(i), j, map[i][j]
 								.getPositionsArrows(k).getPoint()));
-						//possibilities.add(map[i][j].getPositionsArrows(k));
+						// possibilities.add(map[i][j].getPositionsArrows(k));
 					}
 				}
 			}
 		}
-		
-		for (int i = 0; i < possibilities.size(); i++){
-			possibilities.get(i).getNext().setPoint(possibilities.get(i).getPoint());
-			possibilities.get(i).getNext().setRow(possibilities.get(i).getRow());
-			possibilities.get(i).getNext().setColumn(possibilities.get(i).getColumn());
-			
+
+		for (int i = 0; i < possibilities.size(); i++) {
+			possibilities.get(i).getNext()
+					.setPoint(possibilities.get(i).getPoint());
+			possibilities.get(i).getNext()
+					.setRow(possibilities.get(i).getRow());
+			possibilities.get(i).getNext()
+					.setColumn(possibilities.get(i).getColumn());
+
 		}
 	}
 
@@ -290,39 +293,53 @@ public class Albert_Algo {
 
 		return -1;
 	}
-	public static int getRowMap(int row){
+
+	public static int getRowMap(int row) {
 		return MAZE_SIZE - 1 - row;
 	}
-	
-	public static int getMovement(String nodeInput, char point){
-		if(nodeInput.equals("turnRight")){
-			if(point == 'n') return 3;
-			if(point == 'w') return 0;
-			if(point == 's') return 1;
-			if(point == 'e') return 2;
-			
-		} else if(nodeInput.equals("turnLeft")){
-			if(point == 'n') return 1;
-			if(point == 'w') return 2;
-			if(point == 's') return 3;
-			if(point == 'e') return 0;
-		} else if(nodeInput.equals("forward")){
-			if(point == 'n') return 0;
-			if(point == 'w') return 1;
-			if(point == 's') return 2;
-			if(point == 'e') return 3;
+
+	public static int getMovement(String nodeInput, char point) {
+		if (nodeInput.equals("turnRight")) {
+			if (point == 'n')
+				return 3;
+			if (point == 'w')
+				return 0;
+			if (point == 's')
+				return 1;
+			if (point == 'e')
+				return 2;
+
+		} else if (nodeInput.equals("turnLeft")) {
+			if (point == 'n')
+				return 1;
+			if (point == 'w')
+				return 2;
+			if (point == 's')
+				return 3;
+			if (point == 'e')
+				return 0;
+		} else if (nodeInput.equals("forward")) {
+			if (point == 'n')
+				return 0;
+			if (point == 'w')
+				return 1;
+			if (point == 's')
+				return 2;
+			if (point == 'e')
+				return 3;
 		}
 		return -1;
 	}
-public static int getPositionToRemove(Arrow pos, int index){
-		
+
+	public static int getPositionToRemove(Arrow pos, int index) {
+
 		PathNode mvt = currentPath.get(currentPath.size() - 1);
 		Arrow next = possibilities.get(index).getNext();
 		int row = next.getRow();
 		int col = next.getColumn();
 		int rowForMap = getRowMap(row);
-		
-		switch(getMovement(mvt.getMvt(), next.getPoint())){
+
+		switch (getMovement(mvt.getMvt(), next.getPoint())) {
 		case 0:
 			if (mvt.getNodeTilesAway() == 0) {
 				if (!map[rowForMap][col].isNorth())
@@ -378,13 +395,13 @@ public static int getPositionToRemove(Arrow pos, int index){
 			} else if (mvt.getNodeTilesAway() == 2) {
 				if (map[rowForMap][col].isWest())
 					return index;
-				if (col - 1 > - 1) {
+				if (col - 1 > -1) {
 					if (map[rowForMap][col - 1].isWest())
 						return index;
 				} else
 					return index;
 				if (col - 2 > -1) {
-					if (!map[rowForMap][col - 2].isWest()){
+					if (!map[rowForMap][col - 2].isWest()) {
 						return index;
 					}
 				} else
@@ -417,21 +434,21 @@ public static int getPositionToRemove(Arrow pos, int index){
 				} else
 					return index;
 			} else if (mvt.getNodeTilesAway() == 2) {
-				if (map[rowForMap][col].isSouth()){
+				if (map[rowForMap][col].isSouth()) {
 					return index;
 				}
 				if (rowForMap + 1 < MAZE_SIZE) {
-					if (map[rowForMap + 1][col].isSouth()){
+					if (map[rowForMap + 1][col].isSouth()) {
 						return index;
 					}
-				} else{
+				} else {
 					return index;
 				}
 				if (rowForMap + 2 < MAZE_SIZE) {
-					if (!map[rowForMap + 2][col].isSouth()){
+					if (!map[rowForMap + 2][col].isSouth()) {
 						return index;
 					}
-					
+
 				} else {
 					return index;
 				}
@@ -452,35 +469,35 @@ public static int getPositionToRemove(Arrow pos, int index){
 			break;
 		case 3:
 			if (mvt.getNodeTilesAway() == 0) {
-				if (!map[rowForMap][col].isEast()){
+				if (!map[rowForMap][col].isEast()) {
 					return index;
 				}
 			} else if (mvt.getNodeTilesAway() == 1) {
-				if (map[rowForMap][col].isEast()){
+				if (map[rowForMap][col].isEast()) {
 					return index;
 				}
 				if (col + 1 < MAZE_SIZE) {
-					if (!map[rowForMap][col + 1].isEast()){
+					if (!map[rowForMap][col + 1].isEast()) {
 						return index;
 					}
 				} else
 					return index;
 			} else if (mvt.getNodeTilesAway() == 2) {
-				if (map[rowForMap][col].isEast()){
+				if (map[rowForMap][col].isEast()) {
 					return index;
 				}
 				if (col + 1 < MAZE_SIZE) {
-					if (map[rowForMap][col + 1].isEast()){
+					if (map[rowForMap][col + 1].isEast()) {
 						return index;
 					}
 				} else {
 					return index;
 				}
 				if (col + 2 < MAZE_SIZE) {
-					if (!map[rowForMap][col + 2].isEast()){
+					if (!map[rowForMap][col + 2].isEast()) {
 						return index;
 					}
-				} else{
+				} else {
 					return index;
 				}
 			} else {
@@ -498,16 +515,38 @@ public static int getPositionToRemove(Arrow pos, int index){
 					return index;
 			}
 			break;
-		default: return -2;
+		default:
+			return -2;
 		}
-		if(mvt.getMvt().equals("forward")){
-			
+		if (mvt.getMvt().equals("forward")) {
+
+			char orientation = next.getPoint();
+			if (orientation == 'n') {
+				possibilities.get(index).setRow(rowForMap - 1);
+				possibilities.get(index).getNext().setRow(row + 1);
+			} else if (orientation == 'w') {
+				possibilities.get(index).setColumn(col - 1);
+				possibilities.get(index).getNext().setColumn(col - 1);
+			} else if (orientation == 's') {
+				possibilities.get(index).setRow(rowForMap + 1);
+				possibilities.get(index).getNext().setRow(row - 1);
+			} else if (orientation == 'e') {
+				possibilities.get(index).setColumn(col + 1);
+				possibilities.get(index).getNext().setColumn(col + 1);
+			}
+
+			possibilities.get(index).getNext().setPoint(next.getPoint());
+			possibilities.get(index).setPoint(next.getPoint());
 		} else {
-			possibilities.get(index).getNext().setPoint(translate(getMovement(mvt.getMvt(),next.getPoint())));
+			possibilities
+					.get(index)
+					.getNext()
+					.setPoint(
+							translate(getMovement(mvt.getMvt(), next.getPoint())));
 			possibilities.get(index).setPoint(next.getPoint());
 		}
 		return -1;
-		
+
 	}
 
 	// left right or forward
@@ -618,7 +657,7 @@ public static int getPositionToRemove(Arrow pos, int index){
 		int error = 0;
 		for (Integer j : itemsToRemove) { // remove position which can't be the
 											// starting one
-			memRatio.add(possibilities.get(j - error)); 
+			memRatio.add(possibilities.get(j - error));
 			possibilities.remove(j - error);
 			error++;
 		}
