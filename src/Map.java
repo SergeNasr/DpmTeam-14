@@ -43,7 +43,7 @@ public class Map {
 			}
 		}
 	}
-	
+		
 	// 0 = north
 	// 1 = west
 	// 2 = south
