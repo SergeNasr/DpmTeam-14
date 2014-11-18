@@ -93,6 +93,7 @@ public class Albert_Algo {
 		this.usSensorFront = usSensorFront;
 		this.usSensorBack = usSensorBack;
 		this.driver = driver;
+		// TODO maps should be passed from Main class
 		Map maps = new Map(blocks_tilenumber);
 		map = maps.getMap();
 
