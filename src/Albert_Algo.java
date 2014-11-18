@@ -1,5 +1,7 @@
 import java.util.LinkedList;
 
+import lejos.nxt.LCD;
+import lejos.nxt.Sound;
 import lejos.nxt.UltrasonicSensor;
 
 public class Albert_Algo {
@@ -7,9 +9,9 @@ public class Albert_Algo {
 	private static Tiles[][] map;
 	private static UltrasonicSensor usSensorFront;
 	private static UltrasonicSensor usSensorBack;
-	private static final double TILEAWAY_0 = 20.0;
+	private static final double TILEAWAY_0 = 16.0;
 	private static final double TILEAWAY_1 = TILEAWAY_0 + 30.0;
-	private static final double TILEAWAY_2 = TILEAWAY_1 + 40.0;
+	private static final double TILEAWAY_2 = TILEAWAY_1 + 30.0;
 	private static LinkedList<Arrow> possibilities = new LinkedList<Arrow>();
 	private static LinkedList<PathNode> currentPath;
 	private static final int MAZE_SIZE = 4;
@@ -18,72 +20,6 @@ public class Albert_Algo {
 	// west = 1
 	// south = 2
 	// east = 3
-
-//	public static void main(String[] args) {
-//		Map maps = new Map(new int[] { 1, 7, 8, 14 });
-//		map = maps.getMap();
-//		fwd_sensor = new UltrasonicSensor(1);
-//		back_sensor = new UltrasonicSensor(2);
-//		fwd_sensor.off();
-//		back_sensor.off();
-//
-//		currentPath = new LinkedList<PathNode>();
-//		for (int i = 0; i < map.length; i++) {
-//			for (int j = 0; j < map[i].length; j++) {
-//				// System.out.print(counter + " ");
-//				for (int k = 0; k < 4; k++) {
-//					if (!map[i][j].getIsObstacle()){
-//						possibilities.add(new Arrow(getRowMap(i), j, map[i][j]
-//								.getPositionsArrows(k).getPoint()));
-//						//possibilities.add(map[i][j].getPositionsArrows(k));
-//					}
-//				}
-//			}
-//		}
-//		
-//		for (int i = 0; i < possibilities.size(); i++){
-//			possibilities.get(i).getNext().setPoint(possibilities.get(i).getPoint());
-//			possibilities.get(i).getNext().setRow(possibilities.get(i).getRow());
-//			possibilities.get(i).getNext().setColumn(possibilities.get(i).getColumn());
-//			
-//		}
-//		
-//		//System.out.println(getBestRatio(true));
-//		
-//		
-//		System.out.println("***Round 1***");
-//		currentPath.add(new PathNode("turnRight",true, 2));
-//		updatePositions(true);
-//		
-//		for (int i = 0; i < possibilities.size(); i++){
-//			System.out.println(possibilities.get(i).getPoint() + " (" + possibilities.get(i).getColumn() +
-//					", " + possibilities.get(i).getRow() + ")");
-//		}
-		
-		//System.out.println(getBestRatio(true));
-		
-		/*System.out.println("***Round 2***");
-
-		currentPath.add(new PathNode("forward", true, 1));
-		updatePositions(true);
-
-		for (int i = 0; i < possibilities.size(); i++) {
-			System.out.println(possibilities.get(i).getPoint() + " ("
-					+ possibilities.get(i).getColumn() + ", "
-					+ possibilities.get(i).getRow() + ")");
-		}
-		
-		System.out.println("***Round 3***");
-
-		currentPath.add(new PathNode("turnLeft", true, 2));
-		updatePositions(true);
-
-		for (int i = 0; i < possibilities.size(); i++) {
-			System.out.println(possibilities.get(i).getPoint() + " ("
-					+ possibilities.get(i).getColumn() + ", "
-					+ possibilities.get(i).getRow() + ")");
-		}*/
-	//}
 
 	public static int getRowMap(int row){
 		return MAZE_SIZE - 1 - row;
@@ -117,6 +53,8 @@ public class Albert_Algo {
 			possibilities.get(i).getNext().setColumn(possibilities.get(i).getColumn());
 			
 		}
+		usSensorFront.off();
+		usSensorBack.off();
 	}
 
 	public boolean seesObject(int wallsAway) {
@@ -124,21 +62,41 @@ public class Albert_Algo {
 			return false;
 		return true;
 	}
-
+	
+	public void test(){
+		int data_front = numTilesAway(fwd_getFilteredData());
+		int data_back = numTilesAway(back_getFilteredData());
+		LCD.clear();
+		LCD.drawString(String.valueOf(data_back), 0, 1);
+		LCD.drawString(String.valueOf(data_front), 0, 2);
+	}
+	
 	public int algorithm() {
 		String mvtType = null;
 		int data_front = 0;
 		int data_back = 0;
+		driver.moveForward(30);
 		while (possibilities.size() > 1) {
+			
 			data_front = numTilesAway(fwd_getFilteredData());
+			LCD.clear();
+			LCD.drawString(String.valueOf(data_front), 0, 2);
 			currentPath.add(new PathNode("forward", true, data_front));
 			updatePositions(true);
+			data_back = numTilesAway(back_getFilteredData());
+			currentPath.add(new PathNode("forward", true, data_back));
+			updatePositionsBack(0);
+			LCD.drawString(String.valueOf(data_back), 0, 1);
+			
 			if (data_front == 0) {
 				int bestRatio = getBestRatio(false);
-				if (bestRatio != 1 || bestRatio != 3)
-					System.out.println("error");
+				if (bestRatio != 1 && bestRatio != 3){
+					LCD.clear();
+					LCD.drawString("Hello 1", 0, 1);
+				}
 				else {
 					data_back = numTilesAway(back_getFilteredData());
+					LCD.drawString(String.valueOf(data_back), 0, 1);
 					data_front = numTilesAway(fwd_getFilteredData());
 					if (bestRatio == 1) {
 						driver.rotateCounter(90);
@@ -164,12 +122,15 @@ public class Albert_Algo {
 				}
 			} else if (data_front == 1 || data_front == 2) {
 				int bestRatio = getBestRatio(true);
-				if (bestRatio != 0 || bestRatio != 1 || bestRatio != 3)
-					System.out.println("Error");
+				if (bestRatio != 0 && bestRatio != 1 && bestRatio != 3){
+					LCD.clear();
+					LCD.drawString("Hello 2", 0, 1);
+				}
 				else {
 					if (bestRatio == 1 || bestRatio == 3) {
 						data_back = numTilesAway(back_getFilteredData());
-
+						LCD.drawString(String.valueOf(data_back), 0, 1);
+						
 						if (bestRatio == 1) {
 							driver.rotateCounter(90);
 							mvtType = "turnLeft";
@@ -201,12 +162,15 @@ public class Albert_Algo {
 				}
 			} else { // move_fwd sees infinity i.e. -1
 				int bestRatio = getBestRatio(true);
-				if (bestRatio != 0 || bestRatio != 1 || bestRatio != 3)
-					System.out.println("Error");
+				if (bestRatio != 0 && bestRatio != 1 && bestRatio != 3){
+					LCD.clear();
+					LCD.drawString("Hello 3", 0, 1);
+				}
 				else {
 					if (bestRatio == 1 || bestRatio == 3) {
 						data_back = numTilesAway(back_getFilteredData());
-
+						LCD.drawString(String.valueOf(data_back), 0, 1);
+						
 						if (bestRatio == 1) {
 							driver.rotateCounter(90);
 							mvtType = "turnLeft";
@@ -238,7 +202,17 @@ public class Albert_Algo {
 				}
 			}
 		}
+		if(possibilities.size() == 1){
+			Sound.beep();
+			LCD.clear();
+			LCD.drawString(String.valueOf(possibilities.get(0).getColumn()) + " " 
+			+ String.valueOf(possibilities.get(0).getRow()), 0, 1);
+		}
+		else {LCD.clear();
+		LCD.drawString("fail",0,2);}
+		driver.stop();
 		return 0;
+		
 	}
 
 	public static double fwd_getFilteredData() {
@@ -292,7 +266,7 @@ public class Albert_Algo {
 			
 			
 			if (canGoForward) {
-				double min = Math.min(ratio_fwd, Math.min(ratio_left, ratio_right));
+				double min = Math.min(ratio_left, Math.min(ratio_fwd, ratio_right));
 				if (min == ratio_fwd) {
 					return 0;
 				} else if (min == ratio_left) {
@@ -613,16 +587,15 @@ public class Albert_Algo {
 			} else if(rlf == 3){
 				possibilities.get(i).getNext().setPoint(translate(getMovement("turnRight",c)));
 				possibilities.get(i).setPoint(translate(getMovement("turnRight",c)));
-				System.out.println("Hello");
+			} else if (rlf == 0){
+				// TODO test if this actually works
+				possibilities.get(i).setPoint(inverseDirection(possibilities.get(i).getPoint()));
 			}
 		}
 		updatePositions(false);
 		currentPath.remove(currentPath.size() - 1);
 		for(int i = 0; i < possibilities.size(); i++){
-			System.out.println("Hello " + possibilities.get(i).getNext().getPoint() + " " + possibilities.get(i).getPoint());
 			possibilities.get(i).setPoint(inverseDirection(possibilities.get(i).getPoint()));
-			System.out.println("Bye " + possibilities.get(i).getNext().getPoint() + " " + possibilities.get(i).getPoint());
-			
 		}
 	}
 	
