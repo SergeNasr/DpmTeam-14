@@ -75,7 +75,7 @@ public class Arrow {
 	//and the heading of the arrow to the theta angle
 	
 	public static double columnToY (int col) {
-		switch (col) {
+	/*	switch (col) {
 		case 0:
 			return -15;
 		case 1:
@@ -86,11 +86,13 @@ public class Arrow {
 			return 75;
 		default:
 			return -111111; //error
-		}
+		} 
+		*/
+		return (-15 +30*col); //adapted to bigger maps
 	}
 
 	public static double rowToX (int row) {
-		switch (row) {
+	/*	switch (row) {
 		case 0:
 			return -15;
 		case 1:
@@ -102,6 +104,8 @@ public class Arrow {
 		default:
 			return -111111; //error
 		}
+		*/
+		return (-15 +30*row); //adapted to bigger maps
 	}
 
 	public static double headToTheta (char head) {

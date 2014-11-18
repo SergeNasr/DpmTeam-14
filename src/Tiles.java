@@ -5,7 +5,7 @@ public class Tiles {
 	private int col;
 	private int row;
 	
-	private static final int MAZE_SIZE = 8;
+	private static final int MAZE_SIZE = 4;
 	public LinkedList<Tiles> adjList;	//to represent a graph using adjacency list
 	public boolean isVisited;	//used in BFS
 
@@ -37,6 +37,7 @@ public class Tiles {
 				count++;
 			}
 		}
+		positions = new Arrow[4];
 	}
 	
 	public boolean[] getObstacles(){
@@ -126,5 +127,8 @@ public class Tiles {
 		if(index >= 0 || index <= 3)
 			return positions[index];
 		return null;
+	}
+	public Arrow []getPositionsArrows(){
+		return positions;
 	}
 }

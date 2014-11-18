@@ -3,13 +3,13 @@ public class Map {
 	private int [] obstacles;
 	private static final int MAZE_SIZE = 8;
 	
-	/*
+	
 	public static void main(String[]args){
 		int [] obstacles = {1,7,8,14};
 		Map map = new Map(obstacles);
 		printMapObstacles(map);
 		
-	}*/
+	}
 	
 	public Map(int [] blocks_tilenumber){
 		
@@ -38,16 +38,30 @@ public class Map {
 		for (int i = 0 ; i < MAZE_SIZE ; i++) {
 			for (int j = 0 ; j < MAZE_SIZE ; j++) {
 				if (!tiles[i][j].getIsObstacle()) {
-					tiles[i][j].generatePos(i, j);
+					for(int k = 0; k < 4; k++){
+						tiles[i][j].getPositionsArrows()[k] = new Arrow(setRowTile(i),j,setOrientation(k));
+					}
 				}
 			}
 		}
+		
 	}
 		
 	// 0 = north
 	// 1 = west
 	// 2 = south
 	// 3 = east
+	
+	public char setOrientation(int k){
+		if(k==0) return 'n';
+		if(k==1) return 'w';
+		if(k==2) return 's';
+		if(k==3) return 'e';
+		return 'z';
+	}
+	public static int setRowTile(int row) {
+		return MAZE_SIZE - 1 - row;
+	}
 	
 	public void setWalls(int orientation){
 		if(orientation > 3)
@@ -139,6 +153,17 @@ public class Map {
 				for(int k=0; k<4; k++){
 					if(temp[i][j].getObstacles()[k])
 						System.out.print("("+temp[i][j].getTileNumber()+", "+temp[i][j].coordinate(k)+"); ");
+				}
+				System.out.println(" ");
+			}
+		}
+		System.out.println("*******************NEXT***********************");
+		for(int i=0; i< MAZE_SIZE; i++){
+			for(int j=0; j< MAZE_SIZE; j++){
+				for(int k=0; k<4; k++){
+					if(!temp[i][j].getObstacles()[k])
+						System.out.print("("+temp[i][j].getPositionsArrows(k).getNext().getColumn()+", "+
+								temp[i][j].getPositionsArrows(k).getNext().getColumn() +"); ");
 				}
 				System.out.println(" ");
 			}
