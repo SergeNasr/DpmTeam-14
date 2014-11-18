@@ -3,11 +3,11 @@ import lejos.nxt.UltrasonicSensor;
 
 public class UltrasonicPoller extends Thread{
 	private UltrasonicSensor us;
-	private UltrasonicController cont;
+	private Claw cont;
 	private SquareDriver driver;
 	private int distanceCounter;
 	
-	public UltrasonicPoller(UltrasonicSensor us, UltrasonicController cont, SquareDriver driver) {
+	public UltrasonicPoller(UltrasonicSensor us, Claw cont, SquareDriver driver) {
 		this.us = us;
 		this.cont = cont;
 		this.driver = driver;
@@ -24,7 +24,11 @@ public class UltrasonicPoller extends Thread{
 				break;
 			}
 			
-			driver.rotateWithDirectReturn(30);
+			if (cont.blockGrabbed) {
+				break;
+			}
+			
+			driver.rotateWithDirectReturn(45);
 			while (driver.isRotating()) {
 				if (us.getDistance() < 10) {
 					int distance = us.getDistance();
@@ -35,8 +39,12 @@ public class UltrasonicPoller extends Thread{
 				}
 				driver.checkMvt();
 			}
+			
+			if (cont.blockGrabbed) {
+				break;
+			}
 
-			driver.rotateWithDirectReturn(-60);
+			driver.rotateWithDirectReturn(-90);
 			while (driver.isRotating()) {
 				if (us.getDistance() < 10) {
 					int distance = us.getDistance();
@@ -46,17 +54,21 @@ public class UltrasonicPoller extends Thread{
 					break;
 				}
 				driver.checkMvt();
+			}
+			
+			if (cont.blockGrabbed) {
+				break;
 			}
 
 			//return to initial orientation
-			driver.rotateCounter(33);
-			distanceCounter += 12;
-			if (distanceCounter > 30) {
+			driver.rotateCounter(47);
+			if (distanceCounter > 27) {
 				distanceCounter = 0;
 				driver.rotateClockwise(90);
 			}
 			else {
-				driver.moveForward(12);
+				distanceCounter += 10;
+				driver.moveForward(8);
 			}
 			
 			try { Thread.sleep(10); } catch(Exception e){}

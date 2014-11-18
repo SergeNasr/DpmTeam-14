@@ -74,43 +74,43 @@ public class Main {
 //			Albert_Algo albert = new Albert_Algo(mapTest, driver, usSensorFront, usSensorBack);
 //			albert.algorithm();
 			
-//			// create graph and path
-//			GraphGenerator gg = new GraphGenerator(map);
-//			gg.createGraph();
-//			
-//			// Odometer and Correction starts
-//			odo.start();
-//			odometryDisplay.start();
-//			
-//			// TODO odometry correction
-//			//odoCor.start();
-//			
-//			// go from Tile #2 to Tile #11
-//			Tiles start = gg.getGraph().get(1);			// need to modify those values!! And value in Navigation for prevPos
-//			Tiles dest =  gg.getGraph().get(10);
-//			LinkedList<Tiles> path = gg.bfs(start, dest);
-//			
-//			// convert path to points
-//			Point[] pointPath = new Point[path.size() - 1];
-//			for (int i = 0; i < path.size() - 1; i++) {	//removed first element because it is the current tile
-//				pointPath[i] = Point.convertTileToPoint(path.get(i + 1));
-//			}
-//
-//			Navigation navigator = new Navigation(driver, pointPath, odo);
-//			
-//			Thread[] threads = new Thread[2];
-//			threads[0] = navigator;
-//			threads[1] = usPoller;
-//			
-//			// travel/navigate (in a different thread)
-//			// TODO need to pass values of the robots positions
-//			navigator.start();
-//			
-//			try {
-//	            navigator.join();
-//	        } catch (InterruptedException e) {
-//	            System.out.println("Error in thread join");
-//	        }
+			// create graph and path
+			GraphGenerator gg = new GraphGenerator(map);
+			gg.createGraph();
+			
+			// Odometer and Correction starts
+			odo.start();
+			odometryDisplay.start();
+			
+			// TODO odometry correction
+			//odoCor.start();
+			
+			// go from Tile #2 to Tile #11
+			Tiles start = gg.getGraph().get(1);			// need to modify those values!! And value in Navigation for prevPos
+			Tiles dest =  gg.getGraph().get(10);
+			LinkedList<Tiles> path = gg.bfs(start, dest);
+			
+			// convert path to points
+			Point[] pointPath = new Point[path.size() - 1];
+			for (int i = 0; i < path.size() - 1; i++) {	//removed first element because it is the current tile
+				pointPath[i] = Point.convertTileToPoint(path.get(i + 1));
+			}
+
+			Navigation navigator = new Navigation(driver, pointPath, odo);
+			
+			Thread[] threads = new Thread[2];
+			threads[0] = navigator;
+			threads[1] = usPoller;
+			
+			// travel/navigate (in a different thread)
+			// TODO need to pass values of the robots positions
+			navigator.start();
+			
+			try {
+	            navigator.join();
+	        } catch (InterruptedException e) {
+	            System.out.println("Error in thread join");
+	        }
 	         
 			// claw grab and lift
 			usPoller.start();
