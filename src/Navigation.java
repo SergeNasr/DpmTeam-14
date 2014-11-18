@@ -2,8 +2,8 @@
 
 public class Navigation extends Thread {
 	private SquareDriver driver;
-	private double prevPosX = 45.0; 	//TODO modify those values
-	private double prevPosY = 15.0; 
+	private double prevPosX; 
+	private double prevPosY; 
 	private double currentTheta = Math.PI/2;
 	private final int ROTATE_SPEED = 150;
 	private final int FORWARD_SPEED = 250;
@@ -12,7 +12,8 @@ public class Navigation extends Thread {
 
 	public Navigation(SquareDriver driver, Point [] destinations, Odometer odometer){
 		// TODO change values of prevPosX and prevPosY after orienteering
-		
+		this.prevPosX = odometer.getX();
+		this.prevPosY = odometer.getY();
 		this.driver = driver;
 		this.points = destinations;
 		this.odo = odometer;

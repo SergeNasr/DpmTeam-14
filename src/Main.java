@@ -26,7 +26,7 @@ public class Main {
 		int buttonChoice;
 		
 		// initialize all classes
-		Odometer odo = new Odometer(InitPos + 30, InitPos, leftMotor, rightMotor);
+		Odometer odo = new Odometer(InitPos + 30, InitPos + 30, leftMotor, rightMotor);	// TODO modify X and Y for testing
 		OdometryDisplay odometryDisplay = new OdometryDisplay(odo);
 		SquareDriver driver = new SquareDriver(leftMotor, rightMotor);
 		OdometryCorrection odoCor = new OdometryCorrection(odo, colorSensor, driver);
@@ -86,8 +86,8 @@ public class Main {
 			//odoCor.start();
 			
 			// go from Tile #2 to Tile #11
-			Tiles start = gg.getGraph().get(1);			// need to modify those values!! And value in Navigation for prevPos
-			Tiles dest =  gg.getGraph().get(10);
+			Tiles start = gg.getGraph().get(5);			// need to modify those values!! And value in Navigation for prevPos
+			Tiles dest =  gg.getGraph().get(12);
 			LinkedList<Tiles> path = gg.bfs(start, dest);
 			
 			// convert path to points
@@ -98,22 +98,22 @@ public class Main {
 
 			Navigation navigator = new Navigation(driver, pointPath, odo);
 			
-			Thread[] threads = new Thread[2];
-			threads[0] = navigator;
-			threads[1] = usPoller;
+//			Thread[] threads = new Thread[2];
+//			threads[0] = navigator;
+//			threads[1] = usPoller;
 			
 			// travel/navigate (in a different thread)
 			// TODO need to pass values of the robots positions
 			navigator.start();
 			
-			try {
-	            navigator.join();
-	        } catch (InterruptedException e) {
-	            System.out.println("Error in thread join");
-	        }
-	         
-			// claw grab and lift
-			usPoller.start();
+//			try {
+//	            navigator.join();
+//	        } catch (InterruptedException e) {
+//	            System.out.println("Error in thread join");
+//	        }
+//	         
+//			// claw grab and lift
+//			usPoller.start();
 		}
 		
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE);
