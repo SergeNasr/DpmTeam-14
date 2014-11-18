@@ -15,7 +15,8 @@ public class Albert_Algo {
 	private static int counter = 1;
 	private static LinkedList<Arrow> memRatio = new LinkedList<Arrow>();
 	private static final int MAZE_SIZE = 4;
-
+	private static LinkedList<Character> mem = new LinkedList<Character>();
+	
 	// north = 0
 	// west = 1
 	// south = 2
@@ -88,43 +89,42 @@ public class Albert_Algo {
 
 	public int algorithm() {
 		String mvtType = null;
-		// TODO move forward
 		int data_front = 0;
 		int data_back = 0;
 		while (possibilities.size() > 1) {
 			data_front = numTilesAway(fwd_getFilteredData());
-			updatePositions();
+			currentPath.add(new PathNode("forward", true, data_front));
+			updatePositions(true);
 			if (data_front == 0) {
-				int bestRatio = calculateBestRatio(false);
+				int bestRatio = getBestRatio(false);
 				if (bestRatio != 1 || bestRatio != 3)
 					System.out.println("error");
 				else {
 					// TODO turn to best ratio
 					data_back = numTilesAway(back_getFilteredData());
-
+					data_front = numTilesAway(fwd_getFilteredData());
 					if (bestRatio == 1) {
 						mvtType = "turnLeft";
 
 					} else if (bestRatio == 3) {
 						mvtType = "turnRight";
 					}
-					currentPath.add(new PathNode(mvtType,
-							seesObject(data_front), data_front));
-
-					if (mvtType.equals("turnLeft"))
+					currentPath.add(new PathNode(mvtType, seesObject(data_front), data_front));
+					updatePositions(true);
+					
+					if (mvtType.equals("turnLeft")){
 						mvtType = "turnRight";
-					else
+						currentPath.add(new PathNode(mvtType,seesObject(data_back), data_back));
+						updatePositionsBack(3);
+					}
+					else{
 						mvtType = "turnLeft";
-					currentPath.add(new PathNode(mvtType,
-							seesObject(data_back), data_back));
-					// TODO some method that processes the 1 path node that has
-					// been added and that removes
-					// it afterwards as it is not part of the robot path.
+						currentPath.add(new PathNode(mvtType,seesObject(data_back), data_back));
+						updatePositionsBack(1);
+					}
 				}
-				// the robot is currently turned to the new position... no need
-				// to change anything
 			} else if (data_front == 1 || data_front == 2) {
-				int bestRatio = calculateBestRatio(true);
+				int bestRatio = getBestRatio(true);
 				if (bestRatio != 0 || bestRatio != 1 || bestRatio != 3)
 					System.out.println("Error");
 				else {
@@ -138,28 +138,29 @@ public class Albert_Algo {
 						} else if (bestRatio == 3) {
 							mvtType = "turnRight";
 						}
-						currentPath.add(new PathNode(mvtType,
-								seesObject(data_front), data_front));
-						updatePositions();
-						if (mvtType.equals("turnLeft"))
+						currentPath.add(new PathNode(mvtType, seesObject(data_front), data_front));
+						updatePositions(true);
+						
+						if (mvtType.equals("turnLeft")){
 							mvtType = "turnRight";
-						else
+							currentPath.add(new PathNode(mvtType,seesObject(data_back), data_back));
+							updatePositionsBack(3);
+						}
+						else{
 							mvtType = "turnLeft";
-						currentPath.add(new PathNode(mvtType,
-								seesObject(data_back), data_back));
-						// TODO some method that processes the 1 path node that
-						// has been added and that removes
-						// it afterwards as it is not part of the robot path.
+							currentPath.add(new PathNode(mvtType,seesObject(data_back), data_back));
+							updatePositionsBack(1);
+						}
+						
 					} else {
 						// TODO go forward
 						mvtType = "forward";
-						currentPath.add(new PathNode(mvtType,
-								seesObject(data_front), data_front));
-						updatePositions();
+						currentPath.add(new PathNode(mvtType, seesObject(data_front), data_front));
+						updatePositions(true);
 					}
 				}
 			} else { // move_fwd sees infinity i.e. -1
-				int bestRatio = calculateBestRatio(true);
+				int bestRatio = getBestRatio(true);
 				if (bestRatio != 0 || bestRatio != 1 || bestRatio != 3)
 					System.out.println("Error");
 				else {
@@ -173,32 +174,191 @@ public class Albert_Algo {
 						} else if (bestRatio == 3) {
 							mvtType = "turnRight";
 						}
-						currentPath.add(new PathNode(mvtType,
-								seesObject(data_front), data_front));
-						updatePositions();
-						if (mvtType.equals("turnLeft"))
+						currentPath.add(new PathNode(mvtType,seesObject(data_front), data_front));
+						updatePositions(true);
+						
+						if (mvtType.equals("turnLeft")){
 							mvtType = "turnRight";
-						else
+							currentPath.add(new PathNode(mvtType,seesObject(data_back), data_back));
+							updatePositionsBack(3);
+						}
+						else{
 							mvtType = "turnLeft";
-						currentPath.add(new PathNode(mvtType,
-								seesObject(data_back), data_back));
-						// TODO some method that processes the 1 path node that
-						// has been added and that removes
-						// it afterwards as it is not part of the robot path.
+							currentPath.add(new PathNode(mvtType,seesObject(data_back), data_back));
+							updatePositionsBack(1);
+						}
 					} else {
 						// TODO go forward
 						mvtType = "forward";
 						currentPath.add(new PathNode(mvtType,
 								seesObject(data_front), data_front));
-						updatePositions();
+						updatePositions(true);
 					}
 				}
 			}
-			counter++;
 		}
 		return 0;
 	}
-
+	
+	public static int updateTemp(int rlf, int index){
+		int count = 0;
+		Arrow next = possibilities.get(index).getNext();
+		int row = possibilities.get(index).getRow();
+		int rowForMap = getRowMap(row);
+		int col = possibilities.get(index).getColumn();
+		char orientation = next.getPoint();
+		if (orientation == 'n') {
+			if (rlf == 0) {
+				if (rowForMap - 1 < 0) count ++;
+				else if (map[rowForMap-1][col].getIsObstacle()) count ++;
+			} else if (rlf == 1){
+				if(col - 1 < 0 )count++;
+				else if(map[rowForMap][col-1].getIsObstacle()) count ++;
+			} else if (rlf == 3) {
+				if(col + 1 >= MAZE_SIZE) count++;
+				else if(map[rowForMap][col+1].getIsObstacle()) count ++;
+			}
+		} else if (orientation == 'w') {
+			if (rlf == 0) {
+				if(col - 1 < 0)	count++;
+				else if(map[rowForMap][col-1].getIsObstacle()) count ++;
+			} else if (rlf == 3) {
+				if(rowForMap - 1 < 0) count++;
+				else if(map[rowForMap-1][col].getIsObstacle()) count ++;
+			} else if (rlf == 1){
+				if(rowForMap + 1 >= MAZE_SIZE) count++;
+				else if( map[rowForMap+1][col].getIsObstacle()) count ++;
+			}
+		} else if (orientation == 's') {
+			if (rlf == 0){
+				if(rowForMap + 1 >= MAZE_SIZE) count++;
+				else if(map[rowForMap+1][col].getIsObstacle()) count ++;
+			} else if (rlf == 3) {
+				if(col - 1 < 0) count++;
+				else if(map[rowForMap][col-1].getIsObstacle()) count ++;
+			} else if (rlf == 1) {
+				if(col + 1 >= MAZE_SIZE) count++;
+				else if(map[rowForMap][col+1].getIsObstacle()) count ++;
+			}
+		} else if (orientation == 'e') {
+			if (rlf == 0) {
+				if(col + 1 >= MAZE_SIZE) count++;
+				else if(map[rowForMap][col+1].getIsObstacle()) count ++;
+			} else if (rlf == 3) {
+				if(rowForMap - 1 < 0 ) count ++;
+				else if(map[rowForMap-1][col].getIsObstacle()) count++;
+			} else if (rlf == 1) {
+				if(rowForMap + 1 >= MAZE_SIZE) count++;
+				else if(map[rowForMap+1][col].getIsObstacle()) count ++;
+			}
+		}
+		return count;
+	}
+	
+	public static int getBestRatio(boolean canGoForward){
+		if (possibilities.size() > 1) {
+			int pool = possibilities.size() * 3; 
+			int poss_fwd = 0;
+			double ratio_fwd = 0.0;
+			double ratio_left = 0.0;
+			double ratio_right = 0.0;
+			int poss_left = 0;
+			int poss_right = 0;
+			for (int i = 0; i < possibilities.size(); i++) {
+				if (canGoForward) {
+					poss_fwd += updateTemp(0,i);
+				}
+				poss_left += updateTemp(1,i);
+				poss_right += updateTemp(3,i);
+			}
+			
+			ratio_left = Math.abs((poss_left / pool) - 0.5);
+			ratio_right = Math.abs((poss_right / pool) - 0.5);
+			ratio_fwd = Math.abs((poss_fwd / pool) - 0.5);
+			
+			System.out.print(ratio_left);
+			System.out.print(ratio_right);
+			System.out.print(ratio_fwd);
+			
+			
+			if (canGoForward) {
+				double min = Math.min(ratio_fwd, Math.min(ratio_left, ratio_right));
+				if (min == ratio_fwd) {
+					return 0;
+				} else if (min == ratio_left) {
+					return 1;
+				} else if (min == ratio_right) {
+					return 3;
+				}
+			} else {
+				double min = Math.min(ratio_left, ratio_right);
+				if (min == ratio_left)
+					return 1;
+				else
+					return 3;
+			}
+		}
+		return -1;
+	}
+	
+	public static void updatePositions(boolean fromFrontSensor) {
+		Arrow cur;
+		LinkedList<Integer> itemsToRemove = new LinkedList<Integer>();
+		int ind;
+		for (int i = 0; i < possibilities.size(); i++) {
+			cur = possibilities.get(i);
+			ind = getPositionToRemove(cur, i);
+			if (ind != -1) {
+				itemsToRemove.add(ind);
+			}
+		}
+		int error = 0;
+		for (Integer j : itemsToRemove) { 
+			if(!fromFrontSensor) {
+				possibilities.get(j-error).setPoint((mem.get(j-error)));
+				possibilities.get(j-error).getNext().setPoint((mem.get(j-error)));
+			}
+			possibilities.remove(j - error);
+			error++;
+		}
+		mem.clear();
+	}
+	
+	public static void updatePositionsBack(int rlf){
+		mem = new LinkedList<Character>();
+		for(int i = 0; i < possibilities.size();i++){
+			char c = possibilities.get(i).getPoint();
+			mem.add(c);
+			if(rlf == 1){
+				possibilities.get(i).getNext().setPoint(translate(getMovement("turnLeft",c)));
+				possibilities.get(i).setPoint(translate(getMovement("turnLeft",c)));
+			} else if(rlf == 3){
+				possibilities.get(i).getNext().setPoint(translate(getMovement("turnRight",c)));
+				possibilities.get(i).setPoint(translate(getMovement("turnRight",c)));
+				
+			}
+		}
+		updatePositions(false);
+		currentPath.remove(currentPath.size() - 1);
+		for(int i = 0; i < possibilities.size(); i++){
+			possibilities.get(i).setPoint(inverseDirection(possibilities.get(i).getPoint()));
+		}
+	}
+	
+	public static char inverseDirection(char c){
+		if(c == 'n') return 's';
+		if(c == 'w') return 'e';
+		if(c == 's') return 'n';
+		if(c == 'e') return 'w';
+		return 'o';
+	}
+	public static char translate(int index){
+		if(index == 0) return 'n';
+		if(index == 1) return 'w';
+		if(index == 2) return 's';
+		if(index == 3) return 'e';
+		return 'o';
+	}
 	public static double fwd_getFilteredData() {
 		fwd_sensor.ping();
 		double fwd_distance = fwd_sensor.getDistance();
@@ -331,15 +491,15 @@ public class Albert_Algo {
 		return -1;
 	}
 
-	public static int getPositionToRemove(Arrow pos, int index) {
-
+	public static int getPositionToRemove(Arrow pos, int index){
+		
 		PathNode mvt = currentPath.get(currentPath.size() - 1);
 		Arrow next = possibilities.get(index).getNext();
 		int row = next.getRow();
 		int col = next.getColumn();
 		int rowForMap = getRowMap(row);
-
-		switch (getMovement(mvt.getMvt(), next.getPoint())) {
+		
+		switch(getMovement(mvt.getMvt(), next.getPoint())){
 		case 0:
 			if (mvt.getNodeTilesAway() == 0) {
 				if (!map[rowForMap][col].isNorth())
@@ -395,13 +555,13 @@ public class Albert_Algo {
 			} else if (mvt.getNodeTilesAway() == 2) {
 				if (map[rowForMap][col].isWest())
 					return index;
-				if (col - 1 > -1) {
+				if (col - 1 > - 1) {
 					if (map[rowForMap][col - 1].isWest())
 						return index;
 				} else
 					return index;
 				if (col - 2 > -1) {
-					if (!map[rowForMap][col - 2].isWest()) {
+					if (!map[rowForMap][col - 2].isWest()){
 						return index;
 					}
 				} else
@@ -434,33 +594,33 @@ public class Albert_Algo {
 				} else
 					return index;
 			} else if (mvt.getNodeTilesAway() == 2) {
-				if (map[rowForMap][col].isSouth()) {
+				if (map[rowForMap][col].isSouth()){
 					return index;
 				}
 				if (rowForMap + 1 < MAZE_SIZE) {
-					if (map[rowForMap + 1][col].isSouth()) {
+					if (map[rowForMap + 1][col].isSouth()){
 						return index;
 					}
-				} else {
+				} else{
 					return index;
 				}
 				if (rowForMap + 2 < MAZE_SIZE) {
-					if (!map[rowForMap + 2][col].isSouth()) {
+					if (!map[rowForMap + 2][col].isSouth()){
 						return index;
 					}
-
+					
 				} else {
 					return index;
 				}
 			} else {
-				if (map[getRowMap(row)][col].isNorth())
+				if (map[rowForMap][col].isNorth())
 					return index;
-				if (row + 1 < MAZE_SIZE) {
+				if (rowForMap + 1 < MAZE_SIZE) {
 					if (map[rowForMap + 1][col].isSouth())
 						return index;
 				} else
 					return index;
-				if (row + 2 < MAZE_SIZE) {
+				if (rowForMap + 2 < MAZE_SIZE) {
 					if (map[rowForMap + 2][col].isSouth())
 						return index;
 				} else
@@ -469,35 +629,35 @@ public class Albert_Algo {
 			break;
 		case 3:
 			if (mvt.getNodeTilesAway() == 0) {
-				if (!map[rowForMap][col].isEast()) {
+				if (!map[rowForMap][col].isEast()){
 					return index;
 				}
 			} else if (mvt.getNodeTilesAway() == 1) {
-				if (map[rowForMap][col].isEast()) {
+				if (map[rowForMap][col].isEast()){
 					return index;
 				}
 				if (col + 1 < MAZE_SIZE) {
-					if (!map[rowForMap][col + 1].isEast()) {
+					if (!map[rowForMap][col + 1].isEast()){
 						return index;
 					}
 				} else
 					return index;
 			} else if (mvt.getNodeTilesAway() == 2) {
-				if (map[rowForMap][col].isEast()) {
+				if (map[rowForMap][col].isEast()){
 					return index;
 				}
 				if (col + 1 < MAZE_SIZE) {
-					if (map[rowForMap][col + 1].isEast()) {
+					if (map[rowForMap][col + 1].isEast()){
 						return index;
 					}
 				} else {
 					return index;
 				}
 				if (col + 2 < MAZE_SIZE) {
-					if (!map[rowForMap][col + 2].isEast()) {
+					if (!map[rowForMap][col + 2].isEast()){
 						return index;
 					}
-				} else {
+				} else{
 					return index;
 				}
 			} else {
@@ -515,77 +675,33 @@ public class Albert_Algo {
 					return index;
 			}
 			break;
-		default:
-			return -2;
+		default: return -2;
 		}
-		if (mvt.getMvt().equals("forward")) {
-
+		if(mvt.getMvt().equals("forward") && !(mvt.getNodeTilesAway() == 0)){
+			
 			char orientation = next.getPoint();
-			if (orientation == 'n') {
+			if(orientation == 'n') {
 				possibilities.get(index).setRow(rowForMap - 1);
-				possibilities.get(index).getNext().setRow(row + 1);
-			} else if (orientation == 'w') {
+				possibilities.get(index).getNext().setRow(rowForMap - 1);
+			} else if(orientation == 'w') {
 				possibilities.get(index).setColumn(col - 1);
 				possibilities.get(index).getNext().setColumn(col - 1);
-			} else if (orientation == 's') {
+			} else if(orientation == 's') {
 				possibilities.get(index).setRow(rowForMap + 1);
-				possibilities.get(index).getNext().setRow(row - 1);
-			} else if (orientation == 'e') {
+				possibilities.get(index).getNext().setRow(rowForMap + 1);
+			} else if(orientation == 'e') {
 				possibilities.get(index).setColumn(col + 1);
 				possibilities.get(index).getNext().setColumn(col + 1);
 			}
-
+			
 			possibilities.get(index).getNext().setPoint(next.getPoint());
 			possibilities.get(index).setPoint(next.getPoint());
 		} else {
-			possibilities
-					.get(index)
-					.getNext()
-					.setPoint(
-							translate(getMovement(mvt.getMvt(), next.getPoint())));
+			possibilities.get(index).getNext().setPoint(translate(getMovement(mvt.getMvt(),next.getPoint())));
 			possibilities.get(index).setPoint(next.getPoint());
 		}
 		return -1;
-
-	}
-
-	// left right or forward
-	public void updatePositionsBack(int rlf) {
-		Arrow cur = null;
-		LinkedList<Integer> itemsToRemove = new LinkedList<Integer>();
-		int ind;
-		memRatio.clear();
-		Arrow mem = null;
-		for (int i = 0; i < possibilities.size(); i++) {
-			cur = possibilities.get(i);
-			mem = cur;
-			int row = 0;
-			int col = 0;
-			char c = cur.getNext().getPoint();
-			if (rlf == 1) {
-				cur.setNext(map[row][col].getPositionsArrows(getMovement(
-						"turnLeft", c)));
-			} else if (rlf == 3) {
-				cur.setNext(map[row][col].getPositionsArrows(getMovement(
-						"turnRight", c)));
-
-			}
-		}
-		updatePositions();
-		currentPath.remove(currentPath.size() - 1);
-		cur.setNext(mem);
-	}
-
-	public static char translate(int index) {
-		if (index == 0)
-			return 'n';
-		if (index == 1)
-			return 'w';
-		if (index == 2)
-			return 's';
-		if (index == 3)
-			return 'e';
-		return 'o';
+		
 	}
 
 	public void newPosition(Arrow startPos) {
