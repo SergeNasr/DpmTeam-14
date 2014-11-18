@@ -359,6 +359,7 @@ public class Albert_Algo {
 		if(index == 3) return 'e';
 		return 'o';
 	}
+	// TODO filtering method
 	public static double fwd_getFilteredData() {
 		fwd_sensor.ping();
 		double fwd_distance = fwd_sensor.getDistance();
@@ -376,82 +377,12 @@ public class Albert_Algo {
 			return -1;
 		}
 	}
-
+	
+	// TODO filtering method
 	public static double back_getFilteredData() {
 		back_sensor.ping();
 		double back_distance = back_sensor.getDistance();
 		return back_distance;
-	}
-
-	public static double calculateRelativeTurn() {
-		return 0.0;
-	}
-
-	public int calculateBestRatio(boolean canGoForward) {
-		if (possibilities.size() > 1) {
-			int pool = possibilities.size();
-			String mvt_right = "turnRight";
-			String mvt_left = "turnLeft";
-			double ratio_fwd = 0.0;
-			if (canGoForward) {
-				String mvt_fwd = "forward";
-				PathNode temp_fwd = new PathNode(mvt_fwd, true, 1);
-				currentPath.add(temp_fwd);
-				updatePositions();
-				int poss_fwd = possibilities.size();
-				for (int i = memRatio.size() - 1; i >= 0; i--) {
-					possibilities.add(memRatio.get(i));
-					memRatio.clear();
-				}
-				currentPath.remove(currentPath.size() - 1);
-				ratio_fwd = Math.abs((poss_fwd / pool) - 0.5);
-
-			}
-
-			PathNode temp_right = new PathNode(mvt_right, true, 1);
-			PathNode temp_left = new PathNode(mvt_left, true, 1);
-
-			currentPath.add(temp_right);
-			updatePositions();
-			int poss_right = possibilities.size();
-			for (int i = memRatio.size() - 1; i >= 0; i--) {
-				possibilities.add(memRatio.get(i));
-				memRatio.clear();
-			}
-			currentPath.remove(currentPath.size() - 1);
-
-			currentPath.add(temp_left);
-			updatePositions();
-			int poss_left = possibilities.size();
-			for (int i = memRatio.size() - 1; i >= 0; i--) {
-				possibilities.add(memRatio.get(i));
-				memRatio.clear();
-			}
-			currentPath.remove(currentPath.size() - 1);
-
-			double ratio_left = Math.abs((poss_left / pool) - 0.5);
-			double ratio_right = Math.abs((poss_right / pool) - 0.5);
-
-			if (canGoForward) {
-				double min = Math.min(ratio_fwd,
-						Math.min(ratio_left, ratio_right));
-				if (min == ratio_fwd) {
-					return 0;
-				} else if (min == ratio_left) {
-					return 1;
-				} else if (min == ratio_right) {
-					return 3;
-				}
-			} else {
-				double min = Math.min(ratio_left, ratio_right);
-				if (min == ratio_left)
-					return 1;
-				else
-					return 3;
-			}
-		}
-
-		return -1;
 	}
 
 	public static int getRowMap(int row) {
@@ -704,59 +635,6 @@ public class Albert_Algo {
 		
 	}
 
-	public void newPosition(Arrow startPos) {
-		// go through all the nodes of the currentPath
-		// update position based on starting one
-		PathNode mvt;
-		int row, col;
-		for (int i = 0; i < currentPath.size(); i++) {
-			mvt = currentPath.get(i);
-			if (mvt.getMvt().equals("turnLeft")) {
-				if (startPos.getPoint() == 'n') {
-					startPos.setPoint('w');
-				} else if (startPos.getPoint() == 'w') {
-					startPos.setPoint('s');
-				} else if (startPos.getPoint() == 's') {
-					startPos.setPoint('e');
-				} else if (startPos.getPoint() == 'e') {
-					startPos.setPoint('n');
-				}
-			} else if (mvt.getMvt().equals("turnRight")) {
-				if (startPos.getPoint() == 'n') {
-					startPos.setPoint('e');
-				} else if (startPos.getPoint() == 'w') {
-					startPos.setPoint('n');
-				} else if (startPos.getPoint() == 's') {
-					startPos.setPoint('w');
-				} else if (startPos.getPoint() == 'e') {
-					startPos.setPoint('s');
-				}
-			} else { // mvt.getMvt().equals("forward")
-				if (startPos.getPoint() == 'n') {
-					// movement along the positive x-axis
-					// increment row
-					row = startPos.getRow();
-					startPos.setRow(row + 1);
-				} else if (startPos.getPoint() == 'w') {
-					// movement along the positive y-axis
-					// decrement column
-					col = startPos.getColumn();
-					startPos.setColumn(col - 1);
-				} else if (startPos.getPoint() == 's') {
-					// movement along the negative x-axis
-					// decrement row
-					row = startPos.getRow();
-					startPos.setRow(row - 1);
-				} else if (startPos.getPoint() == 'e') {
-					// movement along the negative y-axis
-					// increment column
-					col = startPos.getColumn();
-					startPos.setColumn(col + 1);
-				}
-			}
-		}
-	}
-
 	public void updatePositions() {
 		Arrow cur;
 		LinkedList<Integer> itemsToRemove = new LinkedList<Integer>();
@@ -777,12 +655,5 @@ public class Albert_Algo {
 			possibilities.remove(j - error);
 			error++;
 		}
-	}
-
-	public void take_data(boolean fromFrontSensor) {
-		updatePositions();
-		if (!fromFrontSensor)
-			currentPath.remove(currentPath.size() - 1);
-
 	}
 }
