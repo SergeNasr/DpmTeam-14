@@ -5,7 +5,7 @@ public class Tiles {
 	private int col;
 	private int row;
 	
-	private static final int MAZE_SIZE = 4;
+	private static final int MAZE_SIZE = 8;
 	public LinkedList<Tiles> adjList;	//to represent a graph using adjacency list
 	public boolean isVisited;	//used in BFS
 

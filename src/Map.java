@@ -1,7 +1,7 @@
 public class Map {
 	private static Tiles [][] tiles;
 	private int [] obstacles;
-	private static final int MAZE_SIZE = 4;
+	private static final int MAZE_SIZE = 8;
 	
 	/*
 	public static void main(String[]args){

@@ -14,9 +14,9 @@ public class Albert_Algo {
 	private static LinkedList<PathNode> currentPath;
 	private static int counter = 1;
 	private static LinkedList<Arrow> memRatio = new LinkedList<Arrow>();
-	private static final int MAZE_SIZE = 4;
+	private static final int MAZE_SIZE = 8;
 	private static LinkedList<Character> mem = new LinkedList<Character>();
-	
+	private static SquareDriver sd;
 	// north = 0
 	// west = 1
 	// south = 2
@@ -47,12 +47,13 @@ public class Albert_Algo {
 		return map.length - 1 - row;
 	}
 
-	public Albert_Algo(int[] blocks_tilenumber) {
+	public Albert_Algo(int[] blocks_tilenumber, SensorPort s1, SensorPort s2, SquareDriver SD) {
 
 		Map maps = new Map(blocks_tilenumber);
 		map = maps.getMap();
-		fwd_sensor = new UltrasonicSensor(SensorPort.S1);
-		back_sensor = new UltrasonicSensor(SensorPort.S2);
+		fwd_sensor = new UltrasonicSensor(s1);
+		back_sensor = new UltrasonicSensor(s2);
+		sd = SD;
 		fwd_sensor.off();
 		back_sensor.off();
 
@@ -86,7 +87,15 @@ public class Albert_Algo {
 			return false;
 		return true;
 	}
-
+	
+	public static void turnTo(int LorR){
+		if(LorR == 1){
+			sd.rotateCounter(90);
+		} else if(LorR == 3){
+			sd.rotateClockwise(90);
+		}
+	}
+	
 	public int algorithm() {
 		String mvtType = null;
 		int data_front = 0;
@@ -100,7 +109,7 @@ public class Albert_Algo {
 				if (bestRatio != 1 || bestRatio != 3)
 					System.out.println("error");
 				else {
-					// TODO turn to best ratio
+					turnTo(bestRatio);
 					data_back = numTilesAway(back_getFilteredData());
 					data_front = numTilesAway(fwd_getFilteredData());
 					if (bestRatio == 1) {
@@ -129,7 +138,7 @@ public class Albert_Algo {
 					System.out.println("Error");
 				else {
 					if (bestRatio == 1 || bestRatio == 3) {
-						// TODO turn to best ratio
+						turnTo(bestRatio);
 						data_back = numTilesAway(back_getFilteredData());
 
 						if (bestRatio == 1) {
@@ -153,7 +162,7 @@ public class Albert_Algo {
 						}
 						
 					} else {
-						// TODO go forward
+						sd.moveForward(30);
 						mvtType = "forward";
 						currentPath.add(new PathNode(mvtType, seesObject(data_front), data_front));
 						updatePositions(true);
@@ -165,7 +174,7 @@ public class Albert_Algo {
 					System.out.println("Error");
 				else {
 					if (bestRatio == 1 || bestRatio == 3) {
-						// TODO turn to best ratio
+						turnTo(bestRatio);
 						data_back = numTilesAway(back_getFilteredData());
 
 						if (bestRatio == 1) {
@@ -188,7 +197,7 @@ public class Albert_Algo {
 							updatePositionsBack(1);
 						}
 					} else {
-						// TODO go forward
+						sd.moveForward(30);
 						mvtType = "forward";
 						currentPath.add(new PathNode(mvtType,
 								seesObject(data_front), data_front));
