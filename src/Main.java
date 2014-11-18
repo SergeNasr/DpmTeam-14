@@ -35,12 +35,11 @@ public class Main {
 		// TODO create obstacles for each map and insert coordinates of location of the block
 		
 		// create map
+		int[] mapTest = {1, 8, 10, 14};
 		int [] map1 = {2,3,11,16,17,20,23,27,37,40,45,48,53,64};
 		int [] map2 ={4,5,8,10,13,16,17,27,29,35,52,56,59,62,64};
 		int [] map3 ={1,5,11,12,16,22,28,31,32,35,36,44,61,62,64};
 		
-		Albert_Algo Albert = new Albert_Algo(map1, usPortOne, usPortThree, driver);
-		Albert.algorithm();
 		do {
 			// clear the display
 			LCD.clear();
@@ -67,7 +66,9 @@ public class Main {
 			
 		} else {
 			LCD.clear();
-			// TODO orienteering
+			
+			Albert_Algo albert = new Albert_Algo(mapTest, driver, usSensorFront, usSensorBack);
+			albert.algorithm();
 			
 //			// create graph and path
 //			GraphGenerator gg = new GraphGenerator(map);
@@ -94,8 +95,8 @@ public class Main {
 //			navigator.start();
 			
 			// TODO Claw/Grab-List block
-			UltrasonicPoller usPoller = new UltrasonicPoller(usSensorFront, claw, driver);
-			usPoller.start();
+//			UltrasonicPoller usPoller = new UltrasonicPoller(usSensorFront, claw, driver);
+//			usPoller.start();
 		}
 		
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE);

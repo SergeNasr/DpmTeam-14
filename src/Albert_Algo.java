@@ -1,61 +1,64 @@
 import java.util.LinkedList;
 
+import lejos.nxt.UltrasonicSensor;
+
 public class Albert_Algo {
+	private SquareDriver driver;
 	private static Tiles[][] map;
-	private static UltrasonicSensor fwd_sensor;
-	private static UltrasonicSensor back_sensor;
+	private static UltrasonicSensor usSensorFront;
+	private static UltrasonicSensor usSensorBack;
 	private static final double TILEAWAY_0 = 20.0;
 	private static final double TILEAWAY_1 = TILEAWAY_0 + 30.0;
 	private static final double TILEAWAY_2 = TILEAWAY_1 + 40.0;
 	private static LinkedList<Arrow> possibilities = new LinkedList<Arrow>();
 	private static LinkedList<PathNode> currentPath;
-	private static final int MAZE_SIZE = 8;
+	private static final int MAZE_SIZE = 4;
 	static LinkedList<Character> mem = new LinkedList<Character>();
 	// north = 0
 	// west = 1
 	// south = 2
 	// east = 3
 
-	public static void main(String[] args) {
-		Map maps = new Map(new int[] { 1, 7, 8, 14 });
-		map = maps.getMap();
-		fwd_sensor = new UltrasonicSensor(1);
-		back_sensor = new UltrasonicSensor(2);
-		fwd_sensor.off();
-		back_sensor.off();
-
-		currentPath = new LinkedList<PathNode>();
-		for (int i = 0; i < map.length; i++) {
-			for (int j = 0; j < map[i].length; j++) {
-				// System.out.print(counter + " ");
-				for (int k = 0; k < 4; k++) {
-					if (!map[i][j].getIsObstacle()){
-						possibilities.add(new Arrow(getRowMap(i), j, map[i][j]
-								.getPositionsArrows(k).getPoint()));
-						//possibilities.add(map[i][j].getPositionsArrows(k));
-					}
-				}
-			}
-		}
-		
-		for (int i = 0; i < possibilities.size(); i++){
-			possibilities.get(i).getNext().setPoint(possibilities.get(i).getPoint());
-			possibilities.get(i).getNext().setRow(possibilities.get(i).getRow());
-			possibilities.get(i).getNext().setColumn(possibilities.get(i).getColumn());
-			
-		}
-		
-		//System.out.println(getBestRatio(true));
-		
-		
-		System.out.println("***Round 1***");
-		currentPath.add(new PathNode("turnRight",true, 2));
-		updatePositions(true);
-		
-		for (int i = 0; i < possibilities.size(); i++){
-			System.out.println(possibilities.get(i).getPoint() + " (" + possibilities.get(i).getColumn() +
-					", " + possibilities.get(i).getRow() + ")");
-		}
+//	public static void main(String[] args) {
+//		Map maps = new Map(new int[] { 1, 7, 8, 14 });
+//		map = maps.getMap();
+//		fwd_sensor = new UltrasonicSensor(1);
+//		back_sensor = new UltrasonicSensor(2);
+//		fwd_sensor.off();
+//		back_sensor.off();
+//
+//		currentPath = new LinkedList<PathNode>();
+//		for (int i = 0; i < map.length; i++) {
+//			for (int j = 0; j < map[i].length; j++) {
+//				// System.out.print(counter + " ");
+//				for (int k = 0; k < 4; k++) {
+//					if (!map[i][j].getIsObstacle()){
+//						possibilities.add(new Arrow(getRowMap(i), j, map[i][j]
+//								.getPositionsArrows(k).getPoint()));
+//						//possibilities.add(map[i][j].getPositionsArrows(k));
+//					}
+//				}
+//			}
+//		}
+//		
+//		for (int i = 0; i < possibilities.size(); i++){
+//			possibilities.get(i).getNext().setPoint(possibilities.get(i).getPoint());
+//			possibilities.get(i).getNext().setRow(possibilities.get(i).getRow());
+//			possibilities.get(i).getNext().setColumn(possibilities.get(i).getColumn());
+//			
+//		}
+//		
+//		//System.out.println(getBestRatio(true));
+//		
+//		
+//		System.out.println("***Round 1***");
+//		currentPath.add(new PathNode("turnRight",true, 2));
+//		updatePositions(true);
+//		
+//		for (int i = 0; i < possibilities.size(); i++){
+//			System.out.println(possibilities.get(i).getPoint() + " (" + possibilities.get(i).getColumn() +
+//					", " + possibilities.get(i).getRow() + ")");
+//		}
 		
 		//System.out.println(getBestRatio(true));
 		
@@ -80,20 +83,18 @@ public class Albert_Algo {
 					+ possibilities.get(i).getColumn() + ", "
 					+ possibilities.get(i).getRow() + ")");
 		}*/
-	}
+	//}
 
 	public static int getRowMap(int row){
 		return MAZE_SIZE - 1 - row;
 	}
 	
-	public Albert_Algo(int[] blocks_tilenumber) {
-
+	public Albert_Algo(int[] blocks_tilenumber, SquareDriver driver, UltrasonicSensor usSensorFront, UltrasonicSensor usSensorBack) {
+		this.usSensorFront = usSensorFront;
+		this.usSensorBack = usSensorBack;
+		this.driver = driver;
 		Map maps = new Map(blocks_tilenumber);
 		map = maps.getMap();
-		fwd_sensor = new UltrasonicSensor(1);
-		back_sensor = new UltrasonicSensor(2);
-		fwd_sensor.off();
-		back_sensor.off();
 
 		currentPath = new LinkedList<PathNode>();
 		for (int i = 0; i < map.length; i++) {
@@ -136,13 +137,14 @@ public class Albert_Algo {
 				if (bestRatio != 1 || bestRatio != 3)
 					System.out.println("error");
 				else {
-					// TODO turn to best ratio
 					data_back = numTilesAway(back_getFilteredData());
 					data_front = numTilesAway(fwd_getFilteredData());
 					if (bestRatio == 1) {
+						driver.rotateCounter(90);
 						mvtType = "turnLeft";
 
 					} else if (bestRatio == 3) {
+						driver.rotateClockwise(90);
 						mvtType = "turnRight";
 					}
 					currentPath.add(new PathNode(mvtType, seesObject(data_front), data_front));
@@ -165,13 +167,14 @@ public class Albert_Algo {
 					System.out.println("Error");
 				else {
 					if (bestRatio == 1 || bestRatio == 3) {
-						// TODO turn to best ratio
 						data_back = numTilesAway(back_getFilteredData());
 
 						if (bestRatio == 1) {
+							driver.rotateCounter(90);
 							mvtType = "turnLeft";
 
 						} else if (bestRatio == 3) {
+							driver.rotateClockwise(90);
 							mvtType = "turnRight";
 						}
 						currentPath.add(new PathNode(mvtType, seesObject(data_front), data_front));
@@ -189,7 +192,7 @@ public class Albert_Algo {
 						}
 						
 					} else {
-						// TODO go forward
+						driver.moveForward(30);
 						mvtType = "forward";
 						currentPath.add(new PathNode(mvtType, seesObject(data_front), data_front));
 						updatePositions(true);
@@ -201,13 +204,14 @@ public class Albert_Algo {
 					System.out.println("Error");
 				else {
 					if (bestRatio == 1 || bestRatio == 3) {
-						// TODO turn to best ratio
 						data_back = numTilesAway(back_getFilteredData());
 
 						if (bestRatio == 1) {
+							driver.rotateCounter(90);
 							mvtType = "turnLeft";
 
 						} else if (bestRatio == 3) {
+							driver.rotateClockwise(90);
 							mvtType = "turnRight";
 						}
 						currentPath.add(new PathNode(mvtType,seesObject(data_front), data_front));
@@ -224,7 +228,7 @@ public class Albert_Algo {
 							updatePositionsBack(1);
 						}
 					} else {
-						// TODO go forward
+						driver.moveForward(30);
 						mvtType = "forward";
 						currentPath.add(new PathNode(mvtType,
 								seesObject(data_front), data_front));
@@ -237,8 +241,8 @@ public class Albert_Algo {
 	}
 
 	public static double fwd_getFilteredData() {
-		fwd_sensor.ping();
-		double fwd_distance = fwd_sensor.getDistance();
+		usSensorFront.ping();
+		double fwd_distance = usSensorFront.getDistance();
 		return fwd_distance;
 	}
 
@@ -255,8 +259,8 @@ public class Albert_Algo {
 	}
 
 	public static double back_getFilteredData() {
-		back_sensor.ping();
-		double back_distance = back_sensor.getDistance();
+		usSensorBack.ping();
+		double back_distance = usSensorBack.getDistance();
 		return back_distance;
 	}
 
@@ -284,10 +288,6 @@ public class Albert_Algo {
 			ratio_left = Math.abs((poss_left / pool) - 0.5);
 			ratio_right = Math.abs((poss_right / pool) - 0.5);
 			ratio_fwd = Math.abs((poss_fwd / pool) - 0.5);
-			
-			System.out.print(ratio_left);
-			System.out.print(ratio_right);
-			System.out.print(ratio_fwd);
 			
 			
 			if (canGoForward) {
