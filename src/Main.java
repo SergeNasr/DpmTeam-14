@@ -36,7 +36,7 @@ public class Main {
 		// TODO create obstacles for each map and insert coordinates of location of the block
 		
 		// create map
-		int[] mapTest = {1, 8, 10, 14};
+		int[] mapTest = {1, 7, 8, 14};
 		int [] map1 = {2,3,11,16,17,20,23,27,37,40,45,48,53,64};
 		int [] map2 ={4,5,8,10,13,16,17,27,29,35,52,56,59,62,64};
 		int [] map3 ={1,5,11,12,16,22,28,31,32,35,36,44,61,62,64};
@@ -71,8 +71,9 @@ public class Main {
 			LCD.clear();
 			
 			// orienteering
-//			Albert_Algo albert = new Albert_Algo(mapTest, driver, usSensorFront, usSensorBack);
-//			albert.algorithm();
+			//Albert_Algo albert = new Albert_Algo(mapTest, driver, usSensorFront, usSensorBack);
+			//albert.test();
+			//albert.algorithm();
 			
 			// create graph and path
 			GraphGenerator gg = new GraphGenerator(map);
@@ -98,22 +99,32 @@ public class Main {
 
 			Navigation navigator = new Navigation(driver, pointPath, odo);
 			
-//			Thread[] threads = new Thread[2];
-//			threads[0] = navigator;
-//			threads[1] = usPoller;
-			
+			Thread[] threads = new Thread[2];
+			threads[0] = navigator;
+			threads[1] = usPoller;
+
 			// travel/navigate (in a different thread)
 			// TODO need to pass values of the robots positions
 			navigator.start();
 			
-//			try {
-//	            navigator.join();
-//	        } catch (InterruptedException e) {
-//	            System.out.println("Error in thread join");
-//	        }
-//	         
-//			// claw grab and lift
-//			usPoller.start();
+			try {
+	            navigator.join();
+	        } catch (InterruptedException e) {
+	            System.out.println("Error in thread join");
+	        }
+	         
+			// claw grab and lift
+			usPoller.start();
+
+			try {
+	            navigator.join();
+	        } catch (InterruptedException e) {
+	            System.out.println("Error in thread join");
+	        }
+	         
+			// claw grab and lift
+			usPoller.start();
+
 		}
 		
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE);

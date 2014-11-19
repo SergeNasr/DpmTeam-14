@@ -4,12 +4,12 @@ public class Map {
 	private static final int MAZE_SIZE = 4;
 	
 	
-	public static void main(String[]args){
+	/*public static void main(String[]args){
 		int [] obstacles = {1,7,8,14};
 		Map map = new Map(obstacles);
 		printMapObstacles(map);
 		
-	}
+	}*/
 	
 	public Map(int [] blocks_tilenumber){
 		
