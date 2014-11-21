@@ -1,5 +1,7 @@
 import java.util.LinkedList;
 
+import Lab5.Arrow;
+import Lab5.PathNode;
 import lejos.nxt.LCD;
 import lejos.nxt.Sound;
 import lejos.nxt.UltrasonicSensor;
@@ -216,8 +218,8 @@ public class Albert_Algo {
 	}
 
 	public static double fwd_getFilteredData() {
-		usSensorFront.ping();
-		double fwd_distance = usSensorFront.getDistance();
+		fwd_sensor.ping();
+		double fwd_distance = fwd_sensor.getDistance();
 		return fwd_distance;
 	}
 
@@ -234,8 +236,8 @@ public class Albert_Algo {
 	}
 
 	public static double back_getFilteredData() {
-		usSensorBack.ping();
-		double back_distance = usSensorBack.getDistance();
+		back_sensor.ping();
+		double back_distance = back_sensor.getDistance();
 		return back_distance;
 	}
 
@@ -245,7 +247,7 @@ public class Albert_Algo {
 	
 	public static int getBestRatio(boolean canGoForward){
 		if (possibilities.size() > 1) {
-			int pool = possibilities.size() * 3; 
+			int pool = possibilities.size(); 
 			int poss_fwd = 0;
 			double ratio_fwd = 0.0;
 			double ratio_left = 0.0;
@@ -260,19 +262,23 @@ public class Albert_Algo {
 				poss_right += updateTemp(3,i);
 			}
 			
-			ratio_left = Math.abs((poss_left / pool) - 0.5);
-			ratio_right = Math.abs((poss_right / pool) - 0.5);
-			ratio_fwd = Math.abs((poss_fwd / pool) - 0.5);
+			ratio_left = Math.abs(((double)poss_left / pool) - 0.5);
+			ratio_right = Math.abs(((double)poss_right / pool) - 0.5);
+			ratio_fwd = Math.abs(((double)poss_fwd / pool) - 0.5);
+			
+			//System.out.print(ratio_left + " ");
+			//System.out.print(ratio_right + " ");
+			//System.out.print(ratio_fwd + " ");
 			
 			
 			if (canGoForward) {
-				double min = Math.min(ratio_left, Math.min(ratio_fwd, ratio_right));
-				if (min == ratio_fwd) {
-					return 0;
-				} else if (min == ratio_left) {
+				double min = Math.min(ratio_fwd, Math.min(ratio_left, ratio_right));
+				if (min == ratio_left) {
 					return 1;
 				} else if (min == ratio_right) {
 					return 3;
+				} else if (min == ratio_fwd) {
+					return 0;
 				}
 			} else {
 				double min = Math.min(ratio_left, ratio_right);
@@ -312,7 +318,7 @@ public class Albert_Algo {
 				else if(map[rowForMap-1][col].getIsObstacle()) count ++;
 			} else if (rlf == 1){
 				if(rowForMap + 1 >= MAZE_SIZE) count++;
-				else if( map[rowForMap+1][col].getIsObstacle()) count ++;
+				else if(map[rowForMap+1][col].getIsObstacle()) count ++;
 			}
 		} else if (orientation == 's') {
 			if (rlf == 0){
@@ -330,16 +336,16 @@ public class Albert_Algo {
 				if(col + 1 >= MAZE_SIZE) count++;
 				else if(map[rowForMap][col+1].getIsObstacle()) count ++;
 			} else if (rlf == 3) {
-				if(rowForMap - 1 < 0 ) count ++;
-				else if(map[rowForMap-1][col].getIsObstacle()) count++;
+				if(rowForMap + 1 >= MAZE_SIZE) count ++;
+				else if(map[rowForMap+1][col].getIsObstacle()) count++;
 			} else if (rlf == 1) {
-				if(rowForMap + 1 >= MAZE_SIZE) count++;
-				else if(map[rowForMap+1][col].getIsObstacle()) count ++;
+				if(rowForMap - 1 < 0) count++;
+				else if(map[rowForMap-1][col].getIsObstacle()) count ++;
 			}
 		}
 		return count;
 	}
-	public static int getPositionToRemove(Arrow pos, int index){
+	public static int getPositionToRemove(Arrow pos, int index, boolean fromFrontSensor){
 		
 		PathNode mvt = currentPath.get(currentPath.size() - 1);
 		Arrow next = possibilities.get(index).getNext();
@@ -528,25 +534,20 @@ public class Albert_Algo {
 		if(mvt.getMvt().equals("forward") && !(mvt.getNodeTilesAway() == 0)){
 			
 			char orientation = next.getPoint();
-			if(orientation == 'n') {
-				possibilities.get(index).setRow(rowForMap - 1);
-				possibilities.get(index).getNext().setRow(rowForMap - 1);
-			} else if(orientation == 'w') {
-				possibilities.get(index).setColumn(col - 1);
-				possibilities.get(index).getNext().setColumn(col - 1);
-			} else if(orientation == 's') {
-				possibilities.get(index).setRow(rowForMap + 1);
-				possibilities.get(index).getNext().setRow(rowForMap + 1);
-			} else if(orientation == 'e') {
-				possibilities.get(index).setColumn(col + 1);
-				possibilities.get(index).getNext().setColumn(col + 1);
+			if(fromFrontSensor){
+				if (orientation == 'n') {
+					possibilities.get(index).setRow(row + 1);
+				} else if (orientation == 'w') {
+					possibilities.get(index).setColumn(col - 1);
+				} else if (orientation == 's') {
+					possibilities.get(index).setRow(row - 1);
+				} else if (orientation == 'e') {
+					possibilities.get(index).setColumn(col + 1);
+				}
 			}
-			
-			possibilities.get(index).getNext().setPoint(next.getPoint());
 			possibilities.get(index).setPoint(next.getPoint());
 		} else {
-			possibilities.get(index).getNext().setPoint(translate(getMovement(mvt.getMvt(),next.getPoint())));
-			possibilities.get(index).setPoint(next.getPoint());
+			possibilities.get(index).setPoint(translate(getMovement(mvt.getMvt(),next.getPoint())));
 		}
 		return -1;
 		
@@ -558,7 +559,7 @@ public class Albert_Algo {
 		int ind;
 		for (int i = 0; i < possibilities.size(); i++) {
 			cur = possibilities.get(i);
-			ind = getPositionToRemove(cur, i);
+			ind = getPositionToRemove(cur, i,fromFrontSensor);
 			if (ind != -1) {
 				itemsToRemove.add(ind);
 			}
@@ -582,20 +583,23 @@ public class Albert_Algo {
 			char c = possibilities.get(i).getPoint();
 			mem.add(c);
 			if(rlf == 1){
-				possibilities.get(i).getNext().setPoint(translate(getMovement("turnLeft",c)));
 				possibilities.get(i).setPoint(translate(getMovement("turnLeft",c)));
 			} else if(rlf == 3){
-				possibilities.get(i).getNext().setPoint(translate(getMovement("turnRight",c)));
 				possibilities.get(i).setPoint(translate(getMovement("turnRight",c)));
-			} else if (rlf == 0){
-				// TODO test if this actually works
-				possibilities.get(i).setPoint(inverseDirection(possibilities.get(i).getPoint()));
+			} else if(rlf == 0){
+				possibilities.get(i).setPoint(inverseDirection(c));
+			} else {
+				//System.out.println("Problem in updating positions in the back");
 			}
+			
 		}
 		updatePositions(false);
 		currentPath.remove(currentPath.size() - 1);
 		for(int i = 0; i < possibilities.size(); i++){
+			//System.out.println("Hello " + possibilities.get(i).getNext().getPoint() + " " + possibilities.get(i).getPoint());
 			possibilities.get(i).setPoint(inverseDirection(possibilities.get(i).getPoint()));
+			//System.out.println("Bye " + possibilities.get(i).getNext().getPoint() + " " + possibilities.get(i).getPoint());
+			
 		}
 	}
 	
