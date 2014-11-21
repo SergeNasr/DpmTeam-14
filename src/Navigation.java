@@ -1,12 +1,9 @@
 
-
 public class Navigation extends Thread {
 	private SquareDriver driver;
 	private double prevPosX; 
 	private double prevPosY; 
 	private double currentTheta = Math.PI/2;
-	private final int ROTATE_SPEED = 150;
-	private final int FORWARD_SPEED = 250;
 	private Odometer odo;
 	private Point [] points;
 
@@ -22,7 +19,7 @@ public class Navigation extends Thread {
 	public void run(){
 		for(int i = 0; i < points.length; i++){
 			// Set rotating speeds to motors to anticipate a rotation
-			driver.setSpeeds(ROTATE_SPEED, ROTATE_SPEED);
+			driver.setSpeeds(Constants.ROTATE_SPEED, Constants.ROTATE_SPEED);
 
 			// Turn from current position to desired position
 			double theta = calculatedAngle(points[i]);
@@ -36,13 +33,10 @@ public class Navigation extends Thread {
 			}
 
 			// Go towards that position
-			driver.setSpeeds(FORWARD_SPEED, FORWARD_SPEED);
+			driver.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED);
 
 			// ... until something prevents it to stop
 			driver.moveForward(distanceTo(points[i]));
-
-//			prevPosX = points[i].getX();
-//			prevPosY = points[i].getY();
 
 			// using odometer
 			prevPosX = odo.getX();

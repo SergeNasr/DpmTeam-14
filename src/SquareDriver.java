@@ -2,8 +2,6 @@ import lejos.nxt.NXTRegulatedMotor;
 
 
 public class SquareDriver {
-	private static final double RADIUS = 2.09;
-	private static final double WIDTH = 10;
 	
 	private boolean rotating;	// used in odometry correction
 	private NXTRegulatedMotor leftMotor;
@@ -33,21 +31,21 @@ public class SquareDriver {
 	
 	public void rotateCounter(double theta) {
 		rotating = true;
-		leftMotor.rotate(-convertAngle(RADIUS, WIDTH, theta), true);
-		rightMotor.rotate(convertAngle(RADIUS, WIDTH, theta), false);
+		leftMotor.rotate(-convertAngle(Constants.RADIUS, Constants.WIDTH, theta), true);
+		rightMotor.rotate(convertAngle(Constants.RADIUS, Constants.WIDTH, theta), false);
 		rotating = false;
 	}
 	
 	public void rotateClockwise(double theta) {
 		rotating = true;
-		leftMotor.rotate(convertAngle(RADIUS, WIDTH, theta), true);
-		rightMotor.rotate(-convertAngle(RADIUS, WIDTH, theta), false);
+		leftMotor.rotate(convertAngle(Constants.RADIUS, Constants.WIDTH, theta), true);
+		rightMotor.rotate(-convertAngle(Constants.RADIUS, Constants.WIDTH, theta), false);
 		rotating = false;
 	}
 	
 	public void moveForward(double dist) {
-		leftMotor.rotate(convertDistance(RADIUS, dist),true);
-		rightMotor.rotate(convertDistance(RADIUS, dist),false);
+		leftMotor.rotate(convertDistance(Constants.RADIUS, dist),true);
+		rightMotor.rotate(convertDistance(Constants.RADIUS, dist),false);
 	}
 	
 	public void setSpeeds(int leftSpeed, int rightSpeed) {
@@ -58,13 +56,13 @@ public class SquareDriver {
 	public void rotateWithDirectReturn(double theta) {
 		rotating = true;
 		if (theta > 0) {	// counter
-		leftMotor.rotate(-convertAngle(RADIUS, WIDTH, theta), true);
-		rightMotor.rotate(convertAngle(RADIUS, WIDTH, theta), true);
+		leftMotor.rotate(-convertAngle(Constants.RADIUS, Constants.WIDTH, theta), true);
+		rightMotor.rotate(convertAngle(Constants.RADIUS, Constants.WIDTH, theta), true);
 		}
 		else {	//clockwise
 			theta = -theta;
-			leftMotor.rotate(convertAngle(RADIUS, WIDTH, theta), true);
-			rightMotor.rotate(-convertAngle(RADIUS, WIDTH, theta), true);
+			leftMotor.rotate(convertAngle(Constants.RADIUS, Constants.WIDTH, theta), true);
+			rightMotor.rotate(-convertAngle(Constants.RADIUS, Constants.WIDTH, theta), true);
 		}
 	}
 	

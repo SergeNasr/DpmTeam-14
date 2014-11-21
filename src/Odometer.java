@@ -2,9 +2,6 @@
 import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
 
-/*
-* Odometer.java
-*/
 
 public class Odometer extends Thread {
 	// robot position
@@ -20,8 +17,6 @@ public class Odometer extends Thread {
 	private NXTRegulatedMotor rightMotor;
 	// odometer update period, in ms
 	private static final long ODOMETER_PERIOD = 25;
-	private static double wb = 10;
-	private static double wr = 2.09;
 	// lock object for mutual exclusion
 	private Object lock;
 
@@ -51,8 +46,8 @@ public class Odometer extends Thread {
 		leftTacho = leftMotor.getTachoCount();
 		rightTacho = rightMotor.getTachoCount();
 		
-		data[0] = (leftTacho * wr + rightTacho * wr) *	Math.PI / 360.0;
-		data[1] = (leftTacho * wr - rightTacho * wr) / wb;
+		data[0] = (leftTacho * Constants.RADIUS + rightTacho * Constants.RADIUS) *	Math.PI / 360.0;
+		data[1] = (leftTacho * Constants.RADIUS - rightTacho * Constants.RADIUS) / Constants.WIDTH;
 	}
 	
 	// run method (required for Thread)
@@ -77,12 +72,12 @@ public class Odometer extends Thread {
 				//theta is computed as a clockwise rotation from the +y axis
 				nowTachoL = Motor.A.getTachoCount();
 				nowTachoR = Motor.C.getTachoCount();
-				distL = Math.PI*wr*(nowTachoL-lastTachoL)/180;
-				distR = Math.PI*wr*(nowTachoR-lastTachoR)/180;
+				distL = Math.PI*Constants.RADIUS*(nowTachoL-lastTachoL)/180;
+				distR = Math.PI*Constants.RADIUS*(nowTachoR-lastTachoR)/180;
 				lastTachoL = nowTachoL;
 				lastTachoR = nowTachoR;
 				deltaD = 0.5*(distL + distR);
-				deltaT = (distL - distR)/wb;
+				deltaT = (distL - distR)/Constants.WIDTH;
 				theta += deltaT;
 				dX = deltaD * Math.sin(theta);
 				dY = deltaD * Math.cos(theta);

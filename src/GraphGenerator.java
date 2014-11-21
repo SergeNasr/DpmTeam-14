@@ -2,8 +2,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-
-
 @SuppressWarnings("deprecation")
 public class GraphGenerator {
 	private Tiles[][] tile;

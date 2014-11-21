@@ -5,7 +5,6 @@ public class Tiles {
 	private int col;
 	private int row;
 	
-	private static final int MAZE_SIZE = 4;
 	public LinkedList<Tiles> adjList;	//to represent a graph using adjacency list
 	public boolean isVisited;	//used in BFS
 
@@ -28,8 +27,8 @@ public class Tiles {
 			this.hasBlock[i] = false;
 		}
 		int count = 1;
-		for(int i = 0; i < MAZE_SIZE; i++){
-			for(int j = 0; j< MAZE_SIZE; j++){
+		for(int i = 0; i < Constants.MAZE_SIZE; i++){
+			for(int j = 0; j< Constants.MAZE_SIZE; j++){
 				if(tileNumber == count){
 					this.col = j;
 					this.row = i;

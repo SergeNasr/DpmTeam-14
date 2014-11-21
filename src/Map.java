@@ -1,15 +1,6 @@
 public class Map {
 	private static Tiles [][] tiles;
 	private int [] obstacles;
-	private static final int MAZE_SIZE = 4;
-	
-	
-	/*public static void main(String[]args){
-		int [] obstacles = {1,7,8,14};
-		Map map = new Map(obstacles);
-		printMapObstacles(map);
-		
-	}*/
 	
 	public Map(int [] blocks_tilenumber){
 		
@@ -18,7 +9,7 @@ public class Map {
 			this.obstacles[i] = blocks_tilenumber[i];
 		}
 		int count = 1;
-		tiles = new Tiles[MAZE_SIZE][MAZE_SIZE];
+		tiles = new Tiles[Constants.MAZE_SIZE][Constants.MAZE_SIZE];
 		
 		
 		Tiles tile;
@@ -35,8 +26,8 @@ public class Map {
 		}
 		setBlocks();
 		
-		for (int i = 0 ; i < MAZE_SIZE ; i++) {
-			for (int j = 0 ; j < MAZE_SIZE ; j++) {
+		for (int i = 0 ; i < Constants.MAZE_SIZE ; i++) {
+			for (int j = 0 ; j < Constants.MAZE_SIZE ; j++) {
 				if (!tiles[i][j].getIsObstacle()) {
 					for(int k = 0; k < 4; k++){
 						tiles[i][j].getPositionsArrows()[k] = new Arrow(setRowTile(i),j,setOrientation(k));
@@ -60,7 +51,7 @@ public class Map {
 		return 'z';
 	}
 	public static int setRowTile(int row) {
-		return MAZE_SIZE - 1 - row;
+		return Constants.MAZE_SIZE - 1 - row;
 	}
 	
 	public void setWalls(int orientation){
@@ -76,11 +67,11 @@ public class Map {
 			}
 		} else if(orientation == 2){
 			for(int i = 0; i < tiles.length; i++){
-				tiles[MAZE_SIZE-1][i].setObstacles(orientation, true);
+				tiles[Constants.MAZE_SIZE-1][i].setObstacles(orientation, true);
 			}
 		} else{
 			for(int i = 0; i < tiles.length; i++){
-				tiles[i][MAZE_SIZE-1].setObstacles(orientation, true);
+				tiles[i][Constants.MAZE_SIZE-1].setObstacles(orientation, true);
 			}
 		}
 	}
@@ -96,7 +87,7 @@ public class Map {
 							if(k == 0){
 								tiles[j+1][k].setObstacles(0, true);
 								tiles[j][k+1].setObstacles(1, true);
-							} else if (k == MAZE_SIZE-1){
+							} else if (k == Constants.MAZE_SIZE-1){
 								tiles[j+1][k].setObstacles(0, true);
 								tiles[j][k-1].setObstacles(3, true);
 							} else{
@@ -104,11 +95,11 @@ public class Map {
 								tiles[j][k-1].setObstacles(3, true);
 								tiles[j][k+1].setObstacles(1, true);
 							}
-						} else if(j == MAZE_SIZE-1){
+						} else if(j == Constants.MAZE_SIZE-1){
 							if(k == 0){
 								tiles[j-1][k].setObstacles(2, true);
 								tiles[j][k+1].setObstacles(1, true);
-							} else if(k == MAZE_SIZE-1){
+							} else if(k == Constants.MAZE_SIZE-1){
 								tiles[j-1][k].setObstacles(2, true);
 								tiles[j][k-1].setObstacles(3, true);
 							} else{
@@ -121,7 +112,7 @@ public class Map {
 								tiles[j-1][k].setObstacles(2, true);
 								tiles[j+1][k].setObstacles(0, true);
 								tiles[j][k+1].setObstacles(1, true);
-							} else if(k == MAZE_SIZE-1){
+							} else if(k == Constants.MAZE_SIZE-1){
 								tiles[j-1][k].setObstacles(2, true);
 								tiles[j+1][k].setObstacles(0, true);
 								tiles[j][k-1].setObstacles(3, true);
@@ -148,8 +139,8 @@ public class Map {
 	//prints for each tile in which direction obstacles are located
 	public static void printMapObstacles(Map map){
 		Tiles [][] temp = tiles;
-		for(int i=0; i< MAZE_SIZE; i++){
-			for(int j=0; j< MAZE_SIZE; j++){
+		for(int i=0; i< Constants.MAZE_SIZE; i++){
+			for(int j=0; j< Constants.MAZE_SIZE; j++){
 				for(int k=0; k<4; k++){
 					if(temp[i][j].getObstacles()[k])
 						System.out.print("("+temp[i][j].getTileNumber()+", "+temp[i][j].coordinate(k)+"); ");
@@ -157,9 +148,9 @@ public class Map {
 				System.out.println(" ");
 			}
 		}
-		System.out.println("*******************NEXT***********************");
-		for(int i=0; i< MAZE_SIZE; i++){
-			for(int j=0; j< MAZE_SIZE; j++){
+		
+		for(int i=0; i< Constants.MAZE_SIZE; i++){
+			for(int j=0; j< Constants.MAZE_SIZE; j++){
 				for(int k=0; k<4; k++){
 					if(!temp[i][j].getObstacles()[k])
 						System.out.print("("+temp[i][j].getPositionsArrows(k).getNext().getColumn()+", "+

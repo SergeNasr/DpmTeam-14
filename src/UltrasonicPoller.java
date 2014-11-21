@@ -15,7 +15,7 @@ public class UltrasonicPoller extends Thread{
 	}
 
 	public void run() {
-		driver.setSpeeds(150, 150);
+		driver.setSpeeds(Constants.FIND_BLOCK_SPEED, Constants.FIND_BLOCK_SPEED);
 		while (!cont.blockGrabbed) {
 			if (us.getDistance() < 10) {
 				int distance = us.getDistance();
