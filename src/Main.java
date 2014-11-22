@@ -1,5 +1,3 @@
-import java.util.LinkedList;
-
 import lejos.nxt.Button;
 import lejos.nxt.ColorSensor;
 import lejos.nxt.LCD;
@@ -10,7 +8,8 @@ import lejos.nxt.UltrasonicSensor;
 
 
 public class Main {
-	private static ColorSensor colorSensor = new ColorSensor(SensorPort.S4);
+	private static ColorSensor colorSensorLeft = new ColorSensor(SensorPort.S4);
+	private static ColorSensor colorSensorRight = new ColorSensor(SensorPort.S2);
 	private static final SensorPort usPortOne = SensorPort.S1;
 	private static UltrasonicSensor usSensorFront = new UltrasonicSensor(usPortOne);
 	private static final SensorPort usPortThree = SensorPort.S3;
@@ -29,7 +28,7 @@ public class Main {
 		Odometer odo = new Odometer(InitPos, InitPos, leftMotor, rightMotor);	// TODO modify X and Y for testing
 		OdometryDisplay odometryDisplay = new OdometryDisplay(odo);
 		SquareDriver driver = new SquareDriver(leftMotor, rightMotor);
-		OdometryCorrection odoCor = new OdometryCorrection(odo, colorSensor, driver);
+		OdometryCorrection odoCor = new OdometryCorrection(odo, colorSensorLeft, colorSensorRight, driver);
 		Claw claw = new Claw(clawMotor, usSensorFront, driver);
 		UltrasonicPoller usPoller = new UltrasonicPoller(usSensorFront, claw, driver);
 		
@@ -80,49 +79,51 @@ public class Main {
 			
 			// Odometer and Correction starts
 			odo.start();
-			odometryDisplay.start();
+			//odometryDisplay.start();
+			odoCor.start();
 			
-			// TODO odometry correction
-			//odoCor.start();
+			driver.moveForward(40);
+			driver.rotateClockwise(90);
+			driver.moveForward(40);
 			
-			// go from Tile #2 to Tile #11
-			Tiles start = gg.getGraph().get(5);			// need to modify those values!! And value in Navigation for prevPos
-			Tiles dest =  gg.getGraph().get(12);
-			LinkedList<Tiles> path = gg.bfs(start, dest);
-			
-			// convert path to points
-			Point[] pointPath = new Point[path.size() - 1];
-			for (int i = 0; i < path.size() - 1; i++) {	//removed first element because it is the current tile
-				pointPath[i] = Point.convertTileToPoint(path.get(i + 1));
-			}
-
-			Navigation navigator = new Navigation(driver, pointPath, odo);
-			
-			Thread[] threads = new Thread[2];
-			threads[0] = navigator;
-			threads[1] = usPoller;
-
-			// travel/navigate (in a different thread)
-			// TODO need to pass values of the robots positions
-			navigator.start();
-			
-			try {
-	            navigator.join();
-	        } catch (InterruptedException e) {
-	            System.out.println("Error in thread join");
-	        }
-	         
-			// claw grab and lift
-			usPoller.start();
-
-			try {
-	            navigator.join();
-	        } catch (InterruptedException e) {
-	            System.out.println("Error in thread join");
-	        }
-	         
-			// claw grab and lift
-			usPoller.start();
+//			// go from Tile #2 to Tile #11
+//			Tiles start = gg.getGraph().get(5);			// need to modify those values!! And value in Navigation for prevPos
+//			Tiles dest =  gg.getGraph().get(12);
+//			LinkedList<Tiles> path = gg.bfs(start, dest);
+//			
+//			// convert path to points
+//			Point[] pointPath = new Point[path.size() - 1];
+//			for (int i = 0; i < path.size() - 1; i++) {	//removed first element because it is the current tile
+//				pointPath[i] = Point.convertTileToPoint(path.get(i + 1));
+//			}
+//
+//			Navigation navigator = new Navigation(driver, pointPath, odo);
+//			
+//			Thread[] threads = new Thread[2];
+//			threads[0] = navigator;
+//			threads[1] = usPoller;
+//
+//			// travel/navigate (in a different thread)
+//			// TODO need to pass values of the robots positions
+//			navigator.start();
+//			
+//			try {
+//	            navigator.join();
+//	        } catch (InterruptedException e) {
+//	            System.out.println("Error in thread join");
+//	        }
+//	         
+//			// claw grab and lift
+//			usPoller.start();
+//
+//			try {
+//	            navigator.join();
+//	        } catch (InterruptedException e) {
+//	            System.out.println("Error in thread join");
+//	        }
+//	         
+//			// claw grab and lift
+//			usPoller.start();
 
 		}
 		
