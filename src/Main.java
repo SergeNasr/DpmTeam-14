@@ -11,10 +11,9 @@ public class Main {
 	private static ColorSensor colorSensorLeft = new ColorSensor(SensorPort.S4);
 	private static ColorSensor colorSensorRight = new ColorSensor(SensorPort.S2);
 	private static final SensorPort usPortOne = SensorPort.S1;
-	private static UltrasonicSensor usSensorFront = new UltrasonicSensor(usPortOne);
 	private static final SensorPort usPortThree = SensorPort.S3;
-	private static UltrasonicSensor usSensorBack = new UltrasonicSensor(usPortThree);
-	private static SensorPort usTwo = SensorPort.S3;
+	private static UltrasonicSensor usSensorFront = new UltrasonicSensor(usPortThree);
+	private static UltrasonicSensor usSensorBack = new UltrasonicSensor(usPortOne);
 	private static NXTRegulatedMotor leftMotor = Motor.A;
 	private static NXTRegulatedMotor rightMotor = Motor.C;
 	private static NXTRegulatedMotor clawMotor = Motor.B;
@@ -81,10 +80,6 @@ public class Main {
 			odo.start();
 			//odometryDisplay.start();
 			odoCor.start();
-			
-			driver.moveForward(40);
-			driver.rotateClockwise(90);
-			driver.moveForward(40);
 			
 //			// go from Tile #2 to Tile #11
 //			Tiles start = gg.getGraph().get(5);			// need to modify those values!! And value in Navigation for prevPos

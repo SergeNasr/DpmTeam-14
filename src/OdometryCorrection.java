@@ -48,9 +48,9 @@ public class OdometryCorrection extends Thread {
 				int deltaDistance = distanceDifference(firstTime, secondTime);
 
 				if (deltaDistance > 2) {
-					driver.setSpeeds(Constants.FORWARD_SPEED, 0);
-					driver.moveForward(deltaDistance);
-					driver.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED);
+					driver.setSpeeds(0, 0);
+					//driver.moveForward(deltaDistance);
+					//driver.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED);
 				}
 
 				// reset firstLineSeen
@@ -64,9 +64,10 @@ public class OdometryCorrection extends Thread {
 				int deltaDistance = distanceDifference(firstTime, secondTime);
 
 				if (deltaDistance > 2) {
-					driver.setSpeeds(0, Constants.FORWARD_SPEED);
-					driver.moveForward(deltaDistance);
-					driver.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED);
+//					driver.setSpeeds(0, Constants.FORWARD_SPEED);
+//					driver.moveForward(deltaDistance);
+//					driver.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED);
+					driver.setSpeeds(0, 0);
 				}
 
 				// reset firstLineSeen
