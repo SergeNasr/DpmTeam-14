@@ -5,21 +5,25 @@ import lejos.nxt.Sound;
 import lejos.nxt.UltrasonicSensor;
 
 public class Albert_Algo {
-	private SquareDriver driver;
+	private static SquareDriver driver;
 	private static Tiles[][] mapTiles;
 	private static UltrasonicSensor usSensorFront;
 	private static UltrasonicSensor usSensorBack;
-	private static final double TILEAWAY_0 = 16.0;
-	private static final double TILEAWAY_1 = TILEAWAY_0 + 30.0;
-	private static final double TILEAWAY_2 = TILEAWAY_1 + 30.0;
+	private static final double TILEAWAY_0 = 25;
+	private static final double TILEAWAY_1 = 55;
+	private static final double TILEAWAY_2 = 85;
 	private static LinkedList<Arrow> possibilities = new LinkedList<Arrow>();
 	private static LinkedList<PathNode> currentPath;
+	private static LinkedList<Integer> indexes = new LinkedList<Integer>();
+	
 	static LinkedList<Character> mem = new LinkedList<Character>();
 	// north = 0
 	// west = 1
 	// south = 2
 	// east = 3
-
+	private static Arrow cur;
+	private static int ind;
+	
 	public static int getRowMap(int row){
 		return Constants.MAZE_SIZE - 1 - row;
 	}
@@ -35,12 +39,12 @@ public class Albert_Algo {
 		this.usSensorBack = usSensorBack;
 		this.driver = driver;
 		mapTiles = map.getMap();
-		usSensorFront.off();
-		usSensorBack.off();
+//		usSensorFront.off();
+//		usSensorBack.off();
 		currentPath = new LinkedList<PathNode>();
 	}
 	
-	public String movementType(int rlf){
+	public static String movementType(int rlf){
 		if(rlf == 0){
 			return "forward";
 		} else if(rlf == 1){
@@ -55,7 +59,6 @@ public class Albert_Algo {
 		while (possibilities.size() == 0) {
 			for (int i = 0; i < mapTiles.length; i++) {
 				for (int j = 0; j < mapTiles[i].length; j++) {
-					// System.out.print(counter + " ");
 					for (int k = 0; k < 4; k++) {
 						if (!mapTiles[i][j].getIsObstacle()){
 							possibilities.add(new Arrow(getRowMap(i), j, mapTiles[i][j]
@@ -66,91 +69,125 @@ public class Albert_Algo {
 			}
 			
 			String mvtType = null;
-			int data_front = 0;
-			// always check the back sensor at the very beginning
+			int data_front = numTilesAway(fwd_getFilteredData());
 			int data_back = numTilesAway(back_getFilteredData());
+			
 			currentPath.add(new PathNode("forward",data_back));
-			updatePositionsBack(0);
+			updatePositionsBack();
+			data_front = numTilesAway(fwd_getFilteredData());
+			currentPath.add(new PathNode("forward", data_front));
+			updatePositions(true);
+			if(data_front != 0){
+				driver.moveForward(30);
+			}
+			
 			while (possibilities.size() > 1) {
-				data_front = numTilesAway(fwd_getFilteredData());
-				currentPath.add(new PathNode("forward", data_front));
 				if (data_front == 0 || data_front == 1 || data_front == 2) {
-					if(data_front != 0){
-						driver.moveForward(30);
-					}
-					updatePositions(true);
 					int best_ratio = getBestRatio(false);
+					LCD.drawInt(best_ratio, 0, 0);
 					if(best_ratio == 1){
-						driver.rotateCounter(90);
-					} else if(best_ratio == 3){
 						driver.rotateClockwise(90);
+					} else if (best_ratio == 3){
+						driver.rotateCounter(90);
 					}
+					
 					data_back = numTilesAway(back_getFilteredData());
 					data_front = numTilesAway(fwd_getFilteredData());
 					mvtType = movementType(best_ratio);
+					
 					currentPath.add(new PathNode(mvtType, data_front));
 					updatePositions(true);
-					if (mvtType.equals("turnRight")) {
-						currentPath.add(new PathNode("turnLeft", data_back));
-						updatePositionsBack(1);
-						if(data_front != 0){
-							driver.moveForward(30);
-						}
-					} else if (mvtType.equals("turnLeft")) {
-						currentPath.add(new PathNode("turnRight", data_back));
-						updatePositionsBack(3);
-						if(data_front != 0){
-							driver.moveForward(30);
-						}
+
+					currentPath.add(new PathNode("forward", data_back));
+					updatePositionsBack();
+					
+					currentPath.add(new PathNode("forward",data_front));
+					updatePositions(true);
+					if(data_front != 0){
+						driver.moveForward(30);
 					}
 				} else if (data_front == -1) {
-					driver.moveForward(30);
-					updatePositions(true);
 					int best_ratio = getBestRatio(true);
+					LCD.drawInt(best_ratio, 0, 0);
 					mvtType = movementType(best_ratio);
 					if(best_ratio == 1){
-						driver.rotateCounter(90);
-					} else if(best_ratio == 3){
 						driver.rotateClockwise(90);
+					} else if (best_ratio == 3){
+						driver.rotateCounter(90);
 					}
-					if (mvtType.equals("turnRight")) {
-						data_front = numTilesAway(fwd_getFilteredData());
-						mvtType = movementType(best_ratio);
-						currentPath.add(new PathNode(mvtType, data_front));
+					data_back = numTilesAway(back_getFilteredData());
+					data_front = numTilesAway(fwd_getFilteredData());
+					
+					if(best_ratio == 0){
+						
+						currentPath.add(new PathNode(mvtType,data_back));
+						updatePositionsBack();
+						currentPath.add(new PathNode(mvtType,data_front));
 						updatePositions(true);
-						currentPath.add(new PathNode("turnLeft", data_back));
-						updatePositionsBack(1);
-						if(data_front != 0){
-							driver.moveForward(30);
-						}
-					} else if (mvtType.equals("turnLeft")) {
-						data_front = numTilesAway(fwd_getFilteredData());
-						mvtType = movementType(best_ratio);
-						currentPath.add(new PathNode(mvtType, data_front));
-						updatePositions(true);
-						currentPath.add(new PathNode("turnRight", data_back));
-						updatePositionsBack(3);
-						if(data_front != 0){
-							driver.moveForward(30);
-						}
-					} else if (mvtType.equals("forward")){
 						driver.moveForward(30);
+					} else {
+						
+						currentPath.add(new PathNode(mvtType, data_front));
+						updatePositions(true);
+
+						currentPath.add(new PathNode("forward", data_back));
+						updatePositionsBack();
+						
+						currentPath.add(new PathNode("forward",data_front));
+						updatePositions(true);
+						if(data_front != 0){
+							driver.moveForward(30);
+						}
 					}
 				}
 			}
 		}
-		return new int [] {possibilities.get(0).getPoint(),
-				possibilities.get(0).getColumn(),possibilities.get(0).getRow()};
+		Sound.beep();
+		LCD.drawString(String.valueOf((char)possibilities.get(0).getPoint()), 0, 1);
+		LCD.drawString(String.valueOf(possibilities.get(0).getColumn()), 0, 2);
+		LCD.drawString(String.valueOf(possibilities.get(0).getRow()), 0, 3);
+		
+		return new int [] {possibilities.get(0).getPoint(), possibilities.get(0).getColumn(),possibilities.get(0).getRow()};
 	}
 	
-
-	public static double fwd_getFilteredData() {
+	private static int fwd_getFilteredData() {
+		/*This method filters the result from the ultrasonic sensor. It collects the 5 last measurements
+		 * and does 2 things: first it gets rid of the maximal value. This allows us to discard potential
+		 *  255's read by the sensor. The filter than takes the mean to reduce errors in detection.
+		 * Notice that had we not removed the 255, the mean would be incorrectly large
+		 * */
+		int distance;
+		
+		int [] collected = new int[5];
 		usSensorFront.ping();
-		double fwd_distance = usSensorFront.getDistance();
-		return fwd_distance;
+		
+		for(int i = 0; i < 5 ;i++){
+			collected[i] = usSensorFront.getDistance(); // read 5 values
+		}
+		int max = 0;
+		int indexMax =0;
+		for(int i = 0; i < 5; i++){
+			if(collected[i]>max){ // max loop
+				max  =  collected[i];
+				indexMax = i; // index where max is
+			}
+		}
+		int sum=0;
+		for(int i = 0 ; i < 5 ;  i++){
+			if(indexMax !=i){ // discard  max
+				sum = sum + collected[i]; // take the sum of remaining terms...
+			}
+		}
+		double average = sum/4.0; // ... and average them
+
+		// there will be a delay here
+		distance = (int)average;
+		distance = usSensorFront.getDistance();
+		LCD.drawString("Forward: " + String.valueOf(numTilesAway(distance)), 0, 4);		
+		return distance;
 	}
 
-	private int numTilesAway(double data) {
+	private static int numTilesAway(double data) {
 		if (data < TILEAWAY_0) {
 			return 0;
 		} else if (data < TILEAWAY_1) {
@@ -163,9 +200,38 @@ public class Albert_Algo {
 	}
 
 	public static double back_getFilteredData() {
-		usSensorBack.ping();
-		double back_distance = usSensorBack.getDistance();
-		return back_distance;
+		/*This method filters the result from the ultrasonic sensor. It collects the 5 last measurements
+		 * and does 2 things: first it gets rid of the maximal value. This allows us to discard potential
+		 *  255's read by the sensor. The filter than takes the mean to reduce errors in detection.
+		 * Notice that had we not removed the 255, the mean would be incorrectly large
+		 * */
+		int distance;
+		int [] collected = new int[5];
+
+		for(int i = 0; i < 5 ;i++){
+			collected[i] = usSensorBack.getDistance(); // read 5 values
+		}
+		int max = 0;
+		int indexMax =0;
+		for(int i = 0; i < 5; i++){
+			if(collected[i]>max){ // max loop
+				max  =  collected[i];
+				indexMax = i; // index where max is
+			}
+		}
+		int sum=0;
+		for(int i = 0 ; i < 5 ;  i++){
+			if(indexMax !=i){ // discard  max
+				sum = sum + collected[i]; // take the sum of remaining terms...
+			}
+		}
+		double average = sum/4.0; // ... and average them
+
+		// there will be a delay here
+		distance = (int)average;
+		distance = usSensorBack.getDistance();
+		LCD.drawString("Back: " + String.valueOf(numTilesAway(distance)), 0, 5);
+		return distance;
 	}
 
 	public static double calculateRelativeTurn() {
@@ -193,11 +259,6 @@ public class Albert_Algo {
 			ratio_right = Math.abs(((double)poss_right / pool) - 0.5);
 			ratio_fwd = Math.abs(((double)poss_fwd / pool) - 0.5);
 			
-			System.out.print(ratio_left + " ");
-			System.out.print(ratio_right + " ");
-			System.out.print(ratio_fwd + " ");
-			
-			
 			if (canGoForward) {
 				double min = Math.min(ratio_fwd, Math.min(ratio_left, ratio_right));
 				if (min == ratio_left) {
@@ -218,104 +279,130 @@ public class Albert_Algo {
 		return -1;
 	}
 	
-	public static int updateTemp(int rlf, int index){
+	public static int updateTemp(int rlf, int index) {
 		int count = 0;
 		Arrow next = possibilities.get(index).getNext();
 		int row = possibilities.get(index).getRow();
-		int rowFormapTiles = getRowMap(row);
+		int rowForMap = getRowMap(row);
 		int col = possibilities.get(index).getColumn();
 		char orientation = next.getPoint();
 		if (orientation == 'n') {
 			if (rlf == 0) {
-				if (rowFormapTiles - 3 < 0) count ++;
-				else if (mapTiles[rowFormapTiles- 3][col].getIsObstacle()) count ++;
-			} else if (rlf == 1){
-				if(col - 1 < 0 )count++;
-				else if(mapTiles[rowFormapTiles][col-1].getIsObstacle()) count ++;
+				if (rowForMap - 3 < 0)
+					count++;
+				else if (mapTiles[rowForMap - 3][col].getIsObstacle())
+					count++;
+			} else if (rlf == 1) {
+				if (col - 1 < 0)
+					count++;
+				else if (mapTiles[rowForMap][col - 1].getIsObstacle())
+					count++;
 			} else if (rlf == 3) {
-				if(col + 1 >= Constants.MAZE_SIZE) count++;
-				else if(mapTiles[rowFormapTiles][col+1].getIsObstacle()) count ++;
+				if (col + 1 >= Constants.MAZE_SIZE)
+					count++;
+				else if (mapTiles[rowForMap][col + 1].getIsObstacle())
+					count++;
 			}
 		} else if (orientation == 'w') {
 			if (rlf == 0) {
-				if(col - 3 < 0)	count++;
-				else if(mapTiles[rowFormapTiles][col-3].getIsObstacle()) count ++;
+				if (col - 3 < 0)
+					count++;
+				else if (mapTiles[rowForMap][col - 3].getIsObstacle())
+					count++;
 			} else if (rlf == 3) {
-				if(rowFormapTiles - 1 < 0) count++;
-				else if(mapTiles[rowFormapTiles-1][col].getIsObstacle()) count ++;
-			} else if (rlf == 1){
-				if(rowFormapTiles + 1 >= Constants.MAZE_SIZE) count++;
-				else if(mapTiles[rowFormapTiles+1][col].getIsObstacle()) count ++;
+				if (rowForMap - 1 < 0)
+					count++;
+				else if (mapTiles[rowForMap - 1][col].getIsObstacle())
+					count++;
+			} else if (rlf == 1) {
+				if (rowForMap + 1 >= Constants.MAZE_SIZE)
+					count++;
+				else if (mapTiles[rowForMap + 1][col].getIsObstacle())
+					count++;
 			}
 		} else if (orientation == 's') {
-			if (rlf == 0){
-				if(rowFormapTiles + 3 >= Constants.MAZE_SIZE) count++;
-				else if(mapTiles[rowFormapTiles+3][col].getIsObstacle()) count ++;
+			if (rlf == 0) {
+				if (rowForMap + 3 >= Constants.MAZE_SIZE)
+					count++;
+				else if (mapTiles[rowForMap + 3][col].getIsObstacle())
+					count++;
 			} else if (rlf == 3) {
-				if(col - 1 < 0) count++;
-				else if(mapTiles[rowFormapTiles][col-1].getIsObstacle()) count ++;
+				if (col - 1 < 0)
+					count++;
+				else if (mapTiles[rowForMap][col - 1].getIsObstacle())
+					count++;
 			} else if (rlf == 1) {
-				if(col + 1 >= Constants.MAZE_SIZE) count++;
-				else if(mapTiles[rowFormapTiles][col+1].getIsObstacle()) count ++;
+				if (col + 1 >= Constants.MAZE_SIZE)
+					count++;
+				else if (mapTiles[rowForMap][col + 1].getIsObstacle())
+					count++;
 			}
 		} else if (orientation == 'e') {
 			if (rlf == 0) {
-				if(col + 3 >= Constants.MAZE_SIZE) count++;
-				else if(mapTiles[rowFormapTiles][col+3].getIsObstacle()) count ++;
+				if (col + 3 >= Constants.MAZE_SIZE)
+					count++;
+				else if (mapTiles[rowForMap][col + 3].getIsObstacle())
+					count++;
 			} else if (rlf == 3) {
-				if(rowFormapTiles + 1 >= Constants.MAZE_SIZE) count ++;
-				else if(mapTiles[rowFormapTiles+1][col].getIsObstacle()) count++;
+				if (rowForMap + 1 >= Constants.MAZE_SIZE)
+					count++;
+				else if (mapTiles[rowForMap + 1][col].getIsObstacle())
+					count++;
 			} else if (rlf == 1) {
-				if(rowFormapTiles - 1 < 0) count++;
-				else if(mapTiles[rowFormapTiles-1][col].getIsObstacle()) count ++;
+				if (rowForMap - 1 < 0)
+					count++;
+				else if (mapTiles[rowForMap - 1][col].getIsObstacle())
+					count++;
 			}
 		}
 		return count;
 	}
-	public static int getPositionToRemove(Arrow pos, int index, boolean fromFrontSensor){
-		
+	
+	public static int getPositionToRemove(Arrow pos, int index,
+			boolean fromFrontSensor) {
+
 		PathNode mvt = currentPath.get(currentPath.size() - 1);
 		Arrow next = possibilities.get(index).getNext();
 		int row = next.getRow();
 		int col = next.getColumn();
-		int rowFormapTiles = getRowMap(row);
-		
-		switch(getMovement(mvt.getMvt(), next.getPoint())){
+		int rowForMap = getRowMap(row);
+
+		switch (getMovement(mvt.getMvt(), next.getPoint())) {
 		case 0:
 			if (mvt.getNodeTilesAway() == 0) {
-				if (!mapTiles[rowFormapTiles][col].isNorth())
+				if (!mapTiles[rowForMap][col].isNorth())
 					return index;
 			} else if (mvt.getNodeTilesAway() == 1) {
-				if (mapTiles[rowFormapTiles][col].isNorth())
+				if (mapTiles[rowForMap][col].isNorth())
 					return index;
-				if (rowFormapTiles - 1 > -1) {
-					if (!mapTiles[rowFormapTiles - 1][col].isNorth())
+				if (rowForMap - 1 > -1) {
+					if (!mapTiles[rowForMap - 1][col].isNorth())
 						return index;
 				} else
 					return index;
 			} else if (mvt.getNodeTilesAway() == 2) {
-				if (mapTiles[rowFormapTiles][col].isNorth())
+				if (mapTiles[rowForMap][col].isNorth())
 					return index;
-				if (rowFormapTiles - 1 > -1) {
-					if (mapTiles[rowFormapTiles - 1][col].isNorth())
+				if (rowForMap - 1 > -1) {
+					if (mapTiles[rowForMap - 1][col].isNorth())
 						return index;
 				} else
 					return index;
-				if (rowFormapTiles - 2 > -1) {
-					if (!mapTiles[rowFormapTiles - 2][col].isNorth())
+				if (rowForMap - 2 > -1) {
+					if (!mapTiles[rowForMap - 2][col].isNorth())
 						return index;
 				} else
 					return index;
 			} else {
-				if (mapTiles[rowFormapTiles][col].isNorth())
+				if (mapTiles[rowForMap][col].isNorth())
 					return index;
-				if (rowFormapTiles - 1 > -1) {
-					if (mapTiles[rowFormapTiles - 1][col].isNorth())
+				if (rowForMap - 1 > -1) {
+					if (mapTiles[rowForMap - 1][col].isNorth())
 						return index;
 				} else
 					return index;
-				if (rowFormapTiles - 2 > -1) {
-					if (mapTiles[rowFormapTiles - 2][col].isNorth())
+				if (rowForMap - 2 > -1) {
+					if (mapTiles[rowForMap - 2][col].isNorth())
 						return index;
 				} else
 					return index;
@@ -323,40 +410,40 @@ public class Albert_Algo {
 			break;
 		case 1:
 			if (mvt.getNodeTilesAway() == 0) {
-				if (!mapTiles[rowFormapTiles][col].isWest())
+				if (!mapTiles[rowForMap][col].isWest())
 					return index;
 			} else if (mvt.getNodeTilesAway() == 1) {
-				if (mapTiles[rowFormapTiles][col].isWest())
+				if (mapTiles[rowForMap][col].isWest())
 					return index;
 				if (col - 1 > -1) {
-					if (!mapTiles[rowFormapTiles][col - 1].isWest())
+					if (!mapTiles[rowForMap][col - 1].isWest())
 						return index;
 				} else
 					return index;
 			} else if (mvt.getNodeTilesAway() == 2) {
-				if (mapTiles[rowFormapTiles][col].isWest())
+				if (mapTiles[rowForMap][col].isWest())
 					return index;
-				if (col - 1 > - 1) {
-					if (mapTiles[rowFormapTiles][col - 1].isWest())
+				if (col - 1 > -1) {
+					if (mapTiles[rowForMap][col - 1].isWest())
 						return index;
 				} else
 					return index;
 				if (col - 2 > -1) {
-					if (!mapTiles[rowFormapTiles][col - 2].isWest()){
+					if (!mapTiles[rowForMap][col - 2].isWest()) {
 						return index;
 					}
 				} else
 					return index;
 			} else {
-				if (mapTiles[rowFormapTiles][col].isWest())
+				if (mapTiles[rowForMap][col].isWest())
 					return index;
 				if (col - 1 > -1) {
-					if (mapTiles[rowFormapTiles][col - 1].isWest())
+					if (mapTiles[rowForMap][col - 1].isWest())
 						return index;
 				} else
 					return index;
 				if (col - 2 > -1) {
-					if (mapTiles[rowFormapTiles][col - 2].isWest())
+					if (mapTiles[rowForMap][col - 2].isWest())
 						return index;
 				} else
 					return index;
@@ -364,45 +451,45 @@ public class Albert_Algo {
 			break;
 		case 2:
 			if (mvt.getNodeTilesAway() == 0) {
-				if (!mapTiles[rowFormapTiles][col].isSouth())
+				if (!mapTiles[rowForMap][col].isSouth())
 					return index;
 			} else if (mvt.getNodeTilesAway() == 1) {
-				if (mapTiles[rowFormapTiles][col].isSouth())
+				if (mapTiles[rowForMap][col].isSouth())
 					return index;
-				if (rowFormapTiles + 1 < Constants.MAZE_SIZE) {
-					if (!mapTiles[rowFormapTiles + 1][col].isSouth())
+				if (rowForMap + 1 < Constants.MAZE_SIZE) {
+					if (!mapTiles[rowForMap + 1][col].isSouth())
 						return index;
 				} else
 					return index;
 			} else if (mvt.getNodeTilesAway() == 2) {
-				if (mapTiles[rowFormapTiles][col].isSouth()){
+				if (mapTiles[rowForMap][col].isSouth()) {
 					return index;
 				}
-				if (rowFormapTiles + 1 < Constants.MAZE_SIZE) {
-					if (mapTiles[rowFormapTiles + 1][col].isSouth()){
+				if (rowForMap + 1 < Constants.MAZE_SIZE) {
+					if (mapTiles[rowForMap + 1][col].isSouth()) {
 						return index;
 					}
-				} else{
+				} else {
 					return index;
 				}
-				if (rowFormapTiles + 2 < Constants.MAZE_SIZE) {
-					if (!mapTiles[rowFormapTiles + 2][col].isSouth()){
+				if (rowForMap + 2 < Constants.MAZE_SIZE) {
+					if (!mapTiles[rowForMap + 2][col].isSouth()) {
 						return index;
 					}
-					
+
 				} else {
 					return index;
 				}
 			} else {
-				if (mapTiles[rowFormapTiles][col].isNorth())
+				if (mapTiles[rowForMap][col].isSouth())
 					return index;
-				if (rowFormapTiles + 1 < Constants.MAZE_SIZE) {
-					if (mapTiles[rowFormapTiles + 1][col].isSouth())
+				if (rowForMap + 1 < Constants.MAZE_SIZE) {
+					if (mapTiles[rowForMap + 1][col].isSouth())
 						return index;
 				} else
 					return index;
-				if (rowFormapTiles + 2 < Constants.MAZE_SIZE) {
-					if (mapTiles[rowFormapTiles + 2][col].isSouth())
+				if (rowForMap + 2 < Constants.MAZE_SIZE) {
+					if (mapTiles[rowForMap + 2][col].isSouth())
 						return index;
 				} else
 					return index;
@@ -410,58 +497,59 @@ public class Albert_Algo {
 			break;
 		case 3:
 			if (mvt.getNodeTilesAway() == 0) {
-				if (!mapTiles[rowFormapTiles][col].isEast()){
+				if (!mapTiles[rowForMap][col].isEast()) {
 					return index;
 				}
 			} else if (mvt.getNodeTilesAway() == 1) {
-				if (mapTiles[rowFormapTiles][col].isEast()){
+				if (mapTiles[rowForMap][col].isEast()) {
 					return index;
 				}
 				if (col + 1 < Constants.MAZE_SIZE) {
-					if (!mapTiles[rowFormapTiles][col + 1].isEast()){
+					if (!mapTiles[rowForMap][col + 1].isEast()) {
 						return index;
 					}
 				} else
 					return index;
 			} else if (mvt.getNodeTilesAway() == 2) {
-				if (mapTiles[rowFormapTiles][col].isEast()){
+				if (mapTiles[rowForMap][col].isEast()) {
 					return index;
 				}
 				if (col + 1 < Constants.MAZE_SIZE) {
-					if (mapTiles[rowFormapTiles][col + 1].isEast()){
+					if (mapTiles[rowForMap][col + 1].isEast()) {
 						return index;
 					}
 				} else {
 					return index;
 				}
 				if (col + 2 < Constants.MAZE_SIZE) {
-					if (!mapTiles[rowFormapTiles][col + 2].isEast()){
+					if (!mapTiles[rowForMap][col + 2].isEast()) {
 						return index;
 					}
-				} else{
+				} else {
 					return index;
 				}
 			} else {
-				if (mapTiles[rowFormapTiles][col].isEast())
+				if (mapTiles[rowForMap][col].isEast())
 					return index;
 				if (col + 1 < Constants.MAZE_SIZE) {
-					if (mapTiles[rowFormapTiles][col + 1].isEast())
+					if (mapTiles[rowForMap][col + 1].isEast())
 						return index;
 				} else
 					return index;
 				if (col + 2 < Constants.MAZE_SIZE) {
-					if (mapTiles[rowFormapTiles][col + 2].isEast())
+					if (mapTiles[rowForMap][col + 2].isEast())
 						return index;
 				} else
 					return index;
 			}
 			break;
-		default: return -2;
+		default:
+			return -2;
 		}
-		if(mvt.getMvt().equals("forward") && !(mvt.getNodeTilesAway() == 0)){
-			
+		if (mvt.getMvt().equals("forward") && !(mvt.getNodeTilesAway() == 0)) {
+
 			char orientation = next.getPoint();
-			if(fromFrontSensor){
+			if (fromFrontSensor) {
 				if (orientation == 'n') {
 					possibilities.get(index).setRow(row + 1);
 				} else if (orientation == 'w') {
@@ -474,60 +562,45 @@ public class Albert_Algo {
 			}
 			possibilities.get(index).setPoint(next.getPoint());
 		} else {
-			possibilities.get(index).setPoint(translate(getMovement(mvt.getMvt(),next.getPoint())));
+			
+			possibilities.get(index).setPoint(translate(getMovement(mvt.getMvt(), next.getPoint())));
 		}
 		return -1;
-		
+
 	}
 
-	public static void updatePositions(boolean fromFrontSensor) {
-		Arrow cur;
-		LinkedList<Integer> itemsToRemove = new LinkedList<Integer>();
-		int ind;
-		for (int i = 0; i < possibilities.size(); i++) {
-			cur = possibilities.get(i);
-			ind = getPositionToRemove(cur, i,fromFrontSensor);
-			if (ind != -1) {
-				itemsToRemove.add(ind);
-			}
-		}
-		int error = 0;
-		for (Integer j : itemsToRemove) { 
-			if(!fromFrontSensor) {
-				possibilities.get(j-error).setPoint((mem.get(j-error)));
-				possibilities.get(j-error).getNext().setPoint((mem.get(j-error)));
-			}
-			possibilities.remove(j - error);
-			error++;
-		}
-		mem.clear();
-	}
-	
-	// This method is called with the type of turn the back sensor should do
-	public static void updatePositionsBack(int rlf){
-		mem = new LinkedList<Character>();
+	public static void updatePositionsBack(){
 		for(int i = 0; i < possibilities.size();i++){
 			char c = possibilities.get(i).getPoint();
 			mem.add(c);
-			if(rlf == 1){
-				possibilities.get(i).setPoint(translate(getMovement("turnLeft",c)));
-			} else if(rlf == 3){
-				possibilities.get(i).setPoint(translate(getMovement("turnRight",c)));
-			} else if(rlf == 0){
-				possibilities.get(i).setPoint(inverseDirection(c));
-			} else {
-				System.out.println("Problem in updating positions in the back");
-			}
+			possibilities.get(i).setPoint(inverseDirection(c));
 			
 		}
 		updatePositions(false);
 		currentPath.remove(currentPath.size() - 1);
 		for(int i = 0; i < possibilities.size(); i++){
-			//System.out.println("Hello " + possibilities.get(i).getNext().getPoint() + " " + possibilities.get(i).getPoint());
 			possibilities.get(i).setPoint(inverseDirection(possibilities.get(i).getPoint()));
-			//System.out.println("Bye " + possibilities.get(i).getNext().getPoint() + " " + possibilities.get(i).getPoint());
-			
 		}
+	}	
+	
+	public static void updatePositions(boolean fromFrontSensor) {
+		
+		for (int i = 0; i < possibilities.size(); i++) {
+			cur = possibilities.get(i);
+			ind = getPositionToRemove(cur, i, fromFrontSensor);
+			
+			if (ind != -1) {
+				indexes.add(ind);
+			}
+		}
+		int error = 0;
+		
+		for(int j = 0; j < indexes.size(); j++){
+			possibilities.remove(indexes.get(j) - error);
+			error++;
+		}
+		indexes.clear();
+		mem.clear();
 	}
 	
 	public static char inverseDirection(char c){
