@@ -32,46 +32,60 @@ public class OdometryCorrection extends Thread {
 		long firstTime = 0;
 		long secondTime = 0;
 		boolean firstLineSeen = false;
+		boolean correctingLeft = false;
+		boolean correctingRight = false;
 
 		while (true) {
 			leftValue = colorSensorLeft.getLightValue();
 			rightValue = colorSensorRight.getLightValue();
-			
-			if ((leftValue < LIGHT_THRESHOLD || rightValue < LIGHT_THRESHOLD) && !firstLineSeen) {
+
+			if (leftValue < LIGHT_THRESHOLD && !firstLineSeen && !correctingLeft) {
 				firstTime = System.currentTimeMillis() / 1000;
 				firstLineSeen = true;
-				Sound.beep();
-			} else if (leftValue < LIGHT_THRESHOLD && firstLineSeen) {
-				// left wheel is trailing
-				Sound.beep();
+				correctingLeft = true;
+				
+			} else if (rightValue < LIGHT_THRESHOLD && !firstLineSeen && !correctingRight) {
+				firstTime = System.currentTimeMillis() / 1000;
+				firstLineSeen = true;
+				correctingRight = true;
+				
+			} else if (leftValue < LIGHT_THRESHOLD && firstLineSeen && correctingRight) {
 				secondTime = System.currentTimeMillis() / 1000;
 				int deltaDistance = distanceDifference(firstTime, secondTime);
+				
+				driver.setSpeeds(2 * Constants.FORWARD_SPEED, Constants.FORWARD_SPEED);
+				try {
+					Thread.sleep(deltaDistance / (2 * Constants.FORWARD_SPEED));
+				} catch (InterruptedException e) {}
+				
+				driver.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED);
+				
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {}
 
-				if (deltaDistance > 2) {
-					driver.setSpeeds(0, 0);
-					//driver.moveForward(deltaDistance);
-					//driver.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED);
-				}
-
-				// reset firstLineSeen
 				firstLineSeen = false;
-
-			}
-			else if (rightValue < LIGHT_THRESHOLD && firstLineSeen) {
-				// right wheel is trailing
-				Sound.beep();
+				correctingRight = false;
+				
+			} else if (rightValue < LIGHT_THRESHOLD && firstLineSeen && correctingLeft) {
 				secondTime = System.currentTimeMillis() / 1000;
 				int deltaDistance = distanceDifference(firstTime, secondTime);
+				
+				driver.setSpeeds(Constants.FORWARD_SPEED, 2 * Constants.FORWARD_SPEED);
+				
+				try {
+					Thread.sleep(deltaDistance / (2 * Constants.FORWARD_SPEED));
+				} catch (InterruptedException e) {}
+				
+				driver.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED);
+				
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {}
 
-				if (deltaDistance > 2) {
-//					driver.setSpeeds(0, Constants.FORWARD_SPEED);
-//					driver.moveForward(deltaDistance);
-//					driver.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED);
-					driver.setSpeeds(0, 0);
-				}
-
-				// reset firstLineSeen
 				firstLineSeen = false;
+				correctingRight = false;
+				
 			}
 		}
 	}
