@@ -97,16 +97,4 @@ public class OdometryCorrection extends Thread {
 
 		return deltaDistance;
 	}
-
-	//checks whether theta is almost equal to currentAngle
-	public boolean checkTheta(double theta, double currentAngle){
-		return Math.abs(theta - currentAngle) < (Math.PI / 4);
-	}
-
-	//checks if distance traveled is almost equal to 30 cm 
-	public boolean checkDistTraveled(double prev, double cur){
-		double dist = Math.abs(cur - prev);
-		if (dist > 29 && dist < 31) return true;
-		return false;
-	}
 }

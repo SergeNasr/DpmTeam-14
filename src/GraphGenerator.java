@@ -99,4 +99,13 @@ public class GraphGenerator {
 			System.out.println(f.getTileNumber());
 		}
 	}
+	
+	public int findTileId(double row, double col) {
+		for (int i = 0; i < graph.size(); i++) {
+			if (graph.get(i).getRow() == row && graph.get(i).getCol() == col) {
+				return i;
+			}
+		}
+		return -1; // error
+	}
 }

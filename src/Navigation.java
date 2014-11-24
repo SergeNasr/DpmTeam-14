@@ -3,7 +3,7 @@ public class Navigation extends Thread {
 	private SquareDriver driver;
 	private double prevPosX; 
 	private double prevPosY; 
-	private double currentTheta = Math.PI/2;
+	private double currentTheta = 3 * Math.PI/2;
 	private Odometer odo;
 	private Point [] points;
 
