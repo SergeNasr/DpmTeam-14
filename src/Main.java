@@ -40,7 +40,7 @@ public class Main {
 		int [] map3 ={1,5,11,12,16,22,28,31,32,35,36,44,61,62,64};
 
 		// TODO create map depending on test
-		Map map = new Map(mapTest);
+		Map map = new Map(map1);
 
 		do {
 			// clear the display
@@ -71,8 +71,7 @@ public class Main {
 
 			// orienteering
 			Albert_Algo albert = new Albert_Algo(map, driver, usSensorFront, usSensorBack);
-			//albert.test();
-			//albert.algorithm();
+			int [] data = albert.localize();
 
 			// TODO convert row, col and poiting direction and then set odometer X and Y
 			odo.setX(45);
@@ -80,8 +79,8 @@ public class Main {
 			odo.setAngle(Math.PI / 2);
 
 			// create graph and path
-			GraphGenerator gg = new GraphGenerator(map);
-			gg.createGraph();
+//			GraphGenerator gg = new GraphGenerator(map);
+//			gg.createGraph();
 
 			// Odometer and Correction starts
 			//odo.start();
@@ -90,18 +89,18 @@ public class Main {
 
 			// go from Tile #10 to Tile #4
 			// TODO use gg.findTileId(row, col)
-			int st = gg.findTileId(2, 1);
-			int de = gg.findTileId(0, 3);
-			
-			Tiles start = gg.getGraph().get(st);			// need to modify those values!! And value in Navigation for prevPos
-			Tiles dest =  gg.getGraph().get(de);
-			LinkedList<Tiles> path = gg.bfs(start, dest);
-
-			// convert path to points
-			Point[] pointPath = new Point[path.size() - 1];
-			for (int i = 0; i < path.size() - 1; i++) {	//removed first element because it is the current tile
-				pointPath[i] = Point.convertTileToPoint(path.get(i + 1));
-			}
+//			int st = gg.findTileId(2, 1);
+//			int de = gg.findTileId(0, 3);
+//			
+//			Tiles start = gg.getGraph().get(st);			// need to modify those values!! And value in Navigation for prevPos
+//			Tiles dest =  gg.getGraph().get(de);
+//			LinkedList<Tiles> path = gg.bfs(start, dest);
+//
+//			// convert path to points
+//			Point[] pointPath = new Point[path.size() - 1];
+//			for (int i = 0; i < path.size() - 1; i++) {	//removed first element because it is the current tile
+//				pointPath[i] = Point.convertTileToPoint(path.get(i + 1));
+//			}
 //
 //			Navigation navigator = new Navigation(driver, pointPath, odo);
 //			//			
