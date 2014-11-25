@@ -3,7 +3,11 @@ import java.util.LinkedList;
 import lejos.nxt.LCD;
 import lejos.nxt.Sound;
 import lejos.nxt.UltrasonicSensor;
-
+/**
+ * 
+ * @author Eduardo Coronado-Montoya
+ *
+ */
 public class Albert_Algo {
 	private static SquareDriver driver;
 	private static Tiles[][] mapTiles;
@@ -15,8 +19,6 @@ public class Albert_Algo {
 	private static LinkedList<Arrow> possibilities = new LinkedList<Arrow>();
 	private static LinkedList<PathNode> currentPath;
 	private static LinkedList<Integer> indexes = new LinkedList<Integer>();
-	
-	static LinkedList<Character> mem = new LinkedList<Character>();
 	// north = 0
 	// west = 1
 	// south = 2
@@ -24,14 +26,21 @@ public class Albert_Algo {
 	private static Arrow cur;
 	private static int ind;
 	
+	/**
+	 * 
+	 * @param row The row as seen from the origin
+	 * @return The row for a 2D array
+	 */
 	public static int getRowMap(int row){
 		return Constants.MAZE_SIZE - 1 - row;
 	}
 	
 	/**
 	 * 
-	 * @param blocks_tilenumber
-	 * 
+	 * @param map The map it will localize on
+	 * @param driver The driver that will allow it to move
+	 * @param usSensorFront The front Ultrasonic sensor
+	 * @param usSensorBack The back Ultrasonic sensor
 	 */
 	public Albert_Algo(Map map, SquareDriver driver, UltrasonicSensor usSensorFront, UltrasonicSensor usSensorBack) {
 
@@ -39,11 +48,14 @@ public class Albert_Algo {
 		this.usSensorBack = usSensorBack;
 		this.driver = driver;
 		mapTiles = map.getMap();
-//		usSensorFront.off();
-//		usSensorBack.off();
 		currentPath = new LinkedList<PathNode>();
 	}
 	
+	/**
+	 * 
+	 * @param rlf The number representing forward(0), left(1), or right(3)
+	 * @return The string value of the number
+	 */
 	public static String movementType(int rlf){
 		if(rlf == 0){
 			return "forward";
@@ -54,7 +66,10 @@ public class Albert_Algo {
 		} else return null;
 		
 	}
-
+	/**
+	 * 
+	 * @return The int array containing the heading, the column and the row of the robot
+	 */
 	public int[] localize(){
 		while (possibilities.size() == 0) {
 			for (int i = 0; i < mapTiles.length; i++) {
@@ -149,7 +164,10 @@ public class Albert_Algo {
 		
 		return new int [] {possibilities.get(0).getPoint(), possibilities.get(0).getColumn(),possibilities.get(0).getRow()};
 	}
-	
+	/**
+	 * 
+	 * @return The average of 5 readings. Removes values that are false negatives form the calculation.
+	 */
 	private static int fwd_getFilteredData() {
 		/*This method filters the result from the ultrasonic sensor. It collects the 5 last measurements
 		 * and does 2 things: first it gets rid of the maximal value. This allows us to discard potential
@@ -186,7 +204,11 @@ public class Albert_Algo {
 		LCD.drawString("Forward: " + String.valueOf(numTilesAway(distance)), 0, 4);		
 		return distance;
 	}
-
+	/**
+	 * 
+	 * @param data The reading from the Ultrasonic sensor
+	 * @return Separates data into 0, 1, 2 tiles away. If it doens't see a wall, method will return -1.
+	 */
 	private static int numTilesAway(double data) {
 		if (data < TILEAWAY_0) {
 			return 0;
@@ -198,13 +220,13 @@ public class Albert_Algo {
 			return -1;
 		}
 	}
-
+	
+	/**
+	 * 
+	 * @return The average of 5 readings. Removes values that are false negatives form the calculation.
+	 */
 	public static double back_getFilteredData() {
-		/*This method filters the result from the ultrasonic sensor. It collects the 5 last measurements
-		 * and does 2 things: first it gets rid of the maximal value. This allows us to discard potential
-		 *  255's read by the sensor. The filter than takes the mean to reduce errors in detection.
-		 * Notice that had we not removed the 255, the mean would be incorrectly large
-		 * */
+		
 		int distance;
 		int [] collected = new int[5];
 
@@ -233,10 +255,11 @@ public class Albert_Algo {
 		LCD.drawString("Back: " + String.valueOf(numTilesAway(distance)), 0, 5);
 		return distance;
 	}
-
-	public static double calculateRelativeTurn() {
-		return 0.0;
-	}
+	/**
+	 * 
+	 * @param canGoForward If the robot sees infinity, then the robot can still go forward
+	 * @return A number that is either 0, 1 or 3. This method calculates if it is better to go forward left or right.
+	 */
 	
 	public static int getBestRatio(boolean canGoForward){
 		if (possibilities.size() > 1) {
@@ -278,7 +301,12 @@ public class Albert_Algo {
 		}
 		return -1;
 	}
-	
+	/**
+	 * 
+	 * @param rlf An integer representing right, left, or forward.
+	 * @param index An index to a possibility.
+	 * @return 1 if the possibility crashed for the given direction rlf at the index given. 0 if it didn't crash.
+	 */
 	public static int updateTemp(int rlf, int index) {
 		int count = 0;
 		Arrow next = possibilities.get(index).getNext();
@@ -357,7 +385,13 @@ public class Albert_Algo {
 		}
 		return count;
 	}
-	
+	/**
+	 * 
+	 * @param pos The direction at which the possibility is pointing.
+	 * @param index The index of the list of possibilities.
+	 * @param fromFrontSensor The boolean that checks if it is called from the front sensor or back.
+	 * @return The index to remove if it crashed for the given data. -1 if it still a valid possibility.
+	 */
 	public static int getPositionToRemove(Arrow pos, int index,
 			boolean fromFrontSensor) {
 
@@ -568,11 +602,12 @@ public class Albert_Algo {
 		return -1;
 
 	}
-
+	/**
+	 * treats the cases for the back sensor
+	 */
 	public static void updatePositionsBack(){
 		for(int i = 0; i < possibilities.size();i++){
 			char c = possibilities.get(i).getPoint();
-			mem.add(c);
 			possibilities.get(i).setPoint(inverseDirection(c));
 			
 		}
@@ -582,7 +617,10 @@ public class Albert_Algo {
 			possibilities.get(i).setPoint(inverseDirection(possibilities.get(i).getPoint()));
 		}
 	}	
-	
+	/**
+	 * This method removes all the possibilities if the method getPositionToRemove tells it to do so.
+	 * @param fromFrontSensor Boolean taking care of the cases where it comes from the front sensor and when it doesn't.
+	 */
 	public static void updatePositions(boolean fromFrontSensor) {
 		
 		for (int i = 0; i < possibilities.size(); i++) {
@@ -600,7 +638,6 @@ public class Albert_Algo {
 			error++;
 		}
 		indexes.clear();
-		mem.clear();
 	}
 	
 	public static char inverseDirection(char c){
