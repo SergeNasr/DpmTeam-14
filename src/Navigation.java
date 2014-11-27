@@ -9,43 +9,47 @@ public class Navigation extends Thread {
 	private Odometer odo;
 	private Point [] points;
 
-	public Navigation(SquareDriver driver, Point [] destinations, Odometer odometer){
+	public Navigation(SquareDriver driver, Point [] destinations, Odometer odometer, double currentTheta){
 		// TODO change values of prevPosX and prevPosY after orienteering
 		this.prevPosX = odometer.getX();
 		this.prevPosY = odometer.getY();
-		this.currentTheta = odometer.getAngle();
+		this.currentTheta = currentTheta;
 		this.driver = driver;
 		this.points = destinations;
 		this.odo = odometer;
 	}
 
 	public void run(){
-		for(int i = 0; i < points.length; i++){
+		prevPosX = points[0].getX();
+		prevPosY = points[0].getY();
+		
+		for(int i = 1; i < points.length; i++){
 			// Set rotating speeds to motors to anticipate a rotation
 			driver.setSpeeds(Constants.ROTATE_SPEED, Constants.ROTATE_SPEED);
 
 			// Turn from current position to desired position
 			double newTheta = direction(points[i]);
 			double theta = currentTheta - newTheta;
+			System.out.println((int)currentTheta + " " + (int)newTheta);
+			currentTheta = newTheta;
+			
 			if (theta > 0) {
-				if (theta == (3 * Math.PI / 2)){
+				if (theta == 270){
 					driver.rotateClockwise(90);
 				}
 				else { 
-					driver.rotateCounter((theta * 180) / Math.PI);
+					driver.rotateCounter(theta);
 				}
 			}
 			else if (theta < 0) {
 				theta = -theta;
-				if (theta == (3 * Math.PI / 2)) {
+				if (theta == 270) {
 					driver.rotateCounter(90);
 				}
 				else {
-					driver.rotateClockwise((theta * 180) / Math.PI);
+					driver.rotateClockwise(theta);
 				}
 			}
-			
-			currentTheta = newTheta;
 
 			// Go towards that position
 			driver.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED);
@@ -63,18 +67,20 @@ public class Navigation extends Thread {
 		prevPosY = point.getY();
 
 		double direction = 0.0;
-
-		if(dx == 0 && dy > 0) {
-			direction = (Math.PI / 2);
+		if(Math.abs(dx) < 5 && dy > 0) {
+			direction = 90;
 		}
-		else if(dx == 0 && dy < 0) {
-			direction = (3 * Math.PI / 2);
+		else if(Math.abs(dx) < 5 && dy < 0) {
+			direction = 270;
 		}
-		else if(dx > 0 && dy == 0) {
+		else if(dx > 0 && Math.abs(dy) < 5) {
 			direction = 0;
 		}
-		else if(dx < 0 && dy == 0) {
-			direction = Math.PI;
+		else if(dx < 0 && Math.abs(dy) < 5) {
+			direction = 180;
+		}
+		else {
+			direction = currentTheta;
 		}
 
 		return direction;	

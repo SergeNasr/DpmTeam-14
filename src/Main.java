@@ -7,6 +7,7 @@ import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
+import lejos.util.Delay;
 
 
 public class Main {
@@ -71,40 +72,73 @@ public class Main {
 
 			// orienteering
 			Albert_Algo albert = new Albert_Algo(map, driver, usSensorFront, usSensorBack);
-			int [] data = albert.localize();
+			int[] data = albert.localize();
+			
+			Delay.msDelay(3000);
+
 			leftMotor = Motor.C;
 			rightMotor = Motor.A;
+			driver = new SquareDriver(leftMotor, rightMotor);
+
 			// create graph and path
-//			GraphGenerator gg = new GraphGenerator(map);
-//			gg.createGraph();
-//
-//			// Odometer and Correction starts
-//			odo.start();
-//			//odometryDisplay.start();
-//			//odoCor.start();
-//			
-//			// TODO convert row, col and poiting direction and then set odometer X and Y
-//			odo.setX(105);
-//			odo.setY(105);
-//			odo.setAngle(3 * Math.PI / 2);
-//
-//			// go from Tile #16 to Tile #4
-//			// TODO use gg.findTileId(row, col)
-//			int st = gg.findTileId(3, 3);
-//			int de = gg.findTileId(0, 3);
-//			
-//			Tiles start = gg.getGraph().get(st);			// need to modify those values!! And value in Navigation for prevPos
-//			Tiles dest =  gg.getGraph().get(de);
-//			LinkedList<Tiles> path = gg.bfs(start, dest);
-//
-//			// convert path to points
-//			Point[] pointPath = new Point[path.size() - 1];
-//			for (int i = 0; i < path.size() - 1; i++) {	//removed first element because it is the current tile
-//				pointPath[i] = Point.convertTileToPoint(path.get(i + 1));
-//				//System.out.println(pointPath[i].getX() + " " + pointPath[i].getY());
-//			}
-//
-//			Navigation navigator = new Navigation(driver, pointPath, odo);
+			GraphGenerator gg = new GraphGenerator(map);
+			gg.createGraph();
+
+			// Odometer and Correction starts
+			odo.start();
+			//odometryDisplay.start();
+			odoCor.start();
+			
+			LCD.clear();
+
+			int col = data[1];
+			int row = Constants.MAZE_SIZE - 1 - data[2];
+
+			double colToX = 15 + 30 * col;
+			double rowToY = 15 + 30 * row;
+			double currentTheta = -1;
+
+			// TODO convert row, col and poiting direction and then set odometer X and Y
+			odo.setX(colToX);
+			odo.setY(rowToY);
+
+			if ((char)data[0] == 'n') {
+				odo.setAngle(270);
+				odo.setTheta(270);
+				currentTheta = 270;
+			}
+			else if ((char)data[0] == 'e') {
+				odo.setAngle(0);
+				odo.setTheta(0);
+				currentTheta =  0;
+			}
+			else if ((char)data[0] == 's') {
+				odo.setAngle(90);
+				odo.setTheta(90);
+				currentTheta = 90;
+			}
+			else if ((char)data[0] == 'w') {
+				odo.setAngle(180);
+				odo.setTheta(180);
+				currentTheta = 180;
+			}
+			
+			// go from Tile #16 to Tile #4
+			// TODO use gg.findTileId(row, col)
+			int st = gg.findTileId(row, col);
+			int de = gg.findTileId(2, 1);
+
+			Tiles start = gg.getGraph().get(st);			// need to modify those values!! And value in Navigation for prevPos
+			Tiles dest =  gg.getGraph().get(de);
+			LinkedList<Tiles> path = gg.bfs(start, dest);
+
+			// convert path to points
+			Point[] pointPath = new Point[path.size()];
+			for (int i = 0; i < path.size(); i++) {	//removed first element because it is the current tile
+				pointPath[i] = Point.convertTileToPoint(path.get(i));
+			}
+
+			Navigation navigator = new Navigation(driver, pointPath, odo, currentTheta);
 //			//			
 //			//			Thread[] threads = new Thread[2];
 //			//			threads[0] = navigator;
@@ -112,25 +146,25 @@ public class Main {
 //			//
 //			//			// travel/navigate (in a different thread)
 //			//			// TODO need to pass values of the robots positions
-//			navigator.start();
-			//			
-			//			try {
-			//	            navigator.join();
-			//	        } catch (InterruptedException e) {
-			//	            System.out.println("Error in thread join");
-			//	        }
-			//	         
-			//			// claw grab and lift
-			//			usPoller.start();
-			//
-			//			try {
-			//	            navigator.join();
-			//	        } catch (InterruptedException e) {
-			//	            System.out.println("Error in thread join");
-			//	        }
-			//	         
-			//			// claw grab and lift
-			//			usPoller.start();
+			navigator.start();
+//
+//			try {
+//				navigator.join();
+//			} catch (InterruptedException e) {
+//				System.out.println("Error in thread join");
+//			}
+//
+//			// claw grab and lift
+//			usPoller.start();
+//
+//			try {
+//				navigator.join();
+//			} catch (InterruptedException e) {
+//				System.out.println("Error in thread join");
+//			}
+//
+//			// claw grab and lift
+//			usPoller.start();
 
 		}
 

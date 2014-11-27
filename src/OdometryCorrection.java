@@ -40,16 +40,19 @@ public class OdometryCorrection extends Thread {
 			rightValue = colorSensorRight.getLightValue();
 
 			if (leftValue < LIGHT_THRESHOLD && !firstLineSeen && !correctingLeft) {
+				Sound.beep();
 				firstTime = System.currentTimeMillis() / 1000;
 				firstLineSeen = true;
 				correctingLeft = true;
 				
 			} else if (rightValue < LIGHT_THRESHOLD && !firstLineSeen && !correctingRight) {
+				Sound.beep();
 				firstTime = System.currentTimeMillis() / 1000;
 				firstLineSeen = true;
 				correctingRight = true;
 				
 			} else if (leftValue < LIGHT_THRESHOLD && firstLineSeen && correctingRight) {
+				Sound.beep();
 				secondTime = System.currentTimeMillis() / 1000;
 				int deltaDistance = distanceDifference(firstTime, secondTime);
 				
@@ -68,6 +71,7 @@ public class OdometryCorrection extends Thread {
 				correctingRight = false;
 				
 			} else if (rightValue < LIGHT_THRESHOLD && firstLineSeen && correctingLeft) {
+				Sound.beep();
 				secondTime = System.currentTimeMillis() / 1000;
 				int deltaDistance = distanceDifference(firstTime, secondTime);
 				
