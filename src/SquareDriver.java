@@ -13,6 +13,14 @@ public class SquareDriver {
 		this.rotating = false;
 	}
 	
+	public NXTRegulatedMotor getLeftMotor() {
+		return leftMotor;
+	}
+
+	public NXTRegulatedMotor getRightMotor() {
+		return rightMotor;
+	}
+
 	public boolean isRotating() {
 		return rotating;
 	}

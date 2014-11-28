@@ -8,8 +8,9 @@ public class Navigation extends Thread {
 	private double currentTheta;
 	private Odometer odo;
 	private Point [] points;
+	private OdometryCorrection odoCor;
 
-	public Navigation(SquareDriver driver, Point [] destinations, Odometer odometer, double currentTheta){
+	public Navigation(SquareDriver driver, Point [] destinations, Odometer odometer, double currentTheta, OdometryCorrection odoCor){
 		// TODO change values of prevPosX and prevPosY after orienteering
 		this.prevPosX = odometer.getX();
 		this.prevPosY = odometer.getY();
@@ -17,6 +18,7 @@ public class Navigation extends Thread {
 		this.driver = driver;
 		this.points = destinations;
 		this.odo = odometer;
+		this.odoCor = odoCor;
 	}
 
 	public void run(){
@@ -30,7 +32,6 @@ public class Navigation extends Thread {
 			// Turn from current position to desired position
 			double newTheta = direction(points[i]);
 			double theta = currentTheta - newTheta;
-			System.out.println((int)currentTheta + " " + (int)newTheta);
 			currentTheta = newTheta;
 			
 			if (theta > 0) {
@@ -56,7 +57,19 @@ public class Navigation extends Thread {
 
 			// ... until something prevents it to stop
 			driver.moveForward(30);
+			
+			// apply angle correction
+			if (odoCor.clockCor) {
+				driver.rotateClockwise(odoCor.rotateClockAngle);
+				odoCor.clockCor = false;
+			}
+			else if (odoCor.counterCor) {
+				driver.rotateCounter(odoCor.rotateCounterAngle);
+				odoCor.counterCor = false;
+			}
 		}
+		
+		odoCor.setExitCorrection(true);
 
 	}
 

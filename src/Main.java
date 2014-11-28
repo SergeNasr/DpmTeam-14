@@ -41,7 +41,7 @@ public class Main {
 		int [] map3 ={1,5,11,12,16,22,28,31,32,35,36,44,61,62,64};
 
 		// TODO create map depending on test
-		Map map = new Map(mapTest);
+		Map map = new Map(map1);
 
 		do {
 			// clear the display
@@ -74,7 +74,7 @@ public class Main {
 			Albert_Algo albert = new Albert_Algo(map, driver, usSensorFront, usSensorBack);
 			int[] data = albert.localize();
 			
-			Delay.msDelay(3000);
+			Delay.msDelay(2000);
 
 			leftMotor = Motor.C;
 			rightMotor = Motor.A;
@@ -126,7 +126,7 @@ public class Main {
 			// go from Tile #16 to Tile #4
 			// TODO use gg.findTileId(row, col)
 			int st = gg.findTileId(row, col);
-			int de = gg.findTileId(2, 1);
+			int de = gg.findTileId(1, 0);
 
 			Tiles start = gg.getGraph().get(st);			// need to modify those values!! And value in Navigation for prevPos
 			Tiles dest =  gg.getGraph().get(de);
@@ -138,14 +138,14 @@ public class Main {
 				pointPath[i] = Point.convertTileToPoint(path.get(i));
 			}
 
-			Navigation navigator = new Navigation(driver, pointPath, odo, currentTheta);
-//			//			
-//			//			Thread[] threads = new Thread[2];
-//			//			threads[0] = navigator;
-//			//			threads[1] = usPoller;
-//			//
-//			//			// travel/navigate (in a different thread)
-//			//			// TODO need to pass values of the robots positions
+			Navigation navigator = new Navigation(driver, pointPath, odo, currentTheta, odoCor);
+////			//			
+////			//			Thread[] threads = new Thread[2];
+////			//			threads[0] = navigator;
+////			//			threads[1] = usPoller;
+////			//
+////			//			// travel/navigate (in a different thread)
+////			//			// TODO need to pass values of the robots positions
 			navigator.start();
 //
 //			try {
