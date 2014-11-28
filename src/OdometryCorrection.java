@@ -16,6 +16,8 @@ public class OdometryCorrection extends Thread {
 	public boolean clockCor;
 
 	private boolean exitCorrection = false;
+	
+	public int distanceTacho;
 
 	//distance from light sensor to center of rotation
 	private static final double DISTANCE_SENSOR = 7;
@@ -44,6 +46,7 @@ public class OdometryCorrection extends Thread {
 		int rightValue;
 		int firstTacho = 0;
 		int secondTacho = 0;
+		distanceTacho = 0;
 		boolean firstLineSeen = false;
 		boolean leftSeen = false;
 		boolean rightSeen = false;
@@ -65,6 +68,7 @@ public class OdometryCorrection extends Thread {
 					}
 					else {
 						secondTacho = driver.getRightMotor().getTachoCount();
+						distanceTacho = secondTacho;
 						int tachoDif = secondTacho - firstTacho;
 						double deltaDist = tachoDif * (2 * Math.PI * Constants.RADIUS) /360 ;
 
@@ -72,7 +76,7 @@ public class OdometryCorrection extends Thread {
 						System.out.println("clockwise " + rotateClockAngle);
 						firstLineSeen = false;
 					}
-					leftSeen = true;
+					leftSeen = true ;
 					rightSeen = false;
 					Delay.msDelay(50);
 				}
@@ -86,10 +90,11 @@ public class OdometryCorrection extends Thread {
 					}
 					else {
 						secondTacho = driver.getLeftMotor().getTachoCount();
+						distanceTacho = secondTacho;
 						int tachoDif = secondTacho - firstTacho;
 						double deltaDist = tachoDif * (2 * Math.PI * Constants.RADIUS) /360 ;
 
-						rotateCounterAngle = Math.abs(Math.toDegrees(correctionAngle(deltaDist)));
+						rotateCounterAngle = 2 + Math.abs(Math.toDegrees(correctionAngle(deltaDist)));
 						System.out.println("counter " + rotateCounterAngle);
 						firstLineSeen = false;
 					}
