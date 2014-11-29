@@ -56,24 +56,20 @@ public class Navigation extends Thread {
 			driver.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED);
 
 			// ... until something prevents it to stop
-			driver.moveForward(30);
+			driver.moveForward(30.32);
 			
 			// apply angle correction
 			if (odoCor.clockCor) {
 				driver.rotateClockwise(odoCor.rotateClockAngle);
-//				double checkDistance = Math.abs((driver.getRightMotor().getTachoCount() - odoCor.distanceTacho) * (2 * Math.PI * Constants.RADIUS) /360);
-//				if (Math.abs(16 - checkDistance) > 2) {
-//					driver.moveForward(Math.abs(16 - checkDistance));
-//				}			
 				odoCor.clockCor = false;
+				LCD.clear();
+				LCD.drawString("Clockwise " + odoCor.rotateClockAngle, 0, 0);
 			}
 			else if (odoCor.counterCor) {
 				driver.rotateCounter(odoCor.rotateCounterAngle);
-//				double checkDistance = Math.abs((driver.getLeftMotor().getTachoCount() - odoCor.distanceTacho) * (2 * Math.PI * Constants.RADIUS) /360);
-//				if (Math.abs(16 - checkDistance) > 2) {
-//					driver.moveForward(Math.abs(16 - checkDistance));
-//				}
 				odoCor.counterCor = false;
+				LCD.clear();
+				LCD.drawString("Counter " + odoCor.rotateClockAngle, 0, 1);
 			}
 		}
 		

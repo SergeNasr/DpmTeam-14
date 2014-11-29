@@ -31,6 +31,10 @@ public class OdometryCorrection extends Thread {
 		this.exitCorrection = exitCorrection;
 	}
 
+	public void setDriver(SquareDriver driver) {
+		this.driver = driver;
+	}
+
 	// run method (required for Thread)
 	public void run() {
 		Sound.setVolume(Sound.VOL_MAX);
@@ -108,7 +112,7 @@ public class OdometryCorrection extends Thread {
 			}
 		}
 	}
-
+	
 	private double correctionAngle(double dist) {
 		return Math.atan(dist / Constants.SENSORS_WIDTH);
 	}

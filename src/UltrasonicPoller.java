@@ -64,7 +64,7 @@ public class UltrasonicPoller extends Thread{
 			driver.rotateCounter(47);
 			if (distanceCounter > 27) {
 				distanceCounter = 0;
-				driver.rotateClockwise(90);
+				driver.rotateCounter(90);
 			}
 			else {
 				distanceCounter += 10;

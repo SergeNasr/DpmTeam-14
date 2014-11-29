@@ -19,6 +19,7 @@ public class Albert_Algo {
 	private static LinkedList<Arrow> possibilities = new LinkedList<Arrow>();
 	private static LinkedList<PathNode> currentPath;
 	private static LinkedList<Integer> indexes = new LinkedList<Integer>();
+	private static OdometryCorrection odoCor;
 	// north = 0
 	// west = 1
 	// south = 2
@@ -42,8 +43,8 @@ public class Albert_Algo {
 	 * @param usSensorFront The front Ultrasonic sensor
 	 * @param usSensorBack The back Ultrasonic sensor
 	 */
-	public Albert_Algo(Map map, SquareDriver driver, UltrasonicSensor usSensorFront, UltrasonicSensor usSensorBack) {
-
+	public Albert_Algo(Map map, SquareDriver driver, UltrasonicSensor usSensorFront, UltrasonicSensor usSensorBack, OdometryCorrection odocor) {
+		odoCor = odocor;
 		this.usSensorFront = usSensorFront;
 		this.usSensorBack = usSensorBack;
 		this.driver = driver;
@@ -65,6 +66,17 @@ public class Albert_Algo {
 			return "turnRight";
 		} else return null;
 		
+	}
+	
+	public static void applyCorrection(){
+		if (odoCor.clockCor) {
+			driver.rotateCounter(odoCor.rotateClockAngle);
+			odoCor.clockCor = false;
+		}
+		else if (odoCor.counterCor) {
+			driver.rotateClockwise(odoCor.rotateCounterAngle);
+			odoCor.counterCor = false;
+		}
 	}
 	/**
 	 * 
@@ -93,7 +105,8 @@ public class Albert_Algo {
 			currentPath.add(new PathNode("forward", data_front));
 			updatePositions(true);
 			if(data_front != 0){
-				driver.moveForward(30);
+				driver.moveForward(30.32);
+				applyCorrection();
 			}
 			
 			while (possibilities.size() > 1) {
@@ -119,7 +132,8 @@ public class Albert_Algo {
 					currentPath.add(new PathNode("forward",data_front));
 					updatePositions(true);
 					if(data_front != 0){
-						driver.moveForward(30);
+						driver.moveForward(30.32);
+						applyCorrection();
 					}
 				} else if (data_front == -1) {
 					int best_ratio = getBestRatio(true);
@@ -139,7 +153,8 @@ public class Albert_Algo {
 						updatePositionsBack();
 						currentPath.add(new PathNode(mvtType,data_front));
 						updatePositions(true);
-						driver.moveForward(30);
+						driver.moveForward(30.32);
+						applyCorrection();
 					} else {
 						
 						currentPath.add(new PathNode(mvtType, data_front));
@@ -151,11 +166,13 @@ public class Albert_Algo {
 						currentPath.add(new PathNode("forward",data_front));
 						updatePositions(true);
 						if(data_front != 0){
-							driver.moveForward(30);
+							driver.moveForward(30.32);
+							applyCorrection();
 						}
 					}
 				}
 			}
+			//checkFoundValue();
 		}
 		Sound.beep();
 		LCD.drawString(String.valueOf((char)possibilities.get(0).getPoint()), 0, 1);
@@ -163,6 +180,74 @@ public class Albert_Algo {
 		LCD.drawString(String.valueOf(possibilities.get(0).getRow()), 0, 3);
 		
 		return new int [] {possibilities.get(0).getPoint(), possibilities.get(0).getColumn(),possibilities.get(0).getRow()};
+	}
+	
+	private void checkFoundValue(){
+		if(possibilities.size() == 1){
+			int data_front = numTilesAway(fwd_getFilteredData());
+			int data_back = numTilesAway(back_getFilteredData());
+			if (data_front != 0) {
+				currentPath.add(new PathNode("forward",data_front));
+				updatePositions(true);
+				driver.moveForward(30);
+				
+				data_front = numTilesAway(fwd_getFilteredData());
+				currentPath.add(new PathNode("forward", data_back));
+				updatePositionsBack();
+				currentPath.add(new PathNode("forward", data_front));
+				updatePositions(true);
+				if (data_front != 0) {
+					driver.moveForward(30);
+				}
+				driver.rotateClockwise(90);
+				
+				data_front = numTilesAway(fwd_getFilteredData());
+				data_back = numTilesAway(back_getFilteredData());
+				currentPath.add(new PathNode("turnLeft",data_front));
+				updatePositions(true);
+				currentPath.add(new PathNode("forward", data_back));
+				updatePositionsBack();
+			} else {
+				driver.rotateClockwise(90);
+				data_front = numTilesAway(fwd_getFilteredData());
+				data_back = numTilesAway(back_getFilteredData());
+				currentPath.add(new PathNode("turnLeft",data_front));
+				updatePositions(true);
+				currentPath.add(new PathNode("forward", data_back));
+				updatePositionsBack();
+				if (data_front != 0) {
+					driver.moveForward(30);
+					
+					driver.rotateClockwise(90);
+					data_front = numTilesAway(fwd_getFilteredData());
+					data_back = numTilesAway(back_getFilteredData());
+					currentPath.add(new PathNode("turnLeft",data_front));
+					updatePositions(true);
+					currentPath.add(new PathNode("forward", data_back));
+					updatePositionsBack();
+				} else {
+					driver.rotateClockwise(90);
+					data_front = numTilesAway(fwd_getFilteredData());
+					data_back = numTilesAway(back_getFilteredData());
+					currentPath.add(new PathNode("turnLeft",data_front));
+					updatePositions(true);
+					currentPath.add(new PathNode("forward", data_back));
+					updatePositionsBack();
+					
+					driver.moveForward(30);
+					
+					driver.rotateClockwise(90);
+					data_front = numTilesAway(fwd_getFilteredData());
+					data_back = numTilesAway(back_getFilteredData());
+					currentPath.add(new PathNode("turnLeft",data_front));
+					updatePositions(true);
+					currentPath.add(new PathNode("forward", data_back));
+					updatePositionsBack();
+					
+				}
+				
+			}
+		}
 	}
 	/**
 	 * 
