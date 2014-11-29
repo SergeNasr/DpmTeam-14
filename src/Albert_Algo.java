@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.LinkedList;
 
 import lejos.nxt.LCD;
@@ -254,40 +255,40 @@ public class Albert_Algo {
 	 * @return The average of 5 readings. Removes values that are false negatives form the calculation.
 	 */
 	private static int fwd_getFilteredData() {
-		/*This method filters the result from the ultrasonic sensor. It collects the 5 last measurements
-		 * and does 2 things: first it gets rid of the maximal value. This allows us to discard potential
-		 *  255's read by the sensor. The filter than takes the mean to reduce errors in detection.
-		 * Notice that had we not removed the 255, the mean would be incorrectly large
-		 * */
-		int distance;
 		
 		int [] collected = new int[5];
-		usSensorFront.ping();
 		
 		for(int i = 0; i < 5 ;i++){
+			usSensorFront.ping();
 			collected[i] = usSensorFront.getDistance(); // read 5 values
 		}
-		int max = 0;
-		int indexMax =0;
-		for(int i = 0; i < 5; i++){
-			if(collected[i]>max){ // max loop
-				max  =  collected[i];
-				indexMax = i; // index where max is
+		int [] indexes = new int[5];
+		
+		int j = 0;
+		for(int i = 0; i < collected.length ;i++){
+			if(collected[i] > 200){
+				indexes[j] = i;
+				j++;
 			}
 		}
-		int sum=0;
-		for(int i = 0 ; i < 5 ;  i++){
-			if(indexMax !=i){ // discard  max
-				sum = sum + collected[i]; // take the sum of remaining terms...
+		j = 0;
+		int sum = 0;
+		for(int i = 0; i < collected.length;i++){
+			if(i==indexes[j]){
+				j++;
+			} else {
+				sum += collected[i];
 			}
 		}
-		double average = sum/4.0; // ... and average them
-
-		// there will be a delay here
-		distance = (int)average;
-		distance = usSensorFront.getDistance();
-		LCD.drawString("Forward: " + String.valueOf(numTilesAway(distance)), 0, 4);		
-		return distance;
+		
+		if(sum == 0){
+			LCD.drawString("Forward: " + 255, 0, 5);
+			return 255;
+		} else {
+			int distance = (int) (sum/(collected.length - (j)));
+			LCD.drawString("Forward: " + String.valueOf(numTilesAway(distance)), 0, 5);
+			return distance;
+		}
 	}
 	/**
 	 * 
@@ -312,33 +313,34 @@ public class Albert_Algo {
 	 */
 	public static double back_getFilteredData() {
 		
-		int distance;
-		int [] collected = new int[5];
-
-		for(int i = 0; i < 5 ;i++){
-			collected[i] = usSensorBack.getDistance(); // read 5 values
-		}
-		int max = 0;
-		int indexMax =0;
-		for(int i = 0; i < 5; i++){
-			if(collected[i]>max){ // max loop
-				max  =  collected[i];
-				indexMax = i; // index where max is
+		int [] collected = data;
+		int [] indexes = new int[data.length];
+		
+		int j = 0;
+		for(int i = 0; i < collected.length ;i++){
+			if(collected[i] > 200){
+				indexes[j] = i;
+				j++;
 			}
 		}
-		int sum=0;
-		for(int i = 0 ; i < 5 ;  i++){
-			if(indexMax !=i){ // discard  max
-				sum = sum + collected[i]; // take the sum of remaining terms...
+		j = 0;
+		int sum = 0;
+		for(int i = 0; i < collected.length;i++){
+			if(i==indexes[j]){
+				j++;
+			} else {
+				sum += collected[i];
 			}
 		}
-		double average = sum/4.0; // ... and average them
-
-		// there will be a delay here
-		distance = (int)average;
-		distance = usSensorBack.getDistance();
-		LCD.drawString("Back: " + String.valueOf(numTilesAway(distance)), 0, 5);
-		return distance;
+		
+		if(sum == 0){
+			LCD.drawString("Back: " + 255, 0, 5);
+			return 255;
+		} else {
+			int distance = (int) (sum/(collected.length - (j)));
+			LCD.drawString("Back: " + String.valueOf(numTilesAway(distance)), 0, 5);
+			return distance;
+		}
 	}
 	/**
 	 * 
