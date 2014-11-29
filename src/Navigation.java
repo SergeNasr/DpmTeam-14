@@ -59,23 +59,23 @@ public class Navigation extends Thread {
 			driver.moveForward(30);
 			
 			// apply angle correction
-			if (odoCor.clockCor) {
-				driver.rotateClockwise(odoCor.rotateClockAngle);
-				double checkDistance = Math.abs((driver.getRightMotor().getTachoCount() - odoCor.distanceTacho) * (2 * Math.PI * Constants.RADIUS) /360);
-				if (Math.abs(16 - checkDistance) > 2) {
-					driver.moveForward(Math.abs(16 - checkDistance));
-				}
-				
-				odoCor.clockCor = false;
-			}
-			else if (odoCor.counterCor) {
-				driver.rotateCounter(odoCor.rotateCounterAngle);
-				double checkDistance = Math.abs((driver.getLeftMotor().getTachoCount() - odoCor.distanceTacho) * (2 * Math.PI * Constants.RADIUS) /360);
-				if (Math.abs(16 - checkDistance) > 2) {
-					driver.moveForward(Math.abs(16 - checkDistance));
-				}
-				odoCor.counterCor = false;
-			}
+//			if (odoCor.clockCor) {
+//				driver.rotateClockwise(odoCor.rotateClockAngle);
+//				double checkDistance = Math.abs((driver.getRightMotor().getTachoCount() - odoCor.distanceTacho) * (2 * Math.PI * Constants.RADIUS) /360);
+//				if (Math.abs(16 - checkDistance) > 2) {
+//					driver.moveForward(Math.abs(16 - checkDistance));
+//				}
+//				
+//				odoCor.clockCor = false;
+//			}
+//			else if (odoCor.counterCor) {
+//				driver.rotateCounter(odoCor.rotateCounterAngle);
+//				double checkDistance = Math.abs((driver.getLeftMotor().getTachoCount() - odoCor.distanceTacho) * (2 * Math.PI * Constants.RADIUS) /360);
+//				if (Math.abs(16 - checkDistance) > 2) {
+//					driver.moveForward(Math.abs(16 - checkDistance));
+//				}
+//				odoCor.counterCor = false;
+//			}
 		}
 		
 		odoCor.setExitCorrection(true);
