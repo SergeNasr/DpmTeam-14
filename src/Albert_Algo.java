@@ -313,8 +313,13 @@ public class Albert_Algo {
 	 */
 	public static double back_getFilteredData() {
 		
-		int [] collected = data;
-		int [] indexes = new int[data.length];
+		int [] collected = new int[5];
+		
+		for(int i = 0; i < 5 ;i++){
+			usSensorFront.ping();
+			collected[i] = usSensorFront.getDistance(); // read 5 values
+		}
+		int [] indexes = new int[5];
 		
 		int j = 0;
 		for(int i = 0; i < collected.length ;i++){
@@ -334,11 +339,11 @@ public class Albert_Algo {
 		}
 		
 		if(sum == 0){
-			LCD.drawString("Back: " + 255, 0, 5);
+			LCD.drawString("Forward: " + 255, 0, 5);
 			return 255;
 		} else {
 			int distance = (int) (sum/(collected.length - (j)));
-			LCD.drawString("Back: " + String.valueOf(numTilesAway(distance)), 0, 5);
+			LCD.drawString("Forward: " + String.valueOf(numTilesAway(distance)), 0, 5);
 			return distance;
 		}
 	}
