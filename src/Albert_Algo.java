@@ -282,7 +282,7 @@ public class Albert_Algo {
 		}
 		
 		if(sum == 0){
-			LCD.drawString("Forward: " + 255, 0, 5);
+			LCD.drawString("Forward: " + -1, 0, 5);
 			return 255;
 		} else {
 			int distance = (int) (sum/(collected.length - (j)));
@@ -316,8 +316,8 @@ public class Albert_Algo {
 		int [] collected = new int[5];
 		
 		for(int i = 0; i < 5 ;i++){
-			usSensorFront.ping();
-			collected[i] = usSensorFront.getDistance(); // read 5 values
+			usSensorBack.ping();
+			collected[i] = usSensorBack.getDistance(); // read 5 values
 		}
 		int [] indexes = new int[5];
 		
@@ -339,11 +339,11 @@ public class Albert_Algo {
 		}
 		
 		if(sum == 0){
-			LCD.drawString("Forward: " + 255, 0, 5);
+			LCD.drawString("Back: " + -1, 0, 6);
 			return 255;
 		} else {
 			int distance = (int) (sum/(collected.length - (j)));
-			LCD.drawString("Forward: " + String.valueOf(numTilesAway(distance)), 0, 5);
+			LCD.drawString("Back: " + String.valueOf(numTilesAway(distance)), 0, 6);
 			return distance;
 		}
 	}
