@@ -16,13 +16,8 @@ public class OdometryCorrection extends Thread {
 	public boolean clockCor;
 
 	private boolean exitCorrection = false;
-	
-	public int distanceTacho;
 
-	//distance from light sensor to center of rotation
-	private static final double DISTANCE_SENSOR = 7;
-	private static final int LIGHT_THRESHOLD = 45;
-	private static final double FIRST_LINE = 30;
+	public int distanceTacho;
 
 	// constructor
 	public OdometryCorrection(Odometer odometer, ColorSensor colorSensorLeft, ColorSensor colorSensorRight, SquareDriver driver) {
@@ -51,6 +46,8 @@ public class OdometryCorrection extends Thread {
 		boolean leftSeen = false;
 		boolean rightSeen = false;
 
+		double startTime = 0;
+
 		counterCor = false;
 		clockCor = false;
 
@@ -59,44 +56,50 @@ public class OdometryCorrection extends Thread {
 				leftValue = colorSensorLeft.getLightValue();
 				rightValue = colorSensorRight.getLightValue();
 
-				if (leftValue < LIGHT_THRESHOLD && !leftSeen) {
+				if (leftValue < Constants.LIGHT_THRESHOLD && !leftSeen) {
 					Sound.beep();
 					if (!firstLineSeen) {
+						startTime = System.currentTimeMillis();
 						firstTacho = driver.getLeftMotor().getTachoCount();
 						firstLineSeen = true;
 						counterCor = true;
 					}
 					else {
-						secondTacho = driver.getRightMotor().getTachoCount();
-						distanceTacho = secondTacho;
-						int tachoDif = secondTacho - firstTacho;
-						double deltaDist = tachoDif * (2 * Math.PI * Constants.RADIUS) /360 ;
+						if (System.currentTimeMillis() - startTime < Constants.TIME_THRESHOLD) {
+							secondTacho = driver.getRightMotor().getTachoCount();
+							distanceTacho = secondTacho;
+							int tachoDif = secondTacho - firstTacho;
+							double deltaDist = tachoDif * (2 * Math.PI * Constants.RADIUS) /360 ;
 
-						rotateClockAngle = Math.abs(Math.toDegrees(correctionAngle(deltaDist)));
-						System.out.println("clockwise " + rotateClockAngle);
-						firstLineSeen = false;
+							rotateClockAngle = Math.abs(Math.toDegrees(correctionAngle(deltaDist)));
+							System.out.println("clockwise " + rotateClockAngle);
+							firstLineSeen = false;
+						}
 					}
 					leftSeen = true ;
 					rightSeen = false;
 					Delay.msDelay(50);
 				}
 
-				else if (rightValue < LIGHT_THRESHOLD && !rightSeen) {
+				else if (rightValue < Constants.LIGHT_THRESHOLD && !rightSeen) {
 					Sound.beep();
 					if (!firstLineSeen) {
+						startTime = System.currentTimeMillis();
 						firstTacho = driver.getRightMotor().getTachoCount();
 						firstLineSeen = true;
 						clockCor = true;
 					}
 					else {
-						secondTacho = driver.getLeftMotor().getTachoCount();
-						distanceTacho = secondTacho;
-						int tachoDif = secondTacho - firstTacho;
-						double deltaDist = tachoDif * (2 * Math.PI * Constants.RADIUS) /360 ;
+						if (System.currentTimeMillis() - startTime < Constants.TIME_THRESHOLD) {
+							secondTacho = driver.getLeftMotor().getTachoCount();
+							distanceTacho = secondTacho;
+							int tachoDif = secondTacho - firstTacho;
+							double deltaDist = tachoDif * (2 * Math.PI * Constants.RADIUS) /360 ;
 
-						rotateCounterAngle = 2 + Math.abs(Math.toDegrees(correctionAngle(deltaDist)));
-						System.out.println("counter " + rotateCounterAngle);
-						firstLineSeen = false;
+							rotateCounterAngle = 2 + Math.abs(Math.toDegrees(correctionAngle(deltaDist)));
+							System.out.println("counter " + rotateCounterAngle);
+							firstLineSeen = false;
+						}
 					}
 					leftSeen = false;
 					rightSeen = true;

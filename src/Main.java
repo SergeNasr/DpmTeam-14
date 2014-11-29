@@ -41,7 +41,7 @@ public class Main {
 		int [] map3 ={1,5,11,12,16,22,28,31,32,35,36,44,61,62,64};
 
 		// TODO create map depending on test
-		Map map = new Map(map1);
+		Map map = new Map(mapTest);
 
 		do {
 			// clear the display
