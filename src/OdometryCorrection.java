@@ -68,17 +68,15 @@ public class OdometryCorrection extends Thread {
 						firstLineSeen = true;
 						counterCor = true;
 					}
-					else {
+					else { // TODO the code doesn't consider an else case
 						if (System.currentTimeMillis() - startTime < Constants.TIME_THRESHOLD) {
 							secondTacho = driver.getRightMotor().getTachoCount();
 							distanceTacho = secondTacho;
 							int tachoDif = secondTacho - firstTacho;
 							double deltaDist = tachoDif * (2 * Math.PI * Constants.RADIUS) /360 ;
-
 							rotateClockAngle = Math.abs(Math.toDegrees(correctionAngle(deltaDist)));
-							System.out.println("clockwise " + rotateClockAngle);
-							firstLineSeen = false;
 						}
+						firstLineSeen = false;
 					}
 					leftSeen = true ;
 					rightSeen = false;
@@ -99,11 +97,9 @@ public class OdometryCorrection extends Thread {
 							distanceTacho = secondTacho;
 							int tachoDif = secondTacho - firstTacho;
 							double deltaDist = tachoDif * (2 * Math.PI * Constants.RADIUS) /360 ;
-
-							rotateCounterAngle = 2 + Math.abs(Math.toDegrees(correctionAngle(deltaDist)));
-							System.out.println("counter " + rotateCounterAngle);
-							firstLineSeen = false;
-						}
+							rotateCounterAngle = Math.abs(Math.toDegrees(correctionAngle(deltaDist)));
+						} 
+						firstLineSeen = false;
 					}
 					leftSeen = false;
 					rightSeen = true;

@@ -71,13 +71,31 @@ public class Main {
 			
 			// Odometer and Correction starts
 			odo.start();
-			//odometryDisplay.start();
+			odometryDisplay.start();
 			odoCor.start();
 
 			// orienteering
-			Albert_Algo albert = new Albert_Algo(map, driver, usSensorFront, usSensorBack, odoCor);
-			int[] data = albert.localize();
-			
+//			Albert_Algo albert = new Albert_Algo(map, driver, usSensorFront, usSensorBack, odoCor);
+//			int[] data = albert.localize();
+			int i = 0;
+			while(true){
+				if(i == 3){
+					driver.rotateClockwise(90);
+					i %= 3;
+				} else {
+					driver.moveForward(30);
+					if (odoCor.clockCor) {
+						driver.rotateCounter(odoCor.rotateClockAngle);
+						odoCor.clockCor = false;
+					}
+					else if (odoCor.counterCor) {
+						driver.rotateClockwise(odoCor.rotateCounterAngle);
+						odoCor.counterCor = false;
+					}
+					Delay.msDelay(200);
+					i++;
+				}
+			}
 			/*leftMotor = Motor.C;
 			rightMotor = Motor.A;
 			driver = new SquareDriver(leftMotor, rightMotor);
