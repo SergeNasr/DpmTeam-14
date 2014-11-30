@@ -1,3 +1,5 @@
+import java.util.LinkedList;
+
 import lejos.nxt.ColorSensor;
 import lejos.nxt.Sound;
 import lejos.util.Delay;
@@ -20,7 +22,8 @@ public class OdometryCorrection extends Thread {
 	public int distanceTacho;
 
 	// constructor
-	public OdometryCorrection(Odometer odometer, ColorSensor colorSensorLeft, ColorSensor colorSensorRight, SquareDriver driver) {
+	public OdometryCorrection(Odometer odometer, ColorSensor colorSensorLeft,
+			ColorSensor colorSensorRight, SquareDriver driver) {
 		this.odometer = odometer;
 		this.colorSensorLeft = colorSensorLeft;
 		this.colorSensorRight = colorSensorRight;
@@ -68,18 +71,20 @@ public class OdometryCorrection extends Thread {
 						firstLineSeen = true;
 						counterCor = true;
 						clockCor = false;
-					}
-					else { // TODO the code doesn't consider an else case
+					} else { // TODO the code doesn't consider an else case
 						if (System.currentTimeMillis() - startTime < Constants.TIME_THRESHOLD) {
-							secondTacho = driver.getRightMotor().getTachoCount();
+							secondTacho = driver.getRightMotor()
+									.getTachoCount();
 							distanceTacho = secondTacho;
 							int tachoDif = secondTacho - firstTacho;
-							double deltaDist = tachoDif * (2 * Math.PI * Constants.RADIUS) /360 ;
-							rotateClockAngle = Math.abs(Math.toDegrees(correctionAngle(deltaDist)));
+							double deltaDist = tachoDif
+									* (2 * Math.PI * Constants.RADIUS) / 360;
+							rotateClockAngle = Math.abs(Math
+									.toDegrees(correctionAngle(deltaDist)));
 						}
 						firstLineSeen = false;
 					}
-					leftSeen = true ;
+					leftSeen = true;
 					rightSeen = false;
 					Delay.msDelay(50);
 				}
@@ -92,15 +97,16 @@ public class OdometryCorrection extends Thread {
 						firstLineSeen = true;
 						clockCor = true;
 						counterCor = false;
-					}
-					else {
+					} else {
 						if (System.currentTimeMillis() - startTime < Constants.TIME_THRESHOLD) {
 							secondTacho = driver.getLeftMotor().getTachoCount();
 							distanceTacho = secondTacho;
 							int tachoDif = secondTacho - firstTacho;
-							double deltaDist = tachoDif * (2 * Math.PI * Constants.RADIUS) /360 ;
-							rotateCounterAngle = Math.abs(Math.toDegrees(correctionAngle(deltaDist)));
-						} 
+							double deltaDist = tachoDif
+									* (2 * Math.PI * Constants.RADIUS) / 360;
+							rotateCounterAngle = Math.abs(Math
+									.toDegrees(correctionAngle(deltaDist)));
+						}
 						firstLineSeen = false;
 					}
 					leftSeen = false;
@@ -110,8 +116,60 @@ public class OdometryCorrection extends Thread {
 			}
 		}
 	}
-	
+
 	private double correctionAngle(double dist) {
 		return Math.atan(dist / Constants.SENSORS_WIDTH);
 	}
+
+	static LinkedList<Integer> ma = new LinkedList<Integer>();
+	public static int nbTrue = 0;
+	public static int nbFalse = 0;
+
+	public static void setMA(int data) {
+		if (data >= Constants.LIGHT_TRASH_DATA)
+			return;
+
+		if (ma.size() < 5) {
+			ma.add(data);
+		} else {
+			ma.remove(0);
+			ma.add(ma.size() - 1, data);
+		}
+	}
+
+	public static boolean differential() {
+		int diff = 0;
+
+		for (int i = 0; i < ma.size(); i++) {
+			if (i != 0) {
+				diff = Math.abs(ma.get(i) - ma.get(i - 1));
+			}
+			if (Math.abs(diff) > 10) {
+				if (nbTrue == 0 && nbFalse == 1) {
+					nbTrue++;
+				} else if (nbTrue == 1 && nbFalse == 2) {
+					nbTrue++;
+				}
+				return true;
+			}
+		}
+		if (nbTrue == 0 && nbFalse == 0) {
+			nbFalse++;
+		} else if (nbTrue == 1 && nbFalse == 1) {
+			nbFalse++;
+		} else if (nbTrue == 2 && nbFalse == 2) {
+			nbFalse++;
+		}
+		return false;
+	}
+
+	public static boolean sawLine() {
+		if (nbFalse == 3) {
+			nbFalse = 0;
+			nbTrue = 0;
+			return true;
+		}
+		return false;
+	}
+
 }

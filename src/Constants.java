@@ -9,4 +9,5 @@ public class Constants {
 	public static final int FIND_BLOCK_SPEED = 150;
 	public static final int LIGHT_THRESHOLD = 45;
 	public static final int TIME_THRESHOLD = 2000;
+	public static final int LIGHT_TRASH_DATA = 300;
 }
