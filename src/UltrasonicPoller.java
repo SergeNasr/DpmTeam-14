@@ -1,12 +1,14 @@
 import lejos.nxt.UltrasonicSensor;
 
 
-public class UltrasonicPoller extends Thread{
+public class UltrasonicPoller {
 	private UltrasonicSensor us;
 	private Claw cont;
 	private SquareDriver driver;
 	private int distanceCounter;
-	
+	private double prevPosX; 
+	private double prevPosY;
+
 	public UltrasonicPoller(UltrasonicSensor us, Claw cont, SquareDriver driver) {
 		this.us = us;
 		this.cont = cont;
@@ -14,50 +16,46 @@ public class UltrasonicPoller extends Thread{
 		this.distanceCounter = 0;
 	}
 
-	public void run() {
+	public void findBlock() {
 		driver.setSpeeds(Constants.FIND_BLOCK_SPEED, Constants.FIND_BLOCK_SPEED);
-		while (!cont.blockGrabbed) {
-			if (us.getDistance() < 10) {
-				int distance = us.getDistance();
-				driver.stop();
-				cont.processUSData(distance);
-				break;
-			}
-			
-			if (cont.blockGrabbed) {
-				break;
-			}
-			
-			driver.rotateWithDirectReturn(45);
-			while (driver.isRotating()) {
-				if (us.getDistance() < 10) {
-					int distance = us.getDistance();
-					driver.stop();
-					cont.processUSData(distance);
-					driver.setRotating(false);
-					break;
-				}
-				driver.checkMvt();
-			}
-			
-			if (cont.blockGrabbed) {
-				break;
-			}
+		for (int i = 0; i < 4; i++) {
+			if (!cont.blockGrabbed) {
 
-			driver.rotateWithDirectReturn(-90);
-			while (driver.isRotating()) {
+				us.ping();
 				if (us.getDistance() < 10) {
 					int distance = us.getDistance();
 					driver.stop();
 					cont.processUSData(distance);
-					driver.setRotating(false);
 					break;
 				}
-				driver.checkMvt();
-			}
-			
-			if (cont.blockGrabbed) {
-				break;
+
+				driver.rotateWithDirectReturn(45);
+				while (driver.isRotating()) {
+					us.ping();
+					System.out.println(us.getDistance());
+					if (us.getDistance() < 10) {
+						int distance = us.getDistance();
+						driver.stop();
+						cont.processUSData(distance);
+						driver.setRotating(false);
+						break;
+					}
+					driver.checkMvt();
+				}
+
+				driver.rotateWithDirectReturn(-90);
+				while (driver.isRotating()) {
+					us.ping();
+					System.out.println(us.getDistance());
+					if (us.getDistance() < 10) {
+						int distance = us.getDistance();
+						driver.stop();
+						cont.processUSData(distance);
+						driver.setRotating(false);
+						break;
+					}
+					driver.checkMvt();
+				}
 			}
 
 			//return to initial orientation
@@ -70,7 +68,7 @@ public class UltrasonicPoller extends Thread{
 				distanceCounter += 10;
 				driver.moveForward(8);
 			}
-			
+
 			try { Thread.sleep(10); } catch(Exception e){}
 		}
 	}

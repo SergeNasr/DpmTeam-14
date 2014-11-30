@@ -67,6 +67,7 @@ public class OdometryCorrection extends Thread {
 						firstTacho = driver.getLeftMotor().getTachoCount();
 						firstLineSeen = true;
 						counterCor = true;
+						clockCor = false;
 					}
 					else { // TODO the code doesn't consider an else case
 						if (System.currentTimeMillis() - startTime < Constants.TIME_THRESHOLD) {
@@ -90,6 +91,7 @@ public class OdometryCorrection extends Thread {
 						firstTacho = driver.getRightMotor().getTachoCount();
 						firstLineSeen = true;
 						clockCor = true;
+						counterCor = false;
 					}
 					else {
 						if (System.currentTimeMillis() - startTime < Constants.TIME_THRESHOLD) {

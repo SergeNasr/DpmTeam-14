@@ -21,4 +21,10 @@ public class Claw {
 		driver.moveForward(13);
 		clawMotor.rotate(550);
 	}
+	
+	public void dropObject() {
+		clawMotor.rotate(-620);
+		driver.moveForward(-20);
+		clawMotor.rotate(550);
+	}
 }

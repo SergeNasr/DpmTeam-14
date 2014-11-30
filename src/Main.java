@@ -20,6 +20,9 @@ public class Main {
 	private static NXTRegulatedMotor leftMotor = Motor.A;
 	private static NXTRegulatedMotor rightMotor = Motor.C;
 	private static NXTRegulatedMotor clawMotor = Motor.B;
+	
+	public static double currentX;
+	public static double currentY;
 
 	private static final double InitPos = 15;
 
@@ -39,8 +42,8 @@ public class Main {
 		int [] map1 = {2,3,11,16,17,20,23,27,37,40,45,47,48,53,64};
 		int [] map2 ={4,5,8,10,13,16,17,27,29,35,52,56,59,62,64};
 		int [] map3 ={1,5,11,12,16,22,28,31,32,35,36,44,61,62,64};
-		
-		Map map = new Map(mapTest);
+
+		Map map = new Map(map2);
 
 		do {
 			// clear the display
@@ -68,43 +71,50 @@ public class Main {
 
 		} else {
 			LCD.clear();
-			
+
 			// Odometer and Correction starts
 			odo.start();
-			odometryDisplay.start();
+			//odometryDisplay.start();
 			odoCor.start();
 
-			// orienteering
-//			Albert_Algo albert = new Albert_Algo(map, driver, usSensorFront, usSensorBack, odoCor);
-//			int[] data = albert.localize();
-			int i = 0;
-			while(true){
-				if(i == 3){
-					driver.rotateClockwise(90);
-					i %= 3;
-				} else {
-					driver.moveForward(30);
-					if (odoCor.clockCor) {
-						driver.rotateCounter(odoCor.rotateClockAngle);
-						odoCor.clockCor = false;
-					}
-					else if (odoCor.counterCor) {
-						driver.rotateClockwise(odoCor.rotateCounterAngle);
-						odoCor.counterCor = false;
-					}
-					Delay.msDelay(200);
-					i++;
-				}
-			}
-			/*leftMotor = Motor.C;
+
+			//orienteering
+			Albert_Algo albert = new Albert_Algo(map, driver, usSensorFront, usSensorBack, odoCor);
+			int[] data = albert.localize();
+			
+			//************************* TEST **********************
+//			int i = 0;
+//			while(true){
+//				if(i == 3){
+//					driver.rotateClockwise(90);
+//					i %= 3;
+//				} else {
+//					driver.moveForward(30);
+//					if (odoCor.clockCor) {
+//						System.out.println("clock " + odoCor.rotateClockAngle);
+//						driver.rotateCounter(odoCor.rotateClockAngle);
+//						odoCor.clockCor = false;
+//					}
+//					else if (odoCor.counterCor) {
+//						System.out.println("counter " + odoCor.rotateCounterAngle);
+//						driver.rotateClockwise(odoCor.rotateCounterAngle);
+//						odoCor.counterCor = false;
+//					}
+//					Delay.msDelay(200);
+//					i++;
+//				}
+//			}
+			//*********************************************************
+			
+			leftMotor = Motor.C;
 			rightMotor = Motor.A;
 			driver = new SquareDriver(leftMotor, rightMotor);
 			odoCor.setDriver(driver);
-			
+
 			// create graph and path
 			GraphGenerator gg = new GraphGenerator(map);
 			gg.createGraph();
-			
+
 			LCD.clear();
 
 			int col = data[1];
@@ -114,7 +124,6 @@ public class Main {
 			double rowToY = 15 + 30 * row;
 			double currentTheta = -1;
 
-			// TODO convert row, col and poiting direction and then set odometer X and Y
 			odo.setX(colToX);
 			odo.setY(rowToY);
 
@@ -138,7 +147,7 @@ public class Main {
 				odo.setTheta(180);
 				currentTheta = 180;
 			}
-			
+
 			// go from Tile #16 to Tile #4
 			// TODO use gg.findTileId(row, col)
 			int st = gg.findTileId(row, col);
@@ -154,24 +163,45 @@ public class Main {
 				pointPath[i] = Point.convertTileToPoint(path.get(i));
 			}
 			pointPath[path.size()] = new Point(45, 195);
-			
+
 			Navigation navigator = new Navigation(driver, pointPath, odo, currentTheta, odoCor);
 
-			Thread[] threads = new Thread[3];
-			threads[0] = navigator;
-			threads[1] = usPoller;
-			
-			navigator.start();
-			
-			try {
-				navigator.join();
-			} catch (InterruptedException e) {
-				System.out.println("Error in thread join");
-			}
+			navigator.go();
 			
 			// claw grab and lift
-			usPoller.start();
-*/
+			while (!claw.blockGrabbed) {
+				usPoller.findBlock();
+				
+				if (!claw.blockGrabbed) {
+					driver.rotateClockwise(90);
+				}
+			}
+			
+			// go to final destination
+			// TODO modify those values
+			row = 6;
+			col = 1;
+			currentTheta = 0;
+			
+			st = gg.findTileId(row, col);
+			de = gg.findTileId(0, 0);
+
+			start = gg.getGraph().get(st);			// need to modify those values!! And value in Navigation for prevPos
+			dest =  gg.getGraph().get(de);
+			path = gg.bfs(start, dest);
+
+			// convert path to points
+			pointPath = new Point[path.size()];
+			for (int i = 0; i < path.size(); i++) {	//removed first element because it is the current tile
+				pointPath[i] = Point.convertTileToPoint(path.get(i));
+			}
+
+			navigator = new Navigation(driver, pointPath, odo, currentTheta, odoCor);
+
+			navigator.go();
+			
+			claw.dropObject();
+
 		}
 
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE);

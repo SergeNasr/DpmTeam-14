@@ -1,7 +1,7 @@
 import lejos.nxt.LCD;
 
 
-public class Navigation extends Thread {
+public class Navigation {
 	private SquareDriver driver;
 	private double prevPosX; 
 	private double prevPosY; 
@@ -21,7 +21,15 @@ public class Navigation extends Thread {
 		this.odoCor = odoCor;
 	}
 
-	public void run(){
+	public double getPrevPosX() {
+		return prevPosX;
+	}
+
+	public double getPrevPosY() {
+		return prevPosY;
+	}
+
+	public void go(){
 		prevPosX = points[0].getX();
 		prevPosY = points[0].getY();
 		
@@ -62,14 +70,10 @@ public class Navigation extends Thread {
 			if (odoCor.clockCor) {
 				driver.rotateClockwise(odoCor.rotateClockAngle);
 				odoCor.clockCor = false;
-				LCD.clear();
-				LCD.drawString("Clockwise " + odoCor.rotateClockAngle, 0, 0);
 			}
 			else if (odoCor.counterCor) {
 				driver.rotateCounter(odoCor.rotateCounterAngle);
 				odoCor.counterCor = false;
-				LCD.clear();
-				LCD.drawString("Counter " + odoCor.rotateClockAngle, 0, 1);
 			}
 		}
 		

@@ -21,6 +21,10 @@ public class Albert_Algo {
 	private static LinkedList<PathNode> currentPath;
 	private static LinkedList<Integer> indexes = new LinkedList<Integer>();
 	private static OdometryCorrection odoCor;
+	private static double prevPosX;
+	private static double prevPosY;
+	
+	
 	// north = 0
 	// west = 1
 	// south = 2
@@ -106,7 +110,8 @@ public class Albert_Algo {
 			currentPath.add(new PathNode("forward", data_front));
 			updatePositions(true);
 			if(data_front != 0){
-				driver.moveForward(30.32);
+				driver.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED);
+				driver.moveForward(30);
 				applyCorrection();
 			}
 			
@@ -115,8 +120,10 @@ public class Albert_Algo {
 					int best_ratio = getBestRatio(false);
 					LCD.drawInt(best_ratio, 0, 0);
 					if(best_ratio == 1){
+						driver.setSpeeds(Constants.ROTATE_SPEED, Constants.ROTATE_SPEED);
 						driver.rotateClockwise(90);
 					} else if (best_ratio == 3){
+						driver.setSpeeds(Constants.ROTATE_SPEED, Constants.ROTATE_SPEED);
 						driver.rotateCounter(90);
 					}
 					
@@ -133,7 +140,8 @@ public class Albert_Algo {
 					currentPath.add(new PathNode("forward",data_front));
 					updatePositions(true);
 					if(data_front != 0){
-						driver.moveForward(30.32);
+						driver.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED);
+						driver.moveForward(30);
 						applyCorrection();
 					}
 				} else if (data_front == -1) {
@@ -141,20 +149,22 @@ public class Albert_Algo {
 					LCD.drawInt(best_ratio, 0, 0);
 					mvtType = movementType(best_ratio);
 					if(best_ratio == 1){
+						driver.setSpeeds(Constants.ROTATE_SPEED, Constants.ROTATE_SPEED);
 						driver.rotateClockwise(90);
 					} else if (best_ratio == 3){
+						driver.setSpeeds(Constants.ROTATE_SPEED, Constants.ROTATE_SPEED);
 						driver.rotateCounter(90);
 					}
 					data_back = numTilesAway(back_getFilteredData());
 					data_front = numTilesAway(fwd_getFilteredData());
 					
 					if(best_ratio == 0){
-						
 						currentPath.add(new PathNode(mvtType,data_back));
 						updatePositionsBack();
 						currentPath.add(new PathNode(mvtType,data_front));
 						updatePositions(true);
-						driver.moveForward(30.32);
+						driver.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED);
+						driver.moveForward(30);
 						applyCorrection();
 					} else {
 						
@@ -167,7 +177,8 @@ public class Albert_Algo {
 						currentPath.add(new PathNode("forward",data_front));
 						updatePositions(true);
 						if(data_front != 0){
-							driver.moveForward(30.32);
+							driver.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED);
+							driver.moveForward(30);
 							applyCorrection();
 						}
 					}
@@ -198,6 +209,7 @@ public class Albert_Algo {
 				currentPath.add(new PathNode("forward", data_front));
 				updatePositions(true);
 				if (data_front != 0) {
+					driver.setSpeeds(Constants.FORWARD_SPEED, Constants.FORWARD_SPEED);
 					driver.moveForward(30);
 				}
 				driver.rotateClockwise(90);
