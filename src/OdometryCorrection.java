@@ -64,7 +64,6 @@ public class OdometryCorrection extends Thread {
 				rightValue = colorSensorRight.getLightValue();
 
 				if (leftValue < Constants.LIGHT_THRESHOLD && !leftSeen) {
-					Sound.beep();
 					if (!firstLineSeen) {
 						startTime = System.currentTimeMillis();
 						firstTacho = driver.getLeftMotor().getTachoCount();
@@ -90,7 +89,6 @@ public class OdometryCorrection extends Thread {
 				}
 
 				else if (rightValue < Constants.LIGHT_THRESHOLD && !rightSeen) {
-					Sound.beep();
 					if (!firstLineSeen) {
 						startTime = System.currentTimeMillis();
 						firstTacho = driver.getRightMotor().getTachoCount();

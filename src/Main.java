@@ -38,19 +38,33 @@ public class Main {
 		Claw claw = new Claw(clawMotor, usSensorFront, driver);
 		UltrasonicPoller usPoller = new UltrasonicPoller(usSensorFront, claw, driver);
 		
-		int [] map1 = {3,16,25,34,53,56,58,61,69,71,76,89,94,98,103,111,114,119,129,132,138,141};
-		int [] map2 = {10,17,21,28,29,31,43,48,59,64,73,76,77,78,81,84,85,93,112,120,130,140};
-		int [] map3 = {8,12,16,35,37,43,53,63,65,67,70,77,88,95,97,99,107,112,120,125,140,143};
-		int [] map4 = {4,15,18,24,28,37,45,70,75,84,85,86,91,93,94,97,101,109,112,132,135,142};
-		int [] map5 = {16,17,21,23,31,36,37,42,53,56,65,68,70,73,81,97,100,101,118,120,124,129};
-		int [] map6 = {6,13,16,21,23,31,44,46,53,66,68,74,79,83,90,94,99,112,113,114,117,142};
-		int [][] maps = {map1,map2,map3,map4,map5,map6};
+//		int [] map1 = {3,16,25,34,53,56,58,61,69,71,76,89,94,98,103,111,114,119,129,132,138,141};
+//		int [] map2 = {10,17,21,28,29,31,43,48,59,64,73,76,77,78,81,84,85,93,112,120,130,140};
+//		int [] map3 = {8,12,16,35,37,43,53,63,65,67,70,77,88,95,97,99,107,112,120,125,140,143};
+//		int [] map4 = {4,15,18,24,28,37,45,70,75,84,85,86,91,93,94,97,101,109,112,132,135,142};
+//		int [] map5 = {16,17,21,23,31,36,37,42,53,56,65,68,70,73,81,97,100,101,118,120,124,129};
+//		int [] map6 = {6,13,16,21,23,31,44,46,53,66,68,74,79,83,90,94,99,112,113,114,117,142};
+//		int [][] maps = {map1,map2,map3,map4,map5,map6};
+		
+		// test maps
+		int [] emap1 = {2,3,11,16,17,20,23,27,37,40,45,47,48,53,64};
+		int [] emap2 ={4,5,8,10,13,16,17,27,29,35,52,56,59,62,64};
+		int [] emap3 ={1,5,11,12,16,22,28,31,32,35,36,44,61,62,64};
+		int [][] emaps = {emap1,emap2,emap3};
 		
 		LCD.clear();
-		String[] mapsMenu = {"Map 1", "Map 2", "Map 3", "Map 4", "Map 5", "Map 6"};
+//		String[] mapsMenu = {"Map 1", "Map 2", "Map 3", "Map 4", "Map 5", "Map 6"};
+//		TextMenu menu = new TextMenu(mapsMenu,1,"Maps menu");
+//		int mapSelected = menu.select();
+//		Map map = new Map(maps[mapSelected]);
+		
+		String[] mapsMenu = {"Map 1", "Map 2", "Map 3"};
 		TextMenu menu = new TextMenu(mapsMenu,1,"Maps menu");
 		int mapSelected = menu.select();
-		Map map = new Map(maps[mapSelected]);
+		Map map = new Map(emaps[mapSelected]);
+		
+		// save copy for last path
+		Map Lmap = new Map(emaps[mapSelected]);
 		
 		LCD.clear();
 		String[] xCoord = {"-1","0","1","2","3","4","5","6","7","8","9","10"};
@@ -60,7 +74,7 @@ public class Main {
 		LCD.clear();
 		String[] yCoord = {"-1","0","1","2","3","4","5","6","7","8","9","10"};
 		TextMenu yMenu = new TextMenu(yCoord,1,"Y Coordinate");
-		int ySelected = xMenu.select();
+		int ySelected = yMenu.select();
 		
 		int colDrop = Integer.parseInt(xCoord[xSelected]) + 1;
 		int rowDrop = Constants.MAZE_SIZE - 2 - Integer.parseInt(yCoord[ySelected]);
@@ -83,11 +97,14 @@ public class Main {
 		} while (buttonChoice != Button.ID_RIGHT);
 		
 		if(buttonChoice == Button.ID_RIGHT){
+			LCD.clear();
+			
 			// Odometer and Correction starts
 			odo.start();
 			odometryDisplay.start();
 			odoCor.start();
 			
+			//orienteering
 			Albert_Algo albert = new Albert_Algo(map, driver, usSensorFront, usSensorBack, odoCor);
 			data = albert.localize();
 			
@@ -106,6 +123,7 @@ public class Main {
 
 			double colToX = 15 + 30 * col;
 			double rowToY = 15 + 30 * row;
+			double currentTheta = -1;
 			
 			odo.setX(colToX);
 			odo.setY(rowToY);
@@ -119,20 +137,71 @@ public class Main {
 			Tiles dest =  gg.getGraph().get(de);
 			LinkedList<Tiles> path = gg.bfs(start, dest);
 			
+			// convert path to points
 			Point[] pointPath = new Point[path.size() + 1];
 			for (int i = 0; i < path.size(); i++) {	//removed first element because it is the current tile
 				pointPath[i] = Point.convertTileToPoint(path.get(i));
 			}
+			// TODO change this
 			pointPath[path.size()] = new Point(45, 195);
 
 			Navigation navigator = new Navigation(driver, pointPath, odo, currentTheta, odoCor);
 
 			navigator.go();
 			
-			while (!navigator.finishedNav);
+			// Claw search, grab and lift
+//			usPoller.prevRow = row;
+//			usPoller.prevCol = col;
+//			
+//			// claw grab and lift
+//			while (!claw.blockGrabbed) {
+//				usPoller.findBlock();
+//			}
+//			
+//			driver.rotateCounter(90);
+
+			// go to final destination
+			// TODO modify those values
+//			row = (int)usPoller.prevRow;
+//			col = (int)usPoller.prevRow;
+//			currentTheta = usPoller.currentTheta;
 			
-			claw.dropObject();
+			// ***************** TEST
+			row = 6;
+			col = 1;
+			currentTheta = 90;
+			//**********************
+			
+			odo.setX(195);
+			odo.setY(45);
+			
+			// re-create the graph to re-set all the values
+			gg = new GraphGenerator(Lmap);
+			gg.createGraph();
+
+			st = gg.findTileId(row, col);
+			de = gg.findTileId(rowDrop, colDrop);	
+
+			start = gg.getGraph().get(st);
+			dest =  gg.getGraph().get(de);
+			path = gg.bfs(start, dest);
+
+			// convert path to points
+			pointPath = new Point[path.size()];
+			for (int i = 0; i < path.size(); i++) {	//removed first element because it is the current tile
+				pointPath[i] = Point.convertTileToPoint(path.get(i));
+			}
+
+			navigator = new Navigation(driver, pointPath, odo, currentTheta, odoCor);
+			
+			navigator.go();
+			
+
+			//claw.dropObject();
 		}
+		
+		while (Button.waitForAnyPress() != Button.ID_ESCAPE);
+		System.exit(0);
 	}
 
 	private static void setOdo(Odometer odo){
