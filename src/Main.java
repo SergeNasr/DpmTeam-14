@@ -7,7 +7,6 @@ import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.SensorPort;
 import lejos.nxt.UltrasonicSensor;
-import lejos.util.Delay;
 
 
 public class Main {
@@ -20,7 +19,7 @@ public class Main {
 	private static NXTRegulatedMotor leftMotor = Motor.A;
 	private static NXTRegulatedMotor rightMotor = Motor.C;
 	private static NXTRegulatedMotor clawMotor = Motor.B;
-	
+
 	public static double currentX;
 	public static double currentY;
 
@@ -74,38 +73,38 @@ public class Main {
 
 			// Odometer and Correction starts
 			odo.start();
-			//odometryDisplay.start();
+			odometryDisplay.start();
 			odoCor.start();
 
 
 			//orienteering
 			Albert_Algo albert = new Albert_Algo(map, driver, usSensorFront, usSensorBack, odoCor);
 			int[] data = albert.localize();
-			
+
 			//************************* TEST **********************
-//			int i = 0;
-//			while(true){
-//				if(i == 3){
-//					driver.rotateClockwise(90);
-//					i %= 3;
-//				} else {
-//					driver.moveForward(30);
-//					if (odoCor.clockCor) {
-//						System.out.println("clock " + odoCor.rotateClockAngle);
-//						driver.rotateCounter(odoCor.rotateClockAngle);
-//						odoCor.clockCor = false;
-//					}
-//					else if (odoCor.counterCor) {
-//						System.out.println("counter " + odoCor.rotateCounterAngle);
-//						driver.rotateClockwise(odoCor.rotateCounterAngle);
-//						odoCor.counterCor = false;
-//					}
-//					Delay.msDelay(200);
-//					i++;
-//				}
-//			}
+			//			int i = 0;
+			//			while(true){
+			//				if(i == 3){
+			//					driver.rotateClockwise(90);
+			//					i %= 3;
+			//				} else {
+			//					driver.moveForward(30);
+			//					if (odoCor.clockCor) {
+			//						System.out.println("clock " + odoCor.rotateClockAngle);
+			//						driver.rotateCounter(odoCor.rotateClockAngle);
+			//						odoCor.clockCor = false;
+			//					}
+			//					else if (odoCor.counterCor) {
+			//						System.out.println("counter " + odoCor.rotateCounterAngle);
+			//						driver.rotateClockwise(odoCor.rotateCounterAngle);
+			//						odoCor.counterCor = false;
+			//					}
+			//					Delay.msDelay(200);
+			//					i++;
+			//				}
+			//			}
 			//*********************************************************
-			
+
 			leftMotor = Motor.C;
 			rightMotor = Motor.A;
 			driver = new SquareDriver(leftMotor, rightMotor);
@@ -168,21 +167,24 @@ public class Main {
 
 			navigator.go();
 			
+			while (!navigator.finishedNav);
+
+			usPoller.prevRow = row;
+			usPoller.prevCol = col;
+			
 			// claw grab and lift
 			while (!claw.blockGrabbed) {
 				usPoller.findBlock();
-				
-				if (!claw.blockGrabbed) {
-					driver.rotateClockwise(90);
-				}
 			}
 			
+			driver.rotateCounter(90);
+
 			// go to final destination
 			// TODO modify those values
-			row = 6;
-			col = 1;
-			currentTheta = 0;
-			
+			row = (int)usPoller.prevRow;
+			col = (int)usPoller.prevRow;
+			currentTheta = usPoller.currentTheta;
+
 			st = gg.findTileId(row, col);
 			de = gg.findTileId(0, 0);
 
@@ -197,8 +199,10 @@ public class Main {
 			}
 
 			navigator = new Navigation(driver, pointPath, odo, currentTheta, odoCor);
-
+			navigator.finishedNav = false;
 			navigator.go();
+
+			while (!navigator.finishedNav);
 			
 			claw.dropObject();
 

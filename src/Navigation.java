@@ -1,4 +1,3 @@
-import lejos.nxt.LCD;
 
 
 public class Navigation {
@@ -9,9 +8,10 @@ public class Navigation {
 	private Odometer odo;
 	private Point [] points;
 	private OdometryCorrection odoCor;
+	
+	public boolean finishedNav = false;
 
 	public Navigation(SquareDriver driver, Point [] destinations, Odometer odometer, double currentTheta, OdometryCorrection odoCor){
-		// TODO change values of prevPosX and prevPosY after orienteering
 		this.prevPosX = odometer.getX();
 		this.prevPosY = odometer.getY();
 		this.currentTheta = currentTheta;
@@ -33,7 +33,7 @@ public class Navigation {
 		prevPosX = points[0].getX();
 		prevPosY = points[0].getY();
 		
-		for(int i = 1; i < points.length; i++){
+		for(int i = 1; i < points.length; i++) {
 			// Set rotating speeds to motors to anticipate a rotation
 			driver.setSpeeds(Constants.ROTATE_SPEED, Constants.ROTATE_SPEED);
 
@@ -77,8 +77,8 @@ public class Navigation {
 			}
 		}
 		
-		odoCor.setExitCorrection(true);
-
+		//odoCor.setExitCorrection(true);
+		finishedNav = true;
 	}
 
 	private double direction(Point point){
