@@ -1,3 +1,9 @@
+/**
+ * 
+ * @author Eduardo Coronado-Montoya
+ * @author Raluca Niti
+ *
+ */
 public class Map {
 	private static Tiles [][] tiles;
 	private int [] obstacles;

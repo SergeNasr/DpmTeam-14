@@ -15,7 +15,7 @@ public class Constants {
 	/**
 	 * Size of the square maze: {@value}
 	 */
-	public static final int MAZE_SIZE = 8;
+	public static final int MAZE_SIZE = 12;
 	/**
 	 * Speed of the robot when turning: {@value}degrees/second
 	 */
