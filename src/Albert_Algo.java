@@ -33,20 +33,20 @@ public class Albert_Algo {
 	private static int ind;
 	
 	/**
-	 * 
-	 * @param row The row as seen from the origin
-	 * @return The row for a 2D array
+	 * The row as seen from a 2D array standpoint
+	 * @param row (as seen from the origin)
+	 * @return 
 	 */
 	public static int getRowMap(int row){
 		return Constants.MAZE_SIZE - 1 - row;
 	}
 	
 	/**
-	 * 
-	 * @param map The map it will localize on
-	 * @param driver The driver that will allow it to move
-	 * @param usSensorFront The front Ultrasonic sensor
-	 * @param usSensorBack The back Ultrasonic sensor
+	 * An algorithm that localises the robot inside a given maze.
+	 * @param map
+	 * @param driver 
+	 * @param usSensorFront
+	 * @param usSensorBack 
 	 */
 	public Albert_Algo(Map map, SquareDriver driver, UltrasonicSensor usSensorFront, UltrasonicSensor usSensorBack, OdometryCorrection odocor) {
 		odoCor = odocor;
@@ -58,9 +58,9 @@ public class Albert_Algo {
 	}
 	
 	/**
-	 * 
-	 * @param rlf The number representing forward(0), left(1), or right(3)
-	 * @return The string value of the number
+	 * A method returning a conventional number for movement into a string.
+	 * @param rlf 
+	 * @return The string value of the number representing forward(0), left(1), or right(3)
 	 */
 	public static String movementType(int rlf){
 		if(rlf == 0){
@@ -72,7 +72,9 @@ public class Albert_Algo {
 		} else return null;
 		
 	}
-	
+	/**
+	 * Apply odometer correction
+	 */
 	public static void applyCorrection(){
 		if (odoCor.clockCor) {
 			driver.rotateCounter(odoCor.rotateClockAngle);
@@ -84,11 +86,13 @@ public class Albert_Algo {
 		}
 	}
 	/**
-	 * 
+	 * Algorithm that tell the robot how to process data gotten from the maze and how to move to crash the cases in the most efficient way.
 	 * @return The int array containing the heading, the column and the row of the robot
 	 */
 	public int[] localize(){
+		// if the robot didn't manage to localize, it will restart its localisation
 		while (possibilities.size() == 0) {
+			// creates all the possibilities inside a given maze
 			for (int i = 0; i < mapTiles.length; i++) {
 				for (int j = 0; j < mapTiles[i].length; j++) {
 					for (int k = 0; k < 4; k++) {
@@ -104,6 +108,7 @@ public class Albert_Algo {
 			int data_front = numTilesAway(fwd_getFilteredData());
 			int data_back = numTilesAway(back_getFilteredData());
 			
+			// Checks initial back and front sensor readings to know where to move
 			currentPath.add(new PathNode("forward",data_back));
 			updatePositionsBack();
 			data_front = numTilesAway(fwd_getFilteredData());
@@ -114,7 +119,7 @@ public class Albert_Algo {
 				driver.moveForward(30);
 				applyCorrection();
 			}
-			
+			// Until one or zero possible solution is not found, travel in the maze
 			while (possibilities.size() > 1) {
 				if (data_front == 0 || data_front == 1 || data_front == 2) {
 					int best_ratio = getBestRatio(false);
@@ -193,7 +198,9 @@ public class Albert_Algo {
 		
 		return new int [] {possibilities.get(0).getPoint(), possibilities.get(0).getColumn(),possibilities.get(0).getRow()};
 	}
-	
+	/**
+	 * A method that check if the position found matches some testing cases
+	 */
 	private void checkFoundValue(){
 		if(possibilities.size() == 1){
 			int data_front = numTilesAway(fwd_getFilteredData());
@@ -263,8 +270,8 @@ public class Albert_Algo {
 		}
 	}
 	/**
-	 * 
-	 * @return The average of 5 readings. Removes values that are false negatives form the calculation.
+	 * Eliminate data that is irrelevant and make an average with the remaining data.
+	 * @return A filtered value of distance for the front sensor.
 	 */
 	private static int fwd_getFilteredData() {
 		
@@ -303,8 +310,8 @@ public class Albert_Algo {
 		}
 	}
 	/**
-	 * 
-	 * @param data The reading from the Ultrasonic sensor
+	 * Evaluates the number of tiles separating the robot and wall or block.
+	 * @param data 
 	 * @return Separates data into 0, 1, 2 tiles away. If it doens't see a wall, method will return -1.
 	 */
 	private static int numTilesAway(double data) {
@@ -320,8 +327,8 @@ public class Albert_Algo {
 	}
 	
 	/**
-	 * 
-	 * @return The average of 5 readings. Removes values that are false negatives form the calculation.
+	 * Eliminate data that is irrelevant and make an average with the remaining data.
+	 * @return A filtered value of distance for the back sensor.
 	 */
 	public static double back_getFilteredData() {
 		
@@ -360,11 +367,11 @@ public class Albert_Algo {
 		}
 	}
 	/**
-	 * 
-	 * @param canGoForward If the robot sees infinity, then the robot can still go forward
-	 * @return A number that is either 0, 1 or 3. This method calculates if it is better to go forward left or right.
+	 * Calculates if it is better to go forward left or right based on remaining possibilities. The ratio for the direction 
+	 * that is closest to 0.5 will be the direction chosen.
+	 * @param canGoForward
+	 * @return A number that is either 0, 1 or 3.
 	 */
-	
 	public static int getBestRatio(boolean canGoForward){
 		if (possibilities.size() > 1) {
 			int pool = possibilities.size(); 
@@ -386,6 +393,7 @@ public class Albert_Algo {
 			ratio_right = Math.abs(((double)poss_right / pool) - 0.5);
 			ratio_fwd = Math.abs(((double)poss_fwd / pool) - 0.5);
 			
+			// if the robot can't go forward, it shall not return 0 if the ratio is the smallest.
 			if (canGoForward) {
 				double min = Math.min(ratio_fwd, Math.min(ratio_left, ratio_right));
 				if (min == ratio_left) {
@@ -406,12 +414,13 @@ public class Albert_Algo {
 		return -1;
 	}
 	/**
-	 * 
-	 * @param rlf An integer representing right, left, or forward.
+	 * Checks if for a given orientation (right,left or forward) of the possibility pointed by the index, the robot
+	 * will crash. 
+	 * @param rlf 
 	 * @param index An index to a possibility.
 	 * @return 1 if the possibility crashed for the given direction rlf at the index given. 0 if it didn't crash.
 	 */
-	public static int updateTemp(int rlf, int index) {
+	private static int updateTemp(int rlf, int index) {
 		int count = 0;
 		Arrow next = possibilities.get(index).getNext();
 		int row = possibilities.get(index).getRow();
@@ -490,13 +499,13 @@ public class Albert_Algo {
 		return count;
 	}
 	/**
-	 * 
-	 * @param pos The direction at which the possibility is pointing.
-	 * @param index The index of the list of possibilities.
-	 * @param fromFrontSensor The boolean that checks if it is called from the front sensor or back.
+	 * Method that defines if the possibility should remain one or if it should be removed.
+	 * @param pos 
+	 * @param index
+	 * @param fromFrontSenso
 	 * @return The index to remove if it crashed for the given data. -1 if it still a valid possibility.
 	 */
-	public static int getPositionToRemove(Arrow pos, int index,
+	private static int getPositionToRemove(Arrow pos, int index,
 			boolean fromFrontSensor) {
 
 		PathNode mvt = currentPath.get(currentPath.size() - 1);
@@ -707,7 +716,7 @@ public class Albert_Algo {
 
 	}
 	/**
-	 * treats the cases for the back sensor
+	 * Treats the case when the back sensor is used
 	 */
 	public static void updatePositionsBack(){
 		for(int i = 0; i < possibilities.size();i++){
@@ -723,7 +732,7 @@ public class Albert_Algo {
 	}	
 	/**
 	 * This method removes all the possibilities if the method getPositionToRemove tells it to do so.
-	 * @param fromFrontSensor Boolean taking care of the cases where it comes from the front sensor and when it doesn't.
+	 * @param fromFrontSensor
 	 */
 	public static void updatePositions(boolean fromFrontSensor) {
 		
@@ -743,15 +752,24 @@ public class Albert_Algo {
 		}
 		indexes.clear();
 	}
-	
-	public static char inverseDirection(char c){
+	/**
+	 * Helper method that is used for back sensor
+	 * @param c
+	 * @return The inverse direction of the current direction
+	 */
+	private static char inverseDirection(char c){
 		if(c == 'n') return 's';
 		if(c == 'w') return 'e';
 		if(c == 's') return 'n';
 		if(c == 'e') return 'w';
 		return 'o';
 	}
-	public static char translate(int index){
+	/**
+	 * Helper method that transforms number convention into char convention.
+	 * @param index
+	 * @return A char that represents the input number
+	 */
+	private static char translate(int index){
 		if(index == 0) return 'n';
 		if(index == 1) return 'w';
 		if(index == 2) return 's';
@@ -759,7 +777,13 @@ public class Albert_Algo {
 		return 'o';
 	}
 	
-	public static int getMovement(String nodeInput, char point){
+	/**
+	 * Helper method that transforms a direction into a new one depending on the movement is has as input.
+	 * @param nodeInput
+	 * @param point
+	 * @return An int from the int convention for directions.
+	 */
+	private static int getMovement(String nodeInput, char point){
 		if(nodeInput.equals("turnRight")){
 			if(point == 'n') return 3;
 			if(point == 'w') return 0;

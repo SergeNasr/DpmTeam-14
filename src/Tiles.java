@@ -17,7 +17,11 @@ public class Tiles {
 	//variable keeping track whether or not tile is an obstacle
 	private boolean isObstacle = false;
 	
-	
+	/**
+	 * 
+	 * @param tileNumber
+	 * @param isObstacle
+	 */
 	public Tiles(int tileNumber, boolean isObstacle){
 		adjList = new LinkedList<Tiles>();
 		this.isVisited = false;
