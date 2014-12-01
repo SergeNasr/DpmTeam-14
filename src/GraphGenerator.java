@@ -6,16 +6,24 @@ import java.util.LinkedList;
 public class GraphGenerator {
 	private Tiles[][] tile;
 	private ArrayList<Tiles> graph;
-
+	/**
+	 * Get the map graph
+	 * @return Auto-generated graph from GraphGenerator
+	 */
 	public ArrayList<Tiles> getGraph() {
 		return graph;
 	}
-
+	/**
+	 * A graph generator
+	 * @param map
+	 */
 	public GraphGenerator(Map map) {
 		tile = map.getMap();
 		graph = new ArrayList<Tiles>();
 	}
-
+	/**
+	 * A method that auto-generates a graph based on the obstacles of a map
+	 */
 	public void createGraph() {	//unfinished
 		int rows = tile.length;
 		int col = tile[0].length;
@@ -47,6 +55,9 @@ public class GraphGenerator {
 		}
 	}
 	
+	/**
+	 * Print the graph
+	 */
 	public void printGraph() {
 		for (int i = 0; i < graph.size(); i++) {
 			for ( Tiles t : graph.get(i).adjList) {
@@ -54,7 +65,12 @@ public class GraphGenerator {
 			}
 		}
 	}
-	
+	/**
+	 * Find the shortest path to its destination based on breadth-first search algorithm
+	 * @param start
+	 * @param dest
+	 * @return
+	 */
 	public LinkedList<Tiles> bfs(Tiles start, Tiles dest) {
 		HashMap<Tiles, Tiles> prev = new HashMap<Tiles, Tiles>();
 		LinkedList<Tiles> path = new LinkedList<Tiles>();
@@ -89,8 +105,10 @@ public class GraphGenerator {
 		return path;
 	}
 	
-	
-	public void printPath() {
+	/**
+	 * Print the path found by bfs
+	 */
+	private void printPath() {
 		Tiles st = graph.get(1);
 		Tiles end = graph.get(25);
 		LinkedList<Tiles> pp = bfs(st, end);
@@ -100,6 +118,12 @@ public class GraphGenerator {
 		}
 	}
 	
+	/**
+	 * Find the tile number of a tile that has a row and a column that correspond to the origin of an xy graph.
+	 * @param row
+	 * @param col
+	 * @return
+	 */
 	public int findTileId(double row, double col) {
 		for (int i = 0; i < graph.size(); i++) {
 			if (graph.get(i).getRow() == row && graph.get(i).getCol() == col) {

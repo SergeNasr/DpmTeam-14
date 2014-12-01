@@ -7,13 +7,22 @@ public class Claw {
 	private SquareDriver driver;
 	public boolean blockGrabbed;
 	
+	/**
+	 * A claw that can pick-up and see an object
+	 * @param clawMotor
+	 * @param usSensorFront
+	 * @param driver
+	 */
 	public Claw(NXTRegulatedMotor clawMotor, UltrasonicSensor usSensorFront, SquareDriver driver) {
 		this.clawMotor = clawMotor;
 		this.clawMotor.setSpeed(150);
 		this.driver = driver;
 		blockGrabbed = false;
 	}
-
+	/**
+	 * Grab the object that is in front of it.
+	 * @param distance
+	 */
 	public void processUSData(int distance) {
 		blockGrabbed = true;
 		driver.moveForward(- (22 - distance));
@@ -28,6 +37,9 @@ public class Claw {
 		
 	}
 	
+	/**
+	 * Release the object that is in front
+	 */
 	public void dropObject() {
 		driver.moveForward(-10);
 		clawMotor.rotate(-620);

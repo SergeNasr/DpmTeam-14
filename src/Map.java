@@ -2,6 +2,10 @@ public class Map {
 	private static Tiles [][] tiles;
 	private int [] obstacles;
 	
+	/**
+	 * A map that takes into account obstacles surrounding it.
+	 * @param blocks_tilenumber
+	 */
 	public Map(int [] blocks_tilenumber){
 		
 		this.obstacles = new int[blocks_tilenumber.length];
@@ -11,7 +15,7 @@ public class Map {
 		int count = 1;
 		tiles = new Tiles[Constants.MAZE_SIZE][Constants.MAZE_SIZE];
 		
-		
+		// giving a tile number to all the tiles and giving them default options
 		Tiles tile;
 		for(int i = 0; i < tiles.length; i++){
 			for(int j = 0; j < tiles[i].length; j++){
@@ -21,11 +25,14 @@ public class Map {
 			}
 		}
 		
+		// set the north, west, south, and east walls.
 		for(int i = 0; i < 4; i++){
 			setWalls(i);
 		}
+		// set the obstacles in the map AND the tiles surrounding them
 		setBlocks();
 		
+		// generate arrows for all the blcks that are not obstacles
 		for (int i = 0 ; i < Constants.MAZE_SIZE ; i++) {
 			for (int j = 0 ; j < Constants.MAZE_SIZE ; j++) {
 				if (!tiles[i][j].getIsObstacle()) {
@@ -43,6 +50,11 @@ public class Map {
 	// 2 = south
 	// 3 = east
 	
+	/**
+	 * Translate number convention to char
+	 * @param k
+	 * @return a char representing a direction (0:north ; 1:west ; 2:south ; 3: east)
+	 */
 	public char setOrientation(int k){
 		if(k==0) return 'n';
 		if(k==1) return 'w';
@@ -50,10 +62,19 @@ public class Map {
 		if(k==3) return 'e';
 		return 'z';
 	}
+	/**
+	 * The row translated from a 2D array to a graph
+	 * @param row
+	 * @return The row as seen from the origin
+	 */
 	public static int setRowTile(int row) {
 		return Constants.MAZE_SIZE - 1 - row;
 	}
 	
+	/**
+	 * Create a square around the map representing the neighbouring walls
+	 * @param orientation
+	 */
 	public void setWalls(int orientation){
 		if(orientation > 3)
 			return;
@@ -76,7 +97,9 @@ public class Map {
 		}
 	}
 	
-	//sets obstacle blocks in map
+	/**
+	 * Set the obstacles and the tiles around them
+	 */
 	public void setBlocks(){
 		for(int i = 0; i < obstacles.length; i++){
 			for(int j = 0; j < tiles.length; j++){
@@ -128,16 +151,29 @@ public class Map {
 			}
 		}
 	}
+	
+	/**
+	 * Get array of obstacles from the map
+	 * @return array of tile numbers
+	 */
 	public int[] getObstacles(){
 		return this.obstacles;
 	}
 	
+	
+	/**
+	 * Get map
+	 * @return 2D array of Tiles
+	 */
 	public Tiles[][] getMap(){
 		return tiles;
 	}
 	
-	//prints for each tile in which direction obstacles are located
-	public static void printMapObstacles(Map map){
+	/**
+	 * Print the map
+	 * @param map
+	 */
+	private static void printMapObstacles(Map map){
 		Tiles [][] temp = tiles;
 		for(int i=0; i< Constants.MAZE_SIZE; i++){
 			for(int j=0; j< Constants.MAZE_SIZE; j++){

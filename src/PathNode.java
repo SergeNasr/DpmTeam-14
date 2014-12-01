@@ -5,15 +5,26 @@
 public class PathNode {
 	private String mvt;
 	private int tilesAway;
-	
+	/**
+	 * Node of the path used by the robot that takes as input a vector of movement and a number of tiles it is away from at that movement
+	 * @param m
+	 * @param numTiles
+	 */
 	public PathNode(String m, int numTiles) {
 		mvt = m;
 		tilesAway = numTiles;
 	}
-
+	/**
+	 * Get the movement of the robot
+	 * @return String representing the movement
+	 */
 	public String getMvt() {
 		return mvt;
 	}
+	/**
+	 * Get the number of tiles between the robot and an object/wall
+	 * @return an int that is either 0,1,2, or -1(infinity as seen from the sensor) tiles away
+	 */
 	public int getNodeTilesAway(){
 		return tilesAway;
 	}
