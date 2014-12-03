@@ -50,7 +50,9 @@ public class Odometer extends Thread {
 		data[1] = (leftTacho * Constants.RADIUS - rightTacho * Constants.RADIUS) / Constants.WIDTH;
 	}
 	
-	// run method (required for Thread)
+	/**
+	 * starts the odometer thread
+	 */
 	public void run() {
 		long updateStart, updateEnd;
 

@@ -29,16 +29,18 @@ public class OdometryCorrection extends Thread {
 		this.colorSensorRight = colorSensorRight;
 		this.driver = driver;
 	}
-
-	public void setExitCorrection(boolean exitCorrection) {
-		this.exitCorrection = exitCorrection;
-	}
-
+	
+	/**
+	 * sets the SquareDriver object
+	 * @param driver
+	 */
 	public void setDriver(SquareDriver driver) {
 		this.driver = driver;
 	}
 
-	// run method (required for Thread)
+	/**
+	 * starts the odometry correction thread
+	 */
 	public void run() {
 		Sound.setVolume(Sound.VOL_MAX);
 		colorSensorLeft.setFloodlight(true);
@@ -115,6 +117,11 @@ public class OdometryCorrection extends Thread {
 		}
 	}
 
+	/**
+	 * calculates the correction angle, which is used to re-direct the robot after each movement
+	 * @param dist
+	 * @return angle in degrees
+	 */
 	private double correctionAngle(double dist) {
 		return Math.atan(dist / Constants.SENSORS_WIDTH);
 	}
@@ -123,6 +130,10 @@ public class OdometryCorrection extends Thread {
 	public static int nbTrue = 0;
 	public static int nbFalse = 0;
 
+	/**
+	 * sets the moving average to a window of 5 values
+	 * @param data
+	 */
 	public static void setMA(int data) {
 		if (data >= Constants.LIGHT_TRASH_DATA)
 			return;
@@ -135,6 +146,10 @@ public class OdometryCorrection extends Thread {
 		}
 	}
 
+	/**
+	 * Differential method used to find whether a sensor detects an object
+	 * @return true if object/line is detected; false otherwise
+	 */
 	public static boolean differential() {
 		int diff = 0;
 

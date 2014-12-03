@@ -17,6 +17,9 @@ public class UltrasonicPoller {
 		this.distanceCounter = 0;
 	}
 
+	/**
+	 * Method used to find a block once the robot is the the 2x2 square that contains blocks
+	 */
 	public void findBlock() {
 		currentTheta = 90;
 		driver.setSpeeds(Constants.FIND_BLOCK_SPEED, Constants.FIND_BLOCK_SPEED);

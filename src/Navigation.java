@@ -21,14 +21,25 @@ public class Navigation {
 		this.odoCor = odoCor;
 	}
 
+	/**
+	 * returns previous X position
+	 * @return prevPosX
+	 */
 	public double getPrevPosX() {
 		return prevPosX;
 	}
 
+	/**
+	 * returns previous Y position
+	 * @return prevPosY
+	 */
 	public double getPrevPosY() {
 		return prevPosY;
 	}
 
+	/**
+	 * navigates the robot along the Point array
+	 */
 	public void go(){
 		prevPosX = points[0].getX();
 		prevPosY = points[0].getY();
@@ -81,6 +92,11 @@ public class Navigation {
 		finishedNav = true;
 	}
 
+	/**
+	 * returns the direction the robot should be pointing at when going to Point point
+	 * @param point
+	 * @return direction in degrees (0, 90, 180, 270)
+	 */
 	private double direction(Point point){
 		double dx = point.getX() - prevPosX;
 		double dy = point.getY() - prevPosY;
