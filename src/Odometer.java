@@ -2,7 +2,12 @@
 import lejos.nxt.Motor;
 import lejos.nxt.NXTRegulatedMotor;
 
-
+/**
+ * 
+ * @author Eduardo Coronado-Montoya
+ * @author Raluca Niti
+ *
+ */
 public class Odometer extends Thread {
 	// robot position
 	private int lastTachoL;
@@ -40,8 +45,11 @@ public class Odometer extends Thread {
 		
 		
 	}
-	
-	public void getDisplacementAndHeading(double [] data) {
+	/**
+	 * Get the displacement and heading of the robot
+	 * @param Array containing the distance and the heading
+	 */
+	private void getDisplacementAndHeading(double [] data) {
 		int leftTacho, rightTacho;
 		leftTacho = leftMotor.getTachoCount();
 		rightTacho = rightMotor.getTachoCount();
@@ -51,7 +59,7 @@ public class Odometer extends Thread {
 	}
 	
 	/**
-	 * starts the odometer thread
+	 * Start the odometer thread
 	 */
 	public void run() {
 		long updateStart, updateEnd;
@@ -106,6 +114,10 @@ public class Odometer extends Thread {
 	
 	// + direction means going towards origin or is inbound
 	// - direction means going away from origin or is outbound
+	/**
+	 * Get the direction of the odometer
+	 * @return 1 if it is inbound, -1 if outbound and 0 if it is anything else
+	 */
 	public int direction(){
 		if(dirX < 0 || dirY < 0)
 			return 1;
@@ -134,7 +146,10 @@ public class Odometer extends Thread {
 				position[2] = angle;
 		}
 	}
-
+	/**
+	 * Get x coordinate
+	 * @return x coordinate
+	 */
 	public double getX() {
 		double result;
 
@@ -144,7 +159,10 @@ public class Odometer extends Thread {
 
 		return result;
 	}
-
+	/**
+	 * Get y coordinate
+	 * @return y coordinate
+	 */
 	public double getY() {
 		double result;
 
@@ -154,7 +172,10 @@ public class Odometer extends Thread {
 
 		return result;
 	}
-
+	/**
+	 * Get the direction of the robot
+	 * @return angle at which the robot is pointing
+	 */
 	public double getTheta() {
 		double result;
 
@@ -164,7 +185,6 @@ public class Odometer extends Thread {
 
 		return result;
 	}
-	
 	public double getAngle() {
 		double result;
 
@@ -187,19 +207,28 @@ public class Odometer extends Thread {
 				angle = position[2];
 		}
 	}
-
+	/**
+	 * Set the x coordinate
+	 * @param x The desired x coordinate
+	 */
 	public void setX(double x) {
 		synchronized (lock) {
 			this.x = x;
 		}
 	}
-
+	/**
+	 * Set the y coordinate
+	 * @param y The desired y coordinate
+	 */
 	public void setY(double y) {
 		synchronized (lock) {
 			this.y = y;
 		}
 	}
-
+	/**
+	 * Set the direction
+	 * @param theta The desired direction
+	 */
 	public void setTheta(double theta) {
 		synchronized (lock) {
 			this.theta = theta;

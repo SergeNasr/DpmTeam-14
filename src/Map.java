@@ -104,7 +104,7 @@ public class Map {
 	}
 	
 	/**
-	 * Set the obstacles and the tiles around them
+	 * Set the obstacles inside a 2D array and set the tiles around them
 	 */
 	public void setBlocks(){
 		for(int i = 0; i < obstacles.length; i++){

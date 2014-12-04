@@ -2,13 +2,19 @@
 //nodes inside the list of the current path of the robot
 //each node corresponds to a movement
 //store movement type (turn or forward) and if the robot is seeing an obstacle after the movement
+/**
+ * 
+ * @author Eduardo Coronado-Montoya
+ * @author Serge Nasr
+ *
+ */
 public class PathNode {
 	private String mvt;
 	private int tilesAway;
 	/**
 	 * Node of the path used by the robot that takes as input a vector of movement and a number of tiles it is away from at that movement
-	 * @param m
-	 * @param numTiles
+	 * @param m The movement type : "turnLeft", "turnRight" and "forward"
+	 * @param numTiles The number of tiles away the robot is located from the sensor (0,1,2, or -1)
 	 */
 	public PathNode(String m, int numTiles) {
 		mvt = m;

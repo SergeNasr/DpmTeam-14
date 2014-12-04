@@ -19,9 +19,9 @@ public class Arrow {
 	private double x, y, theta;
 	/**
 	 * Arrow is usually defined by the row and column of the block where it is, and it's orientation (north, west, south. east)
-	 * @param r
-	 * @param c
-	 * @param p
+	 * @param r The row of the tile nesting the arrow
+	 * @param c The column of the tile nesting the arrow
+	 * @param p The direction of the arrow; 'n', 'w', 's' or 'e;
 	 */
 	public Arrow(int r, int c, char p) {
 		row = r;
@@ -31,9 +31,9 @@ public class Arrow {
 	}
 	/**
 	 * Arrow can be defined by its x, y coordinates and orientation
-	 * @param x
-	 * @param y
-	 * @param theta
+	 * @param x The x coordinate
+	 * @param y The y coordinate
+	 * @param theta The direction of the arrow
 	 */
 	public Arrow(double x, double y, double theta) {
 		this.x = x;
@@ -42,21 +42,21 @@ public class Arrow {
 	}
 	/**
 	 * Set the row of the arrow
-	 * @param row
+	 * @param row The desired row for a tile
 	 */
 	public void setRow(int row) {
 		this.row = row;
 	}
 	/**
 	 * Set the column of the arrow
-	 * @param column
+	 * @param column The desired column for a tile
 	 */
 	public void setColumn(int column) {
 		this.column = column;
 	}
 	/**
 	 * Set the direction of the arrow
-	 * @param point
+	 * @param point The desired direction for a tile
 	 */
 	public void setPoint(char point) {
 		this.point = point;
@@ -114,7 +114,7 @@ public class Arrow {
 	}
 	/**
 	 * Converts a column to an x coordinate
-	 * @param col
+	 * @param col The column of the tile nesting the arrow.
 	 * @return the x coordinate of the arrow
 	 */
 	public static double columnToY (int col) {
@@ -122,7 +122,7 @@ public class Arrow {
 	}
 	/**
 	 * Converts a row to a y coordinate
-	 * @param row
+	 * @param row The row of the tile nesting the arrow.
 	 * @return the y coordinate of the arrow
 	 */
 	public static double rowToX (int row) {
@@ -130,8 +130,8 @@ public class Arrow {
 	}
 	/**
 	 * Converts from char convention to angle
-	 * @param direction
-	 * @return the angle represented by the char direction
+	 * @param direction The direction of the arrow
+	 * @return The angle at which the robot is theoretically pointing.
 	 */
 	public static double headToTheta (char direction) {
 		switch (direction) {
@@ -149,8 +149,8 @@ public class Arrow {
 	}
 	/**
 	 * Converts from and angle to a direction
-	 * @param theta
-	 * @return the char representing the given angle ('n','s','w' or 'e')
+	 * @param theta The value of the angle at which the robot is theoretically pointing.
+	 * @return The char representing the given angle ('n','s','w' or 'e')
 	 */
 	public static char thetaToHead (double theta) {
 		if (theta == 0) {

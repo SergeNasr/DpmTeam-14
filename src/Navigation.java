@@ -1,5 +1,10 @@
 
-
+/**
+ * 
+ * @author Serge Nasr
+ * @author Eduardo Coronado-Montoya
+ *
+ */
 public class Navigation {
 	private SquareDriver driver;
 	private double prevPosX; 
@@ -22,23 +27,23 @@ public class Navigation {
 	}
 
 	/**
-	 * returns previous X position
-	 * @return prevPosX
+	 * Get previous X position
+	 * @return the previous x coordinate
 	 */
 	public double getPrevPosX() {
 		return prevPosX;
 	}
 
 	/**
-	 * returns previous Y position
-	 * @return prevPosY
+	 * Get previous Y position
+	 * @return the previous y coordinate
 	 */
 	public double getPrevPosY() {
 		return prevPosY;
 	}
 
 	/**
-	 * navigates the robot along the Point array
+	 * Makes the robot go its destinations which are given by a point array
 	 */
 	public void go(){
 		prevPosX = points[0].getX();
@@ -93,7 +98,7 @@ public class Navigation {
 	}
 
 	/**
-	 * returns the direction the robot should be pointing at when going to Point point
+	 * Calculate direction the robot should be pointing at when going to Point point
 	 * @param point
 	 * @return direction in degrees (0, 90, 180, 270)
 	 */

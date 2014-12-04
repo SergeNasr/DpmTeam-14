@@ -34,7 +34,7 @@ public class Albert_Algo {
 	
 	/**
 	 * The row as seen from a 2D array standpoint
-	 * @param row (as seen from the origin)
+	 * @param row The row as seen from the origin
 	 * @return 
 	 */
 	public static int getRowMap(int row){
@@ -43,10 +43,10 @@ public class Albert_Algo {
 	
 	/**
 	 * An algorithm that localises the robot inside a given maze.
-	 * @param map
-	 * @param driver 
-	 * @param usSensorFront
-	 * @param usSensorBack 
+	 * @param map The map on which the robot will localize
+	 * @param driver The driver that will make the robot move
+	 * @param usSensorFront The front Ultrasonic sensor
+	 * @param usSensorBack The back Ultrasonic sensor
 	 */
 	public Albert_Algo(Map map, SquareDriver driver, UltrasonicSensor usSensorFront, UltrasonicSensor usSensorBack, OdometryCorrection odocor) {
 		odoCor = odocor;
@@ -59,7 +59,7 @@ public class Albert_Algo {
 	
 	/**
 	 * A method returning a conventional number for movement into a string.
-	 * @param rlf 
+	 * @param rlf 0 if going forward, 1 if going left, 3 if going right
 	 * @return The string value of the number representing forward(0), left(1), or right(3)
 	 */
 	public static String movementType(int rlf){
@@ -73,7 +73,7 @@ public class Albert_Algo {
 		
 	}
 	/**
-	 * Apply odometer correction
+	 * Apply odometer correction on the driver
 	 */
 	public static void applyCorrection(){
 		if (odoCor.clockCor) {
@@ -311,7 +311,7 @@ public class Albert_Algo {
 	}
 	/**
 	 * Evaluates the number of tiles separating the robot and wall or block.
-	 * @param data 
+	 * @param data The reading from the Ultrasonic sensor.
 	 * @return Separates data into 0, 1, 2 tiles away. If it doens't see a wall, method will return -1.
 	 */
 	private static int numTilesAway(double data) {
@@ -369,7 +369,7 @@ public class Albert_Algo {
 	/**
 	 * Calculates if it is better to go forward left or right based on remaining possibilities. The ratio for the direction 
 	 * that is closest to 0.5 will be the direction chosen.
-	 * @param canGoForward
+	 * @param canGoForward Boolean defining if the robot can go forward or not.
 	 * @return A number that is either 0, 1 or 3.
 	 */
 	public static int getBestRatio(boolean canGoForward){
@@ -416,7 +416,7 @@ public class Albert_Algo {
 	/**
 	 * Checks if for a given orientation (right,left or forward) of the possibility pointed by the index, the robot
 	 * will crash. 
-	 * @param rlf 
+	 * @param rlf 0 if moving forward, 1 if moving to the left, 3 if moving to the right.
 	 * @param index An index to a possibility.
 	 * @return 1 if the possibility crashed for the given direction rlf at the index given. 0 if it didn't crash.
 	 */
@@ -500,9 +500,9 @@ public class Albert_Algo {
 	}
 	/**
 	 * Method that defines if the possibility should remain one or if it should be removed.
-	 * @param pos 
-	 * @param index
-	 * @param fromFrontSenso
+	 * @param pos The arrow that is being evaluated.
+	 * @param index The index in the array of possibilities.
+	 * @param fromFrontSensor The boolean that checks if the data comes from the front sensor.
 	 * @return The index to remove if it crashed for the given data. -1 if it still a valid possibility.
 	 */
 	private static int getPositionToRemove(Arrow pos, int index,
@@ -732,7 +732,7 @@ public class Albert_Algo {
 	}	
 	/**
 	 * This method removes all the possibilities if the method getPositionToRemove tells it to do so.
-	 * @param fromFrontSensor
+	 * @param fromFrontSensor Checks if the data is from the front ultrasonic sensor or not.
 	 */
 	public static void updatePositions(boolean fromFrontSensor) {
 		
@@ -766,7 +766,7 @@ public class Albert_Algo {
 	}
 	/**
 	 * Helper method that transforms number convention into char convention.
-	 * @param index
+	 * @param index The number defining a direction. 0 if north, 1 if west, 2 if south and 3 if east
 	 * @return A char that represents the input number
 	 */
 	private static char translate(int index){
@@ -779,9 +779,9 @@ public class Albert_Algo {
 	
 	/**
 	 * Helper method that transforms a direction into a new one depending on the movement is has as input.
-	 * @param nodeInput
-	 * @param point
-	 * @return An int from the int convention for directions.
+	 * @param nodeInput The movement type; "forward", "turnLeft" or "turnRight"
+	 * @param point The character defining an orientation; 'n', 'w', 's' and 'e'
+	 * @return An int representing a direction after the movement type was executed.
 	 */
 	private static int getMovement(String nodeInput, char point){
 		if(nodeInput.equals("turnRight")){

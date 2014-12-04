@@ -1,7 +1,11 @@
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.UltrasonicSensor;
 
-
+/**
+ * 
+ * @author Serge Nasr
+ *
+ */
 public class Claw {
 	private NXTRegulatedMotor clawMotor;
 	private SquareDriver driver;

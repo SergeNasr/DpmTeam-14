@@ -1,6 +1,11 @@
 import lejos.nxt.NXTRegulatedMotor;
 
-
+/**
+ * 
+ * @author Serge Nasr
+ * @author Eduardo Coronado-Montoya
+ *
+ */
 public class SquareDriver {
 	
 	private boolean rotating;	// used in odometry correction
@@ -30,8 +35,8 @@ public class SquareDriver {
 	}
 
 	/**
-	 * 
-	 * @return boolean that represents whether the robot is rotating
+	 * Check if the robot is rotating
+	 * @return True if rotating, false if not
 	 */
 	public boolean isRotating() {
 		return rotating;
@@ -39,16 +44,16 @@ public class SquareDriver {
 	
 	/**
 	 * Sets the rotating boolean value
-	 * @param rotating
+	 * @param rotating True if rotating, false if not
 	 */
 	public void setRotating(boolean rotating) {
 		this.rotating = rotating;
 	}
 
 	/**
-	 * converts distance value in cm to number of wheel rotations in degrees
-	 * @param radius
-	 * @param distance
+	 * Converts distance value in cm to number of wheel rotations in degrees
+	 * @param radius The radius of the wheel
+	 * @param distance The distance in degrees/second
 	 * @return converted distance
 	 */
 	private static int convertDistance(double radius, double distance) {
@@ -56,19 +61,19 @@ public class SquareDriver {
 	}
 
 	/**
-	 * convert angle in degrees to number of rotations of the wheel in degrees
-	 * @param radius
-	 * @param width
-	 * @param angle
-	 * @return
+	 * Convert angle in degrees to number of rotations of the wheel in degrees
+	 * @param radius The radius of the wheel
+	 * @param width The width between the two wheels of the robot
+	 * @param angle The angle by which the robot has to turn
+	 * @return The number of rotations of the wheel
 	 */
 	private static int convertAngle(double radius, double width, double angle) {
 		return convertDistance(radius, Math.PI * width * angle / 360.0);
 	}
 	
 	/**
-	 * rotates the driver by theta degrees counter clockwise
-	 * @param theta
+	 * Rotates the robot by some degrees in a counter clockwise fashion
+	 * @param theta The number of degrees by which the robot has to turn
 	 */
 	public void rotateCounter(double theta) {
 		rotating = true;
@@ -78,8 +83,8 @@ public class SquareDriver {
 	}
 	
 	/**
-	 * rotates the driver by theta degrees clockwise
-	 * @param theta
+	 * Rotates the robot by some degrees in a clockwise fashion
+	 * @param theta The number of degrees by which the robot has to turn
 	 */
 	public void rotateClockwise(double theta) {
 		rotating = true;
@@ -89,8 +94,8 @@ public class SquareDriver {
 	}
 	
 	/**
-	 * moves the driver forward by dist (in cm)
-	 * @param dist
+	 * Moves the robot forward
+	 * @param dist Amount by which the robot has to move
 	 */
 	public void moveForward(double dist) {
 		leftMotor.rotate(convertDistance(Constants.RADIUS, dist),true);
@@ -98,9 +103,9 @@ public class SquareDriver {
 	}
 	
 	/**
-	 * sets the speeds of the left and right motors
-	 * @param leftSpeed
-	 * @param rightSpeed
+	 * Sets the speeds of the left and right motors
+	 * @param leftSpeed Speed for left motor
+	 * @param rightSpeed Speed for right motor
 	 */
 	public void setSpeeds(int leftSpeed, int rightSpeed) {
 		leftMotor.setSpeed(leftSpeed);
@@ -108,7 +113,7 @@ public class SquareDriver {
 	}
 	
 	/**
-	 * rotates the driver and returns right away (without waiting for the movement to finish)
+	 * Rotates the driver and returns right away (without waiting for the movement to finish)
 	 * @param theta
 	 */
 	public void rotateWithDirectReturn(double theta) {
@@ -125,7 +130,7 @@ public class SquareDriver {
 	}
 	
 	/**
-	 * sets the rotating value to false if both motors are not moving
+	 * Sets the rotating value to false if both motors are not moving
 	 */
 	public void checkMvt() {
 		if (!leftMotor.isMoving() && !rightMotor.isMoving()) {
@@ -134,7 +139,7 @@ public class SquareDriver {
 	}
 	
 	/**
-	 * stops the driver from moving
+	 * Stops the driver from moving
 	 */
 	public void stop() {
 		leftMotor.stop();

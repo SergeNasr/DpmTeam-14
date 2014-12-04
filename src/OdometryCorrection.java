@@ -3,7 +3,12 @@ import java.util.LinkedList;
 import lejos.nxt.ColorSensor;
 import lejos.nxt.Sound;
 import lejos.util.Delay;
-
+/**
+ * 
+ * 
+ * @author Serge Nasr
+ *
+ */
 public class OdometryCorrection extends Thread {
 	private static final long CORRECTION_PERIOD = 10;
 	private Odometer odometer;
@@ -31,7 +36,7 @@ public class OdometryCorrection extends Thread {
 	}
 	
 	/**
-	 * sets the SquareDriver object
+	 * Sets the SquareDriver object
 	 * @param driver
 	 */
 	public void setDriver(SquareDriver driver) {
@@ -39,7 +44,7 @@ public class OdometryCorrection extends Thread {
 	}
 
 	/**
-	 * starts the odometry correction thread
+	 * Starts the odometry correction thread
 	 */
 	public void run() {
 		Sound.setVolume(Sound.VOL_MAX);
@@ -118,7 +123,7 @@ public class OdometryCorrection extends Thread {
 	}
 
 	/**
-	 * calculates the correction angle, which is used to re-direct the robot after each movement
+	 * Calculates the correction angle, which is used to re-direct the robot after each movement
 	 * @param dist
 	 * @return angle in degrees
 	 */
@@ -131,8 +136,8 @@ public class OdometryCorrection extends Thread {
 	public static int nbFalse = 0;
 
 	/**
-	 * sets the moving average to a window of 5 values
-	 * @param data
+	 * Sets the moving average to a window of constant size 5
+	 * @param data The input to update the list
 	 */
 	public static void setMA(int data) {
 		if (data >= Constants.LIGHT_TRASH_DATA)
@@ -175,7 +180,10 @@ public class OdometryCorrection extends Thread {
 		}
 		return false;
 	}
-
+	/**
+	 * Tells if a line was seen with an absolute value
+	 * @return True, if a line was seen and false, if a line wasn't seen.
+	 */
 	public static boolean sawLine() {
 		if (nbFalse == 3) {
 			nbFalse = 0;

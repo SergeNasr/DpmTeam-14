@@ -3,8 +3,8 @@ public class Point {
 	private double y;
 	/**
 	 * A point in the graph that represents a location
-	 * @param xCoord
-	 * @param yCoord
+	 * @param xCoord An x coordinate on the graph
+	 * @param yCoord A y coordinate on the graph
 	 */
 	public Point(double xCoord, double yCoord){
 		x = xCoord;
@@ -26,7 +26,7 @@ public class Point {
 	}
 	/**
 	 * Convert a Tile's row and column to a point.
-	 * @param t
+	 * @param t A Tile object
 	 * @return a point containing the x and y parameters of the tile.
 	 */
 	public static Point convertTileToPoint(Tiles t) {
